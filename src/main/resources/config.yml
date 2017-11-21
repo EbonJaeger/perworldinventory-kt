@@ -1,0 +1,89 @@
+##########################################
+#  PerWorldInventory configuration file  #
+##########################################
+
+# If true, the server will change player's gamemodes when entering a world
+# The gamemode set is configured in the worlds.yml file
+manage-gamemodes: false
+
+# If true, players will have different inventories for each gamemode
+separate-gamemode-inventories: true
+
+# If true, any worlds that are not in the worlds.yml configuration file will share the same inventory
+share-if-unconfigured: false
+
+metrics:
+  # Choose whether or not to enable metrics sending.
+  # See https://bstats.org/getting-started for details.
+  enable: true
+  # Send the number of configured groups.
+  # No group names will be sent!
+  send-number-of-groups: true
+  # Send the total number of worlds on the server.
+  send-number-of-worlds: true
+
+# All settings for players are here:
+player:
+  # Save and Load players' economy balances. Requires Vault!
+  economy: false
+  # Load players' ender chests
+  ender-chest: true
+  # Load players' inventory
+  inventory: true
+  # All options for player stats are here:
+  stats:
+    # Load if a player is able to fly
+    can-fly: true
+    # Load the player's display name
+    display-name: false
+    # Load a player's exhaustion level
+    exhaustion: true
+    # Load how much exp a player has
+    exp: true
+    # Load a player's hunger level
+    food: true
+    # Load if a player is flying
+    flying: true
+    # Load what gamemode a player is in. This is shadow-set to false if
+    # 'manage-gamemodes' is true, to stop infinite loop
+    gamemode: false
+    # Load the maximum health a player can have
+    max-health: true
+    # Load how much health a player has
+    health: true
+    # Load what level the player is
+    level: true
+    # Load all the potion effects of the player
+    potion-effects: true
+    # Load the saturation level of the player
+    saturation: true
+    # Load a player's fall distance
+    fall-distance: true
+    # Load the fire ticks a player has
+    fire-ticks: true
+    # Load the maximum amount of air a player can have
+    max-air: true
+    # Load the current remaining air a player has
+    remaining-air: true
+
+# Config Version 2 below this line #
+
+# Configure the amount of time between saves, in seconds
+# Default is 5 minutes (300 seconds)
+save-interval: 300
+
+# Config Version 3 Additions below this line #
+
+# Attempt to figure out which world a player last logged off in
+# and save/load the correct data if that world is different.
+# REQUIRES MC 1.9.2 OR NEWER
+load-data-on-join: false
+
+# Print out debug messages to the console for every event that happens in PWI
+debug-mode: false
+
+# Config Version 4 additions below this line #
+
+# Disables bypass regardless of permission
+# Defaults to false
+disable-bypass: false

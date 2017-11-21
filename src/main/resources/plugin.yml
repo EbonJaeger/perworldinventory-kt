@@ -1,0 +1,39 @@
+main: maven-main
+version: maven-version
+name: maven-name
+author: maven-authors
+softdepend: [Vault]
+
+commands:
+  pwi:
+    description: Commands for PerWorldInventory
+    aliases: [perworldinventory]
+    
+permissions:
+  perworldinventory.admin:
+    default: op
+    children:
+      perworldinventory.convert: true
+      perworldinventory.help: true
+      perworldinventory.reload: true
+      perworldinventory.setdefaults: true
+      perworldinventory.version: true
+  perworldinventory.bypass.*:
+    default: false
+    children:
+      perworldinventory.bypass.gamemode: true
+      perworldinventory.bypass.world: true
+  perworldinventory.convert:
+    default: false
+  perworldinventory.help:
+    default: false
+  perworldinventory.reload:
+    default: false
+  perworldinventory.setdefaults:
+    default: false
+  perworldinventory.version:
+    default: false
+  perworldinventory.bypass.gamemode:
+    default: false
+  perworldinventory.bypass.world:
+    default: false
