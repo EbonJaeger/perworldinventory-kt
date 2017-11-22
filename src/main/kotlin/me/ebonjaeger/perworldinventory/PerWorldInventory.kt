@@ -17,6 +17,10 @@ class PerWorldInventory : JavaPlugin()
     var economy: Economy? = null
         private set
 
+    val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
+
+    private val groupManager = GroupManager(this)
+
     override fun onEnable()
     {
         ConsoleLogger.setLogger(logger)
@@ -27,8 +31,6 @@ class PerWorldInventory : JavaPlugin()
         {
             Files.createDirectories(defaultsDir)
         }
-
-        // TODO: copy over __default.json to defaults dir
 
         // Check if `worlds.yml` exists. If it does, convert it to JSON.
         // Otherwise, save it if it doesn't exist.
@@ -43,7 +45,7 @@ class PerWorldInventory : JavaPlugin()
 
         // TODO: Main config stuff
 
-        // TODO: Load world groups into memory
+        groupManager.loadGroups(WORLDS_CONFIG_FILE)
 
         // TODO: Register commands
 
@@ -69,6 +71,7 @@ class PerWorldInventory : JavaPlugin()
 
     override fun onDisable()
     {
+        groupManager.groups.clear()
         server.scheduler.cancelTasks(this)
     }
 
@@ -107,13 +110,13 @@ class PerWorldInventory : JavaPlugin()
         // Rename old .yml file, and create new json file
         Files.move(File(dataFolder, "worlds.yml").toPath(), File(dataFolder,
                 "worlds.old.yml").toPath())
-        Files.createFile(File(dataFolder, "worlds.json").toPath())
+        Files.createFile(WORLDS_CONFIG_FILE.toPath())
 
         // Save to the new json file
         val gson = Gson()
         server.scheduler.runTaskAsynchronously(this, {
-            FileWriter(File(dataFolder, "worlds.json")).use {
-                it.write(gson.toJson(groups))
+            FileWriter(WORLDS_CONFIG_FILE).use {
+                it.write(gson.toJson(root))
             }
         })
     }
