@@ -29,7 +29,7 @@ class PerWorldInventory : JavaPlugin()
         ConsoleLogger.setLogger(logger)
 
         // Make data folders
-        val defaultsDir = File(dataFolder.path + File.separator + "data", "defaults").toPath()
+        val defaultsDir = File(DATA_DIRECTORY, "defaults").toPath()
         if (Files.exists(defaultsDir))
         {
             Files.createDirectories(defaultsDir)
