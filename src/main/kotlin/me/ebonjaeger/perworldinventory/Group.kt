@@ -19,6 +19,12 @@ data class Group(
         val defaultGameMode: GameMode
         )
 {
+
+    /**
+     * If this is true, then this group was configured in the `worlds.json`
+     * file. If the group was created on the fly due to a world not being in
+     * a group, then this will be false.
+     */
     var configured: Boolean = false
 
     /**

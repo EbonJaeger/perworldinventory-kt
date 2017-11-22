@@ -39,7 +39,7 @@ class GroupManager(private val plugin: PerWorldInventory)
      * @return The Group
      */
     fun getGroup(name: String): Group?
-            = groups[name]
+            = groups[name.decapitalize()]
 
     /**
      * Get the group that contains a specific world. This method iterates
@@ -63,6 +63,8 @@ class GroupManager(private val plugin: PerWorldInventory)
         val worlds = mutableSetOf(world, "${world}_nether", "${world}_the_end")
         val group = Group(world, worlds, GameMode.SURVIVAL)
         groups.put(world.decapitalize(), group)
+        ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
+                " Please double check your `worlds.json` file configuration.!")
 
         return group
     }
@@ -88,7 +90,7 @@ class GroupManager(private val plugin: PerWorldInventory)
                         val group = gson.fromJson(jsonObject, Group::class.java)
                         group.configured = true
 
-                        groups.put(group.name, group)
+                        groups.put(group.name.decapitalize(), group)
                     }
                 })
             }
