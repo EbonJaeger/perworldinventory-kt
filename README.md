@@ -18,7 +18,7 @@ Kotlin programming language.
 
 If you want to build PerWorldInventory yourself, you will need Maven.
 
-1) Clone the PerWorldInventory project: ```git clone https://github.com/Gnat008/PerWorldInventory.git```
+1) Clone the PerWorldInventory project: ```git clone https://github.com/Gnat008/perworldinventory-kt.git```
 
 2) Run ```mvn clean install```
 
