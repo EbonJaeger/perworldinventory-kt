@@ -17,6 +17,7 @@ class PerWorldInventory : JavaPlugin()
     var economy: Economy? = null
         private set
 
+    val DATA_DIRECTORY = File(dataFolder, "data")
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
 
     private val groupManager = GroupManager(this)
