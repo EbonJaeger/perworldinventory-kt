@@ -1,8 +1,14 @@
 package me.ebonjaeger.perworldinventory
 
+import ch.jalu.configme.migration.PlainMigrationService
+import ch.jalu.configme.resource.YamlFileResource
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
+import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
+import me.ebonjaeger.perworldinventory.configuration.PluginSettings
+import me.ebonjaeger.perworldinventory.configuration.Settings
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
@@ -46,7 +52,14 @@ class PerWorldInventory : JavaPlugin()
             saveResource("worlds.json", false)
         }
 
-        // TODO: Main config stuff
+
+        val settings = Settings(YamlFileResource(File(dataFolder, "config.yml")),
+                PlainMigrationService(),
+                PluginSettings::class.java,
+                MetricsSettings::class.java,
+                PlayerSettings::class.java)
+
+        ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
 
         groupManager.loadGroups(WORLDS_CONFIG_FILE)
 
@@ -70,6 +83,8 @@ class PerWorldInventory : JavaPlugin()
         }
 
         // TODO: Initialize bStats telemetry
+
+        ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!");
     }
 
     override fun onDisable()
