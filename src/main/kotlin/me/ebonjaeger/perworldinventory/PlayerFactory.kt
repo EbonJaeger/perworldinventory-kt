@@ -13,7 +13,7 @@ class PlayerFactory(private val plugin: PerWorldInventory)
     fun create(player: Player, group: Group): PlayerInfo
     {
         var balance = 0.0
-        if (plugin.economy != null)
+        if (plugin.econEnabled)
         {
             val econ = plugin.economy
             balance = econ!!.getBalance(player)

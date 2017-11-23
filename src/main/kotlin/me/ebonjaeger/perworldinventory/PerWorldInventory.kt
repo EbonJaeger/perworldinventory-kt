@@ -22,10 +22,20 @@ import java.nio.file.Files
 class PerWorldInventory : JavaPlugin()
 {
 
+    /**
+     * Economy from Vault, if Vault is present on the server. If Vault is not
+     * installed or we failed to hook into it, this will return null.
+     */
     var economy: Economy? = null
         private set
-    // TODO: Also check setting
-    var econEnabled = economy != null
+
+    /**
+     * If this is true, then Vault has been hooked in to, and the plugin is
+     * configured to perform economy operations on players. If either of
+     * those is not true, then this will return false.
+     */
+    var econEnabled = false
+        private set
 
     val DATA_DIRECTORY = File(dataFolder, "data")
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
@@ -83,6 +93,8 @@ class PerWorldInventory : JavaPlugin()
                 ConsoleLogger.warning("Unable to hook into Vault!")
             }
         }
+
+        econEnabled = economy != null && settings.getProperty(PlayerSettings.USE_ECONOMY)
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
