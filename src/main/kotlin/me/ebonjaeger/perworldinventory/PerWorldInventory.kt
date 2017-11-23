@@ -10,6 +10,8 @@ import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import net.milkbowl.vault.economy.Economy
+import org.bstats.bukkit.Metrics
+import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -82,7 +84,11 @@ class PerWorldInventory : JavaPlugin()
             }
         }
 
-        // TODO: Initialize bStats telemetry
+        // Start bStats metrics
+        if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
+        {
+            startMetrics(settings)
+        }
 
         ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!");
     }
@@ -91,6 +97,47 @@ class PerWorldInventory : JavaPlugin()
     {
         groupManager.groups.clear()
         server.scheduler.cancelTasks(this)
+    }
+
+    /**
+     * Start sending metrics information to bStats. If so configured, this
+     * will send the number of configured groups and the number of worlds on
+     * the server.
+     *
+     * @param settings The settings for sending group and world information
+     */
+    private fun startMetrics(settings: Settings)
+    {
+        val bStats = Metrics(this)
+
+        if (settings.getProperty(MetricsSettings.SEND_NUM_GROUPS))
+        {
+            // Get the total number of configured Groups
+            bStats.addCustomChart(Metrics.SimplePie("num_groups", {
+                val numGroups = groupManager.groups.size
+
+                return@SimplePie numGroups.toString()
+            }))
+        }
+
+        if (settings.getProperty(MetricsSettings.SEND_NUM_WORLDS))
+        {
+            // Get the total number of worlds (configured or not)
+            bStats.addCustomChart(Metrics.SimplePie("num_worlds", {
+                val numWorlds = Bukkit.getWorlds().size
+
+                when
+                {
+                    numWorlds <= 5 -> return@SimplePie "1-5"
+                    numWorlds <= 10 -> return@SimplePie "6-10"
+                    numWorlds <= 15 -> return@SimplePie "11-15"
+                    numWorlds <= 20 -> return@SimplePie "16-20"
+                    numWorlds <= 25 -> return@SimplePie "21-25"
+                    numWorlds <= 30 -> return@SimplePie "26-30"
+                    else -> return@SimplePie numWorlds.toString()
+                }
+            }))
+        }
     }
 
     /**
