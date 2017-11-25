@@ -32,6 +32,7 @@
 
         <!-- Change Bukkit Version HERE! -->
         <bukkit.version>1.12-R0.1-SNAPSHOT</bukkit.version>
+        <powermock.version>1.7.3</powermock.version>
     </properties>
 
     <licenses>
@@ -112,11 +113,44 @@
             <artifactId>bstats-bukkit</artifactId>
             <version>1.2</version>
         </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.natpryce</groupId>
+            <artifactId>hamkrest</artifactId>
+            <version>1.4.2.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <!-- Note ljacqu 20171125: Powermock doesn't work with anything above 2.9 because of a removed class -->
+            <version>2.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>${powermock.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
-        <!-- testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory -->
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <defaultGoal>clean install</defaultGoal>
         <resources>
