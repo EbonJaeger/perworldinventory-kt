@@ -10,6 +10,7 @@ Kotlin programming language.
 
 [![Build Status](https://travis-ci.org/Gnat008/perworldinventory-kt.svg?branch=master)](https://travis-ci.org/Gnat008/perworldinventory-kt)
 [![CircleCI](https://circleci.com/gh/Gnat008/perworldinventory-kt.svg?style=svg)](https://circleci.com/gh/Gnat008/perworldinventory-kt)
+[![Coverage Status](https://coveralls.io/repos/github/Gnat008/perworldinventory-kt/badge.svg?branch=master)](https://coveralls.io/github/Gnat008/perworldinventory-kt?branch=master)
 ## Building Prerequisites
 * JDK 8
 * Maven
