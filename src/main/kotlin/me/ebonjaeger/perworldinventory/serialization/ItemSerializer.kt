@@ -32,12 +32,12 @@ object ItemSerializer
         /*
          * Check to see if the item is a skull with a null owner.
          * This is because some people are getting skulls with null owners, which causes Spigot to throw an error
-         * when it tries to serialize the item. If this ever gets fixed in Spigot, this will be removed.
+         * when it tries to serialize the item.
          */
         if (item.type == Material.SKULL_ITEM)
         {
             val meta = item.itemMeta as SkullMeta
-            if (meta.hasOwner() && (meta.owner == null || meta.owner.isEmpty()))
+            if (meta.hasOwner() && (meta.owner.isNullOrEmpty()))
             {
                 item.itemMeta = Bukkit.getServer().itemFactory.getItemMeta(Material.SKULL_ITEM)
             }
