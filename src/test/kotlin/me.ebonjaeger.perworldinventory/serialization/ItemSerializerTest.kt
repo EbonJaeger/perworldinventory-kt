@@ -99,7 +99,7 @@ class ItemSerializerTest {
                 fail("Map is empty!")
             } else {
                 for (entry in expectedItemMeta.providedMap.entries) {
-                    assertThat(givenItemMeta.providedMap.get(entry.key), equalTo(entry.value))
+                    assertThat(givenItemMeta.providedMap[entry.key], equalTo(entry.value))
                 }
             }
         } else {

@@ -29,9 +29,8 @@ class ItemMetaTestImpl : ItemMeta {
         this.providedMap = map
     }
 
-    override fun serialize(): MutableMap<String, Any> {
-        return HashMap(this.providedMap)
-    }
+    override fun serialize(): MutableMap<String, Any> =
+            HashMap(this.providedMap)
 
     override fun clone(): ItemMeta {
         val mapClone = HashMap(providedMap)
