@@ -19,7 +19,7 @@ object Utils
     {
         val versionNum = version.substring(version.indexOf('.') - 1,
                 version.length - 1).trim()
-        val parts = versionNum.split("\\.")
+        val parts = versionNum.split(".")
 
         try
         {
