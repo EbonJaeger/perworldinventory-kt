@@ -4,7 +4,7 @@ import ch.jalu.configme.configurationdata.ConfigurationDataBuilder
 import com.google.common.collect.Sets
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import com.natpryce.hamkrest.hasSize
+import com.natpryce.hamkrest.isEmpty
 import me.ebonjaeger.perworldinventory.TestHelper.getFromJar
 import org.bukkit.configuration.file.YamlConfiguration
 import org.junit.Test
@@ -50,6 +50,6 @@ class SettingsConsistencyTest
         // when / then
         val difference = Sets.difference(keysInYaml, keysInCode)
         assertThat("config.yml has unknown properties",
-                difference, hasSize(equalTo(0)))
+                difference, isEmpty)
     }
 }
