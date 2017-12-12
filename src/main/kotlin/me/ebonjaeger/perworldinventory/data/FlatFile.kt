@@ -5,6 +5,7 @@ import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -26,7 +27,7 @@ class FlatFile(private val plugin: PerWorldInventory,
 
         try
         {
-            creatFileIfNotExists(file)
+            createFileIfNotExists(file)
         } catch (ex: IOException)
         {
             if (ex !is FileAlreadyExistsException)
@@ -49,7 +50,21 @@ class FlatFile(private val plugin: PerWorldInventory,
 
     override fun saveLogout(player: PlayerInfo)
     {
-        TODO("not implemented")
+        val dir = File(plugin.DATA_DIRECTORY, player.uuid.toString())
+        val file = File(dir, "last-logout.json")
+
+        try
+        {
+            createFileIfNotExists(file)
+            val data = LocationSerializer.serialize(player.location)
+            FileWriter(file).use { it.write(Gson().toJson(data)) }
+        } catch (ex: IOException)
+        {
+            if (ex !is FileAlreadyExistsException)
+            {
+                ConsoleLogger.severe("Error writing logout location for '${player.name}':", ex)
+            }
+        }
     }
 
     override fun saveLocation(player: PlayerInfo)
@@ -80,7 +95,7 @@ class FlatFile(private val plugin: PerWorldInventory,
      * @throws IOException If file could not be created
      */
     @Throws(IOException::class)
-    fun creatFileIfNotExists(file: File): File
+    private fun createFileIfNotExists(file: File): File
     {
         if (!file.exists())
         {
@@ -103,7 +118,7 @@ class FlatFile(private val plugin: PerWorldInventory,
      * @param uuid The UUID of the player
      * @return The data file to read from or write to
      */
-    fun getFile(group: Group, gameMode: GameMode, uuid: UUID): File
+    private fun getFile(group: Group, gameMode: GameMode, uuid: UUID): File
     {
         val dir = File(plugin.DATA_DIRECTORY, uuid.toString())
         return when(gameMode)
