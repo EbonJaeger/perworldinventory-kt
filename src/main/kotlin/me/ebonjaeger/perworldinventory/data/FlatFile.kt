@@ -121,7 +121,21 @@ class FlatFile(private val plugin: PerWorldInventory,
 
     override fun getLogout(player: Player): Location?
     {
-        TODO("not implemented")
+        val dir = File(plugin.DATA_DIRECTORY, player.uniqueId.toString())
+        val file = File(dir, "last-logout.json")
+
+        // This player is likely logging in for the first time
+        if (!file.exists())
+        {
+            return null
+        }
+
+        JsonReader(FileReader(file)).use {
+            val parser = JsonParser()
+            val data = parser.parse(it).asJsonObject
+
+            return LocationSerializer.deserialize(data)
+        }
     }
 
     override fun getLocation(player: Player, world: String): Location?
