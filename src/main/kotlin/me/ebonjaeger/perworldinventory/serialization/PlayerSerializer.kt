@@ -12,6 +12,8 @@ class PlayerSerializer(private val plugin: PerWorldInventory,
                        private val settings: Settings)
 {
 
+    private val statSerializer = StatSerializer(settings)
+
     /**
      * Serialize a Player into a JsonObject. The player's EnderChest, inventory
      * (including armor) and stats such as experience and potion effects will
@@ -36,7 +38,7 @@ class PlayerSerializer(private val plugin: PerWorldInventory,
         obj.addProperty("data-format", 2)
         obj.add("ender-chest", InventorySerializer.serializeInventory(player.enderChest))
         obj.add("inventory", InventorySerializer.serializeAllInventories(player))
-        // TODO: add serialized stats
+        obj.add("stats", statSerializer.serialize(player))
         // TODO: add serialized economy
 
         ConsoleLogger.debug("[SERIALIZER] Done serializing player '${player.name}'")
@@ -71,7 +73,11 @@ class PlayerSerializer(private val plugin: PerWorldInventory,
             InventorySerializer.setInventories(player, data["inventory"].asJsonObject, format)
         }
 
-        // TODO: Set the player's new stats
+        // Apply the player's stats and potion effects
+        if (data.has("stats"))
+        {
+            statSerializer.applyStats(player, data["stats"].asJsonObject, format)
+        }
 
         // TODO: Set the player's new economical value
 
