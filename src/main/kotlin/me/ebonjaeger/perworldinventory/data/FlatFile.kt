@@ -126,7 +126,34 @@ class FlatFile(private val plugin: PerWorldInventory,
 
     override fun getLocation(player: Player, world: String): Location?
     {
-        TODO("not implemented")
+        val dir = File(plugin.DATA_DIRECTORY, player.uniqueId.toString())
+        val file = File(dir, "last-locations.json")
+
+        // Clearly they haven't visited any other worlds yet
+        if (!file.exists())
+        {
+            return null
+        }
+
+        JsonReader(FileReader(file)).use {
+            val parser = JsonParser()
+            val root = parser.parse(it).asJsonObject
+            if (!root.has("locations"))
+            {
+                // Somehow the file exists, but still no locations
+                return null
+            }
+
+            val locations = root["locations"].asJsonObject
+            return if (locations.has(world))
+            {
+                LocationSerializer.deserialize(locations["world"].asJsonObject)
+            } else
+            {
+                // They haven't been to this world before, so no data
+                null
+            }
+        }
     }
 
     /**
