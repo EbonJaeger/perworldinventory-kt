@@ -1,6 +1,9 @@
 package me.ebonjaeger.perworldinventory.data
 
 import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.PerWorldInventory
@@ -11,6 +14,7 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.io.File
+import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
@@ -67,9 +71,47 @@ class FlatFile(private val plugin: PerWorldInventory,
         }
     }
 
-    override fun saveLocation(player: PlayerInfo)
+    override fun saveLocation(player: Player, location: Location)
     {
-        TODO("not implemented")
+        val dir = File(plugin.DATA_DIRECTORY, player.uniqueId.toString())
+        val file = File(dir, "last-locations.json")
+
+        try
+        {
+            createFileIfNotExists(file)
+            val data = LocationSerializer.serialize(location)
+            val key = location.world.name
+
+            // Get any existing data
+            JsonReader(FileReader(file)).use {
+                val parser = JsonParser()
+                val root = parser.parse(it).asJsonObject
+                val locations = if (root.has("locations"))
+                {
+                    root["locations"].asJsonObject
+                } else
+                {
+                    JsonObject()
+                }
+
+                // If a location for this world already exists, remove it.
+                if (locations.has(key))
+                {
+                    locations.remove(key)
+                }
+
+                // Write the latest data to disk
+                locations.add(key, data)
+                root.add("locations", locations)
+                FileWriter(file).use { it.write(Gson().toJson(root)) }
+            }
+        } catch (ex: IOException)
+        {
+            if (ex !is FileAlreadyExistsException)
+            {
+                ConsoleLogger.severe("Error writing last location for '${player.name}':", ex)
+            }
+        }
     }
 
     override fun getPlayer(group: Group, gameMode: GameMode, player: Player)

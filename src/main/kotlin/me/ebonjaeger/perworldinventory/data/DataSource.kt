@@ -30,8 +30,9 @@ interface DataSource
      * Save the location of a player when they teleport to a different world.
      *
      * @param player The player that teleported
+     * @param location The location of the player on teleport
      */
-    fun saveLocation(player: PlayerInfo)
+    fun saveLocation(player: Player, location: Location)
 
     /**
      * Retrieves a player's data from the database.
