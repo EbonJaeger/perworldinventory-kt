@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.PlayerInfo
 import me.ebonjaeger.perworldinventory.Utils
@@ -34,12 +35,12 @@ class StatSerializer(private val config: Settings)
         obj.addProperty("max-health", player.maxHealth)
         obj.addProperty("health", player.health)
         obj.addProperty("level", player.level)
-        // TODO: Add potion effects
         obj.addProperty("saturation", player.saturation)
         obj.addProperty("fallDistance", player.fallDistance)
         obj.addProperty("fireTicks", player.fireTicks)
         obj.addProperty("maxAir", player.maximumAir)
         obj.addProperty("remainingAir", player.remainingAir)
+        obj.add("potion-effects", PotionSerializer.serialize(player.potionEffects))
 
         return obj
     }
@@ -91,8 +92,16 @@ class StatSerializer(private val config: Settings)
             player.maximumAir = stats["maxAir"].asInt
         if (config.getProperty(PlayerSettings.LOAD_REMAINING_AIR) && stats.has("remainingAir"))
             player.remainingAir = stats["remainingAir"].asInt
-
-        // TODO: Set potion effects
+        if (config.getProperty(PlayerSettings.LOAD_POTION_EFFECTS) && stats.has("potion-effects"))
+        {
+            if (format >= 2)
+            {
+                setPotionEffects(player, stats["potion-effects"].asJsonArray)
+            } else
+            {
+                throw IllegalArgumentException("Older format '$format' for potion effects is no longer supported")
+            }
+        }
     }
 
     /**
@@ -152,5 +161,24 @@ class StatSerializer(private val config: Settings)
                 3 -> player.gameMode = GameMode.SPECTATOR
             }
         }
+    }
+
+    /**
+     * Apply potion effects in a JsonArray to a player.
+     *
+     * @param player The player to apply the effects to
+     * @param json The potion effects
+     */
+    private fun setPotionEffects(player: Player, json: JsonArray)
+    {
+        // Remove any current effects
+        if (player.activePotionEffects != null)
+        {
+            player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
+        }
+
+        // Deserialize effects and apply to the player
+        val effects = PotionSerializer.deserialize(json)
+        player.addPotionEffects(effects)
     }
 }
