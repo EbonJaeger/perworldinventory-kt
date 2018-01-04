@@ -9,6 +9,10 @@ import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
+import me.ebonjaeger.perworldinventory.data.FlatFile
+import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
+import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
+import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import net.milkbowl.vault.economy.Economy
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
@@ -76,7 +80,9 @@ class PerWorldInventory : JavaPlugin()
 
         // TODO: Register commands
 
-        // TODO: Register Listeners
+        // Register Listeners
+        server.pluginManager.registerEvents(PlayerChangedWorldListener(groupManager, settings), this)
+        server.pluginManager.registerEvents(PlayerTeleportListener(groupManager), this)
 
         // Register Vault if present
         if (server.pluginManager.getPlugin("Vault") != null)
@@ -94,6 +100,10 @@ class PerWorldInventory : JavaPlugin()
         }
 
         econEnabled = economy != null && settings.getProperty(PlayerSettings.USE_ECONOMY)
+
+        // Initialize serializer and data source
+        val playerSerializer = PlayerSerializer(this, settings)
+        val dataSource = FlatFile(this, playerSerializer)
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
