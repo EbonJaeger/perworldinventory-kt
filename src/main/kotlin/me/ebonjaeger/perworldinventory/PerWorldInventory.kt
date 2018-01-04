@@ -46,11 +46,10 @@ class PerWorldInventory : JavaPlugin()
     {
         ConsoleLogger.setLogger(logger)
 
-        // Make data folders
-        val defaultsDir = File(DATA_DIRECTORY, "defaults").toPath()
-        if (Files.exists(defaultsDir))
+        // Make data folder
+        if (!Files.exists(DATA_DIRECTORY.toPath()))
         {
-            Files.createDirectories(defaultsDir)
+            Files.createDirectories(DATA_DIRECTORY.toPath())
         }
 
         // Check if `worlds.yml` exists. If it does, convert it to JSON.
