@@ -39,7 +39,7 @@ class PlayerSerializer(private val plugin: PerWorldInventory,
         obj.add("ender-chest", InventorySerializer.serializeInventory(player.enderChest))
         obj.add("inventory", InventorySerializer.serializeAllInventories(player))
         obj.add("stats", statSerializer.serialize(player))
-        // TODO: add serialized economy
+        obj.add("economy", EconomySerializer.serialize(player))
 
         ConsoleLogger.debug("[SERIALIZER] Done serializing player '${player.name}'")
         return obj
@@ -79,7 +79,30 @@ class PlayerSerializer(private val plugin: PerWorldInventory,
             statSerializer.applyStats(player, data["stats"].asJsonObject, format)
         }
 
-        // TODO: Set the player's new economical value
+        if (plugin.econEnabled)
+        {
+            val econ = plugin.economy
+            if (econ == null)
+            {
+                ConsoleLogger.warning("Economy saving is turned on, but no economy found!")
+            } else
+            {
+                ConsoleLogger.debug("[ECON] Withdrawing ${econ.getBalance(player)} from '${player.name}'!")
+                val er = econ.withdrawPlayer(player, econ.getBalance(player))
+
+                if (er.transactionSuccess())
+                {
+                    if (data.has("economy"))
+                    {
+                        EconomySerializer.apply(player, econ, data["economy"].asJsonObject)
+                    }
+                } else
+                {
+                    ConsoleLogger.warning(
+                            "[ECON] Unable to withdraw funds from '${player.name}': ${er.errorMessage}")
+                }
+            }
+        }
 
         ConsoleLogger.debug("[SERIALIZER] Done deserializing player '${player.name}'")
 
