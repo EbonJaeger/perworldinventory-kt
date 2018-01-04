@@ -114,9 +114,21 @@ class FlatFile(private val plugin: PerWorldInventory,
         }
     }
 
-    override fun getPlayer(group: Group, gameMode: GameMode, player: Player)
+    // TODO: Find a better way of doing this
+    override fun getPlayer(group: Group, gameMode: GameMode, player: Player): JsonObject?
     {
-        TODO("not implemented")
+        val file = getFile(group, gameMode, player.uniqueId)
+
+        // If the file does not exist, the player hasn't been to this group before
+        if (!file.exists())
+        {
+            return null
+        }
+
+        JsonReader(FileReader(file)).use {
+            val parser = JsonParser()
+            return parser.parse(it).asJsonObject
+        }
     }
 
     override fun getLogout(player: Player): Location?
