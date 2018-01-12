@@ -15,10 +15,10 @@ import java.util.*
  *
  * @param player The player to grab data from
  */
-data class PlayerInfo(private val player: Player,
-                      private val group: Group,
-                      val balance: Double,
-                      private val useAttributes: Boolean)
+data class PlayerProfile(private val player: Player,
+                         private val group: Group,
+                         val balance: Double,
+                         private val useAttributes: Boolean)
 {
 
     /* Inventories */

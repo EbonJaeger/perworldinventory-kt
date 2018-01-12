@@ -2,7 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.PlayerProfile
 import me.ebonjaeger.perworldinventory.Utils
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
@@ -21,7 +21,7 @@ class StatSerializer(private val config: Settings)
      * @param player The player whose stats to serialize
      * @return The serialized stats
      */
-    fun serialize(player: PlayerInfo): JsonObject
+    fun serialize(player: PlayerProfile): JsonObject
     {
         val obj = JsonObject()
 

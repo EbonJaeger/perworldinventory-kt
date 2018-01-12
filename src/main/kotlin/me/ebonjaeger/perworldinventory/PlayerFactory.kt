@@ -3,14 +3,14 @@ package me.ebonjaeger.perworldinventory
 import org.bukkit.entity.Player
 
 /**
- * Factory for creating PlayerInfo objects.
+ * Factory for creating PlayerProfile objects.
  *
  * @param plugin PerWorldInventory instance
  */
 class PlayerFactory(private val plugin: PerWorldInventory)
 {
 
-    fun create(player: Player, group: Group): PlayerInfo
+    fun create(player: Player, group: Group): PlayerProfile
     {
         var balance = 0.0
         if (plugin.econEnabled)
@@ -21,9 +21,9 @@ class PlayerFactory(private val plugin: PerWorldInventory)
 
         return if (Utils.checkServerVersion(plugin.server.version, 1, 9, 0))
         {
-            PlayerInfo(player, group, balance, true)
+            PlayerProfile(player, group, balance, true)
         } else {
-            PlayerInfo(player, group, balance, false)
+            PlayerProfile(player, group, balance, false)
         }
     }
 }

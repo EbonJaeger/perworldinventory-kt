@@ -3,7 +3,7 @@ package me.ebonjaeger.perworldinventory.serialization
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.PerWorldInventory
-import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.PlayerProfile
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import org.bukkit.entity.Player
@@ -30,7 +30,7 @@ class PlayerSerializer(private val plugin: PerWorldInventory,
      * @param player The player to serialize
      * @return The serialized player's data in its entirety
      */
-    fun serialize(player: PlayerInfo): JsonObject
+    fun serialize(player: PlayerProfile): JsonObject
     {
         ConsoleLogger.debug("[SERIALIZER] Serializing player '${player.name}'")
         val obj = JsonObject()

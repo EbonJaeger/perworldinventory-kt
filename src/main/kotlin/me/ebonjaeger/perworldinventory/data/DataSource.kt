@@ -2,7 +2,7 @@ package me.ebonjaeger.perworldinventory.data
 
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.Group
-import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.PlayerProfile
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -15,9 +15,9 @@ interface DataSource
      *
      * @param group The [Group] the player was in
      * @param gameMode The [GameMode] the player was in
-     * @param player The [PlayerInfo] with the data
+     * @param player The [PlayerProfile] with the data
      */
-    fun savePlayer(group: Group, gameMode: GameMode, player: PlayerInfo)
+    fun savePlayer(group: Group, gameMode: GameMode, player: PlayerProfile)
 
     /**
      * Save the location of a player when they log out or are kicked from the
@@ -25,7 +25,7 @@ interface DataSource
      *
      * @param player The player who logged out
      */
-    fun saveLogout(player: PlayerInfo)
+    fun saveLogout(player: PlayerProfile)
 
     /**
      * Save the location of a player when they teleport to a different world.

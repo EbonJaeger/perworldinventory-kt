@@ -2,7 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
-import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.PlayerProfile
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.entity.Player
 
@@ -15,7 +15,7 @@ object EconomySerializer
      * @param player The player's information
      * @return A JsonObject containing the balance
      */
-    fun serialize(player: PlayerInfo): JsonObject
+    fun serialize(player: PlayerProfile): JsonObject
     {
         val obj = JsonObject()
         obj.addProperty("balance", player.balance)

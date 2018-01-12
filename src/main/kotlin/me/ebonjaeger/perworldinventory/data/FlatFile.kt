@@ -7,7 +7,7 @@ import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.PerWorldInventory
-import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.PlayerProfile
 import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import org.bukkit.GameMode
@@ -24,7 +24,7 @@ class FlatFile(private val plugin: PerWorldInventory,
                private val serializer: PlayerSerializer) : DataSource
 {
 
-    override fun savePlayer(group: Group, gameMode: GameMode, player: PlayerInfo)
+    override fun savePlayer(group: Group, gameMode: GameMode, player: PlayerProfile)
     {
         val file = getFile(group, gameMode, player.uuid)
         ConsoleLogger.debug("Saving data for player '${player.name}' in file '${file.path}'")
@@ -52,7 +52,7 @@ class FlatFile(private val plugin: PerWorldInventory,
         }
     }
 
-    override fun saveLogout(player: PlayerInfo)
+    override fun saveLogout(player: PlayerProfile)
     {
         val dir = File(plugin.DATA_DIRECTORY, player.uuid.toString())
         val file = File(dir, "last-logout.json")

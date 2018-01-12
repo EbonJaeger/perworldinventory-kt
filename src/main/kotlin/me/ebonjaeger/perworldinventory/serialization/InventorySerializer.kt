@@ -2,7 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.PlayerInfo
+import me.ebonjaeger.perworldinventory.PlayerProfile
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -17,7 +17,7 @@ object InventorySerializer
      * @param player The player to serialize
      * @return A JsonObject with a player's armor and inventory contents
      */
-    fun serializeAllInventories(player: PlayerInfo): JsonObject
+    fun serializeAllInventories(player: PlayerProfile): JsonObject
     {
         val obj = JsonObject()
         val inventory = serializeInventory(player.inventory)
