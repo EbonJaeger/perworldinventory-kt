@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit
 
 class FlatFile(private val plugin: PerWorldInventory,
                private val serializer: PlayerSerializer,
-               private val cacheExpires: Long,
-               private val maxCacheSize: Long) : DataSource
+               cacheExpires: Long,
+               maxCacheSize: Long) : DataSource
 {
 
     private val profileCache: Cache<ProfileKey, JsonObject> = CacheBuilder.newBuilder()
