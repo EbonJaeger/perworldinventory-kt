@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.ConsoleLogger
-import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
@@ -17,15 +16,14 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
-import java.util.*
 
 class FlatFile(private val plugin: PerWorldInventory,
                private val serializer: PlayerSerializer) : DataSource
 {
 
-    override fun savePlayer(group: Group, gameMode: GameMode, player: PlayerProfile)
+    override fun savePlayer(key: ProfileKey, player: PlayerProfile)
     {
-        val file = getFile(group, gameMode, player.uuid)
+        val file = getFile(key)
         ConsoleLogger.debug("Saving data for player '${player.name}' in file '${file.path}'")
 
         try
@@ -114,9 +112,9 @@ class FlatFile(private val plugin: PerWorldInventory,
     }
 
     // TODO: Find a better way of doing this
-    override fun getPlayer(group: Group, gameMode: GameMode, player: Player): JsonObject?
+    override fun getPlayer(key: ProfileKey, player: Player): JsonObject?
     {
-        val file = getFile(group, gameMode, player.uniqueId)
+        val file = getFile(key)
 
         // If the file does not exist, the player hasn't been to this group before
         if (!file.exists())
@@ -207,20 +205,18 @@ class FlatFile(private val plugin: PerWorldInventory,
     /**
      * Get the data file for a player.
      *
-     * @param group The group the player is in
-     * @param gameMode The game mode for the group
-     * @param uuid The UUID of the player
+     * @param key The [ProfileKey] to get the right file
      * @return The data file to read from or write to
      */
-    private fun getFile(group: Group, gameMode: GameMode, uuid: UUID): File
+    private fun getFile(key: ProfileKey): File
     {
-        val dir = File(plugin.DATA_DIRECTORY, uuid.toString())
-        return when(gameMode)
+        val dir = File(plugin.DATA_DIRECTORY, key.uuid.toString())
+        return when(key.gameMode)
         {
-            GameMode.ADVENTURE -> File(dir, group.name + "_adventure.json")
-            GameMode.CREATIVE -> File(dir, group.name + "_creative.json")
-            GameMode.SPECTATOR -> File(dir, group.name + "_spectator.json")
-            GameMode.SURVIVAL -> File(dir, group.name + ".json")
+            GameMode.ADVENTURE -> File(dir, key.groupName + "_adventure.json")
+            GameMode.CREATIVE -> File(dir, key.groupName + "_creative.json")
+            GameMode.SPECTATOR -> File(dir, key.groupName + "_spectator.json")
+            GameMode.SURVIVAL -> File(dir, key.groupName + ".json")
         }
     }
 }

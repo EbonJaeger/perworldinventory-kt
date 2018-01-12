@@ -1,8 +1,6 @@
 package me.ebonjaeger.perworldinventory.data
 
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.Group
-import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -12,11 +10,10 @@ interface DataSource
     /**
      * Saves a player's information to the database.
      *
-     * @param group The [Group] the player was in
-     * @param gameMode The [GameMode] the player was in
+     * @param key The [ProfileKey] for this profile
      * @param player The [PlayerProfile] with the data
      */
-    fun savePlayer(group: Group, gameMode: GameMode, player: PlayerProfile)
+    fun savePlayer(key: ProfileKey, player: PlayerProfile)
 
     /**
      * Save the location of a player when they log out or are kicked from the
@@ -37,13 +34,12 @@ interface DataSource
     /**
      * Retrieves a player's data from the database.
      *
-     * @param group The [Group] the player was in
-     * @param gameMode The [GameMode] the player was in
+     * @param key The [ProfileKey] to get the data for
      * @param player The [Player] that the data will be applied to
      * @return A [JsonObject] with all of the player's information
      */
     // TODO: Find a better way of doing this
-    fun getPlayer(group: Group, gameMode: GameMode, player: Player): JsonObject?
+    fun getPlayer(key: ProfileKey, player: Player): JsonObject?
 
     /**
      * Get the name of the world that a player logged out in.
