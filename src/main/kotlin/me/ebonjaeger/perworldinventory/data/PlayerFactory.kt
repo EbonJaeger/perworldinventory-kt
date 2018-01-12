@@ -1,5 +1,8 @@
-package me.ebonjaeger.perworldinventory
+package me.ebonjaeger.perworldinventory.data
 
+import me.ebonjaeger.perworldinventory.Group
+import me.ebonjaeger.perworldinventory.PerWorldInventory
+import me.ebonjaeger.perworldinventory.Utils
 import org.bukkit.entity.Player
 
 /**

@@ -2,7 +2,6 @@ package me.ebonjaeger.perworldinventory.data
 
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.Group
-import me.ebonjaeger.perworldinventory.PlayerProfile
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player

@@ -1,5 +1,6 @@
-package me.ebonjaeger.perworldinventory
+package me.ebonjaeger.perworldinventory.data
 
+import me.ebonjaeger.perworldinventory.Group
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute

@@ -2,7 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.PlayerProfile
+import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import me.ebonjaeger.perworldinventory.Utils
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings

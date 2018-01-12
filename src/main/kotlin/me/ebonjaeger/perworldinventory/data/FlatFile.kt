@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.PerWorldInventory
-import me.ebonjaeger.perworldinventory.PlayerProfile
 import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import org.bukkit.GameMode
