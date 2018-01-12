@@ -1,5 +1,7 @@
 package me.ebonjaeger.perworldinventory.data
 
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -16,10 +18,16 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
+import java.util.concurrent.TimeUnit
 
 class FlatFile(private val plugin: PerWorldInventory,
                private val serializer: PlayerSerializer) : DataSource
 {
+
+    private val profileCache: Cache<ProfileKey, JsonObject> = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .maximumSize(1000)
+            .build()
 
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)
     {
@@ -114,6 +122,13 @@ class FlatFile(private val plugin: PerWorldInventory,
     // TODO: Find a better way of doing this
     override fun getPlayer(key: ProfileKey, player: Player): JsonObject?
     {
+        // Check for cached data first
+        val cached = profileCache.getIfPresent(key)
+        if (cached != null)
+        {
+            return cached
+        }
+
         val file = getFile(key)
 
         // If the file does not exist, the player hasn't been to this group before
@@ -124,7 +139,11 @@ class FlatFile(private val plugin: PerWorldInventory,
 
         JsonReader(FileReader(file)).use {
             val parser = JsonParser()
-            return parser.parse(it).asJsonObject
+            val json = parser.parse(it).asJsonObject
+
+            profileCache.put(key, json)
+
+            return json
         }
     }
 
