@@ -3,9 +3,9 @@ package me.ebonjaeger.perworldinventory.serialization
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.PerWorldInventory
-import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
+import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.entity.Player
 
 class PlayerSerializer(private val plugin: PerWorldInventory,
