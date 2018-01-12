@@ -103,7 +103,10 @@ class PerWorldInventory : JavaPlugin()
 
         // Initialize serializer and data source
         val playerSerializer = PlayerSerializer(this, settings)
-        val dataSource = FlatFile(this, playerSerializer)
+        val dataSource = FlatFile(this,
+                playerSerializer,
+                settings.getProperty(PluginSettings.CACHE_DURATION).toLong(),
+                settings.getProperty(PluginSettings.CACHE_MAX_LIMIT).toLong())
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))

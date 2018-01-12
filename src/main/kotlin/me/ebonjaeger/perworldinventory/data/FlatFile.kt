@@ -21,12 +21,14 @@ import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 
 class FlatFile(private val plugin: PerWorldInventory,
-               private val serializer: PlayerSerializer) : DataSource
+               private val serializer: PlayerSerializer,
+               private val cacheExpires: Long,
+               private val maxCacheSize: Long) : DataSource
 {
 
     private val profileCache: Cache<ProfileKey, JsonObject> = CacheBuilder.newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
-            .maximumSize(1000)
+            .expireAfterAccess(cacheExpires, TimeUnit.MINUTES)
+            .maximumSize(maxCacheSize)
             .build()
 
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)

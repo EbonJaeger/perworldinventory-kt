@@ -46,4 +46,13 @@ object PluginSettings : SettingsHolder
         "Disables bypass regardless of permission",
         "Defaults to false")
     val DISABLE_BYPASS = newProperty("disable-bypass", false)
+
+    @JvmField
+    @Comment("Set the duration in minutes for player information loaded from the disk to be cached")
+    val CACHE_DURATION = newProperty("cache-duration", 10)
+
+    @JvmField
+    @Comment("Set the maximum number of player profiles that can be cached at any given time",
+            "This only applies to data loaded from the disk")
+    val CACHE_MAX_LIMIT = newProperty("cache-maximum-limit", 1000)
 }
