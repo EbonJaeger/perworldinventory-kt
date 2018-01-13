@@ -37,7 +37,7 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
      * Get a group by name. This will return null if no group with the given name
      * exists.
      *
-     * @param group The name of the Group
+     * @param name The name of the Group
      * @return The Group
      */
     fun getGroup(name: String): Group?
