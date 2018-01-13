@@ -7,8 +7,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerTeleportEvent
+import javax.inject.Inject
 
-class PlayerTeleportListener(private val groupManager: GroupManager,
+class PlayerTeleportListener @Inject constructor(private val groupManager: GroupManager,
                              private val profileManager: ProfileManager) : Listener
 {
 

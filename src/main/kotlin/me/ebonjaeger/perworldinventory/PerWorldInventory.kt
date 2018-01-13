@@ -2,6 +2,8 @@ package me.ebonjaeger.perworldinventory
 
 import ch.jalu.configme.migration.PlainMigrationService
 import ch.jalu.configme.resource.YamlFileResource
+import ch.jalu.injector.Injector
+import ch.jalu.injector.InjectorBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -9,7 +11,8 @@ import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
-import me.ebonjaeger.perworldinventory.data.FlatFile
+import me.ebonjaeger.perworldinventory.data.DataSource
+import me.ebonjaeger.perworldinventory.data.DataSourceProvider
 import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
@@ -17,6 +20,7 @@ import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import net.milkbowl.vault.economy.Economy
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
+import org.bukkit.Server
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
@@ -51,8 +55,6 @@ class PerWorldInventory : JavaPlugin()
     val DATA_DIRECTORY = File(dataFolder, "data")
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
 
-    private val groupManager = GroupManager(this)
-
     override fun onEnable()
     {
         ConsoleLogger.setLogger(logger)
@@ -74,18 +76,20 @@ class PerWorldInventory : JavaPlugin()
             saveResource("worlds.json", false)
         }
 
-
+        /* Injector initialization */
+        val injector = InjectorBuilder().addDefaultHandlers("me.ebonjaeger.perworldinventory").create()
+        injector.register(PerWorldInventory::class.java, this)
+        injector.register(Server::class.java, server)
+        injector.registerProvider(DataSource::class.java, DataSourceProvider::class.java)
         val settings = Settings(YamlFileResource(File(dataFolder, "config.yml")),
                 PlainMigrationService(),
                 PluginSettings::class.java,
                 MetricsSettings::class.java,
                 PlayerSettings::class.java)
+        injector.register(Settings::class.java, settings)
+        injectServices(injector)
 
         ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
-
-        groupManager.loadGroups(WORLDS_CONFIG_FILE)
-
-        // TODO: Register commands
 
         // Register Vault if present
         if (server.pluginManager.getPlugin("Vault") != null)
@@ -104,19 +108,10 @@ class PerWorldInventory : JavaPlugin()
 
         econEnabled = economy != null && settings.getProperty(PlayerSettings.USE_ECONOMY)
 
-        // Initialize serializer and data source
-        val playerSerializer = PlayerSerializer(this, settings)
-        val dataSource = FlatFile(this, playerSerializer)
-        val profileManager = ProfileManager(this, dataSource, settings)
-
-        // Register Listeners
-        server.pluginManager.registerEvents(PlayerChangedWorldListener(groupManager, profileManager, settings), this)
-        server.pluginManager.registerEvents(PlayerTeleportListener(groupManager, profileManager), this)
-
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
         {
-            startMetrics(settings)
+            startMetrics(settings, injector.getSingleton(GroupManager::class.java))
         }
 
         ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!");
@@ -125,8 +120,17 @@ class PerWorldInventory : JavaPlugin()
     override fun onDisable()
     {
         isShuttingDown = true
-        groupManager.groups.clear()
         server.scheduler.cancelTasks(this)
+    }
+
+    private fun injectServices(injector: Injector)
+    {
+        injector.getSingleton(GroupManager::class.java)
+        injector.getSingleton(PlayerSerializer::class.java)
+        injector.getSingleton(ProfileManager::class.java)
+
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerChangedWorldListener::class.java), this)
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class.java), this)
     }
 
     /**
@@ -136,7 +140,7 @@ class PerWorldInventory : JavaPlugin()
      *
      * @param settings The settings for sending group and world information
      */
-    private fun startMetrics(settings: Settings)
+    private fun startMetrics(settings: Settings, groupManager: GroupManager)
     {
         val bStats = Metrics(this)
 

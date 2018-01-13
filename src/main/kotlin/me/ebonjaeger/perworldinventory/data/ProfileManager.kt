@@ -11,10 +11,11 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class ProfileManager(private val plugin: PerWorldInventory,
+class ProfileManager @Inject constructor(private val plugin: PerWorldInventory,
                      private val dataSource: DataSource,
-                     private val settings: Settings)
+                     settings: Settings)
 {
 
     private val profileCache: Cache<ProfileKey, PlayerProfile> = CacheBuilder.newBuilder()

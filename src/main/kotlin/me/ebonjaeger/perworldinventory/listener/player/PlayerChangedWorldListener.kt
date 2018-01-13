@@ -12,8 +12,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
+import javax.inject.Inject
 
-class PlayerChangedWorldListener(private val groupManager: GroupManager,
+class PlayerChangedWorldListener @Inject constructor(private val groupManager: GroupManager,
                                  private val profileManager: ProfileManager,
                                  private val settings: Settings) : Listener
 {

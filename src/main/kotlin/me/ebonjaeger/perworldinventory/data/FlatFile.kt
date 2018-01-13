@@ -16,8 +16,9 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
+import javax.inject.Inject
 
-class FlatFile(private val plugin: PerWorldInventory,
+class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
                private val serializer: PlayerSerializer) : DataSource
 {
 

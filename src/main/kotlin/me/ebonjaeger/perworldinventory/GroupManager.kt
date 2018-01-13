@@ -9,9 +9,13 @@ import org.bukkit.GameMode
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import javax.annotation.PostConstruct
+import javax.inject.Inject
 
-class GroupManager(private val plugin: PerWorldInventory)
+class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
 {
+
+    val WORLDS_CONFIG_FILE = File(plugin.dataFolder, "worlds.json")
 
     val groups = mutableMapOf<String, Group>()
 
@@ -74,8 +78,11 @@ class GroupManager(private val plugin: PerWorldInventory)
      *
      * @param file The file to load the groups from
      */
+    @PostConstruct
     fun loadGroups(file: File)
     {
+        groups.clear()
+
         plugin.server.scheduler.runTaskAsynchronously(plugin, {
             JsonReader(FileReader(file)).use {
                 val parser = JsonParser()

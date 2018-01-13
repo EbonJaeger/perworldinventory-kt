@@ -7,8 +7,9 @@ import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.entity.Player
+import javax.inject.Inject
 
-class PlayerSerializer(private val plugin: PerWorldInventory,
+class PlayerSerializer @Inject constructor(private val plugin: PerWorldInventory,
                        private val settings: Settings)
 {
 

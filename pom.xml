@@ -89,6 +89,13 @@
             <version>0.4</version>
         </dependency>
 
+        <!-- Dependency Injector -->
+        <dependency>
+            <groupId>ch.jalu</groupId>
+            <artifactId>injector</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!-- Vault -->
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
