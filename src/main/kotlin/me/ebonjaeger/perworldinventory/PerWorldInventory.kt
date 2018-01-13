@@ -10,6 +10,7 @@ import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.FlatFile
+import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
@@ -39,6 +40,12 @@ class PerWorldInventory : JavaPlugin()
      * those is not true, then this will return false.
      */
     var econEnabled = false
+        private set
+
+    /**
+     * Get whether or not the server is currently shutting down.
+     */
+    var isShuttingDown = false
         private set
 
     val DATA_DIRECTORY = File(dataFolder, "data")
@@ -80,10 +87,6 @@ class PerWorldInventory : JavaPlugin()
 
         // TODO: Register commands
 
-        // Register Listeners
-        server.pluginManager.registerEvents(PlayerChangedWorldListener(groupManager, settings), this)
-        server.pluginManager.registerEvents(PlayerTeleportListener(groupManager), this)
-
         // Register Vault if present
         if (server.pluginManager.getPlugin("Vault") != null)
         {
@@ -103,10 +106,12 @@ class PerWorldInventory : JavaPlugin()
 
         // Initialize serializer and data source
         val playerSerializer = PlayerSerializer(this, settings)
-        val dataSource = FlatFile(this,
-                playerSerializer,
-                settings.getProperty(PluginSettings.CACHE_DURATION).toLong(),
-                settings.getProperty(PluginSettings.CACHE_MAX_LIMIT).toLong())
+        val dataSource = FlatFile(this, playerSerializer)
+        val profileManager = ProfileManager(this, dataSource, settings)
+
+        // Register Listeners
+        server.pluginManager.registerEvents(PlayerChangedWorldListener(groupManager, profileManager, settings), this)
+        server.pluginManager.registerEvents(PlayerTeleportListener(groupManager, profileManager), this)
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
@@ -119,6 +124,7 @@ class PerWorldInventory : JavaPlugin()
 
     override fun onDisable()
     {
+        isShuttingDown = true
         groupManager.groups.clear()
         server.scheduler.cancelTasks(this)
     }

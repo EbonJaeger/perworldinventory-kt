@@ -28,7 +28,7 @@ object PluginSettings : SettingsHolder
 
     @JvmField
     @Comment("If true, players will have different inventories for each gamemode")
-    val SEPERATE_GM_INVENTORIES = newProperty("separate-gamemode-inventories", true)
+    val SEPARATE_GM_INVENTORIES = newProperty("separate-gamemode-inventories", true)
 
     @JvmField
     @Comment("If true, any worlds that are not in the worlds.yml configuration file will share the same inventory")
@@ -48,11 +48,10 @@ object PluginSettings : SettingsHolder
     val DISABLE_BYPASS = newProperty("disable-bypass", false)
 
     @JvmField
-    @Comment("Set the duration in minutes for player information loaded from the disk to be cached")
+    @Comment("Set the duration in minutes for player profile information to be cached")
     val CACHE_DURATION = newProperty("cache-duration", 10)
 
     @JvmField
-    @Comment("Set the maximum number of player profiles that can be cached at any given time",
-            "This only applies to data loaded from the disk")
+    @Comment("Set the maximum number of player profiles that can be cached at any given time")
     val CACHE_MAX_LIMIT = newProperty("cache-maximum-limit", 1000)
 }

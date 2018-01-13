@@ -4,16 +4,17 @@ import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.GroupManager
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
+import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.event.InventoryLoadEvent
 import me.ebonjaeger.perworldinventory.serialization.DeserializeCause
 import org.bukkit.Bukkit
-import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 
 class PlayerChangedWorldListener(private val groupManager: GroupManager,
+                                 private val profileManager: ProfileManager,
                                  private val settings: Settings) : Listener
 {
 
@@ -59,32 +60,16 @@ class PlayerChangedWorldListener(private val groupManager: GroupManager,
             return
         }
 
-        // Check if GameModes have separate inventories
-        if (settings.getProperty(PluginSettings.SEPERATE_GM_INVENTORIES))
-        {
-            ConsoleLogger.debug("[PROCESS] GameModes are separated! " +
-                    "Loading data for player '${player.name}' for group " +
-                    "'${groupTo.name}' in GameMode '${player.gameMode.name}'")
+        // All other checks are done, time to get the data
+        ConsoleLogger.debug("[PROCESS] Loading data for player " +
+                "'${player.name}' for group '${groupTo.name}'")
 
-            val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
-                    player.gameMode, groupTo)
-            Bukkit.getPluginManager().callEvent(loadEvent)
-            if (!loadEvent.isCancelled)
-            {
-                // TODO: Apply player data
-            }
-        } else
+        val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
+                player.gameMode, groupTo)
+        Bukkit.getPluginManager().callEvent(loadEvent)
+        if (!loadEvent.isCancelled)
         {
-            ConsoleLogger.debug("[PROCESS] Loading data for player " +
-                    "'${player.name}' for group '${groupTo.name}'")
-
-            val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
-                    GameMode.SURVIVAL, groupTo)
-            Bukkit.getPluginManager().callEvent(loadEvent)
-            if (!loadEvent.isCancelled)
-            {
-                // TODO: Apply player data
-            }
+            profileManager.getPlayerData(player, groupTo, player.gameMode)
         }
     }
 }

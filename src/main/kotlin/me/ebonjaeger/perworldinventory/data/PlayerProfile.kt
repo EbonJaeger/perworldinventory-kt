@@ -1,6 +1,5 @@
 package me.ebonjaeger.perworldinventory.data
 
-import me.ebonjaeger.perworldinventory.Group
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.attribute.Attribute
@@ -17,7 +16,6 @@ import java.util.*
  * @param player The player to grab data from
  */
 data class PlayerProfile(private val player: Player,
-                         private val group: Group,
                          val balance: Double,
                          private val useAttributes: Boolean)
 {

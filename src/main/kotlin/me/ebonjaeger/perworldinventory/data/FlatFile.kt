@@ -1,7 +1,5 @@
 package me.ebonjaeger.perworldinventory.data
 
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -18,18 +16,10 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.nio.file.Files
-import java.util.concurrent.TimeUnit
 
 class FlatFile(private val plugin: PerWorldInventory,
-               private val serializer: PlayerSerializer,
-               cacheExpires: Long,
-               maxCacheSize: Long) : DataSource
+               private val serializer: PlayerSerializer) : DataSource
 {
-
-    private val profileCache: Cache<ProfileKey, JsonObject> = CacheBuilder.newBuilder()
-            .expireAfterAccess(cacheExpires, TimeUnit.MINUTES)
-            .maximumSize(maxCacheSize)
-            .build()
 
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)
     {
@@ -124,13 +114,6 @@ class FlatFile(private val plugin: PerWorldInventory,
     // TODO: Find a better way of doing this
     override fun getPlayer(key: ProfileKey, player: Player): JsonObject?
     {
-        // Check for cached data first
-        val cached = profileCache.getIfPresent(key)
-        if (cached != null)
-        {
-            return cached
-        }
-
         val file = getFile(key)
 
         // If the file does not exist, the player hasn't been to this group before
@@ -141,11 +124,8 @@ class FlatFile(private val plugin: PerWorldInventory,
 
         JsonReader(FileReader(file)).use {
             val parser = JsonParser()
-            val json = parser.parse(it).asJsonObject
 
-            profileCache.put(key, json)
-
-            return json
+            return parser.parse(it).asJsonObject
         }
     }
 
@@ -234,10 +214,10 @@ class FlatFile(private val plugin: PerWorldInventory,
         val dir = File(plugin.DATA_DIRECTORY, key.uuid.toString())
         return when(key.gameMode)
         {
-            GameMode.ADVENTURE -> File(dir, key.groupName + "_adventure.json")
-            GameMode.CREATIVE -> File(dir, key.groupName + "_creative.json")
-            GameMode.SPECTATOR -> File(dir, key.groupName + "_spectator.json")
-            GameMode.SURVIVAL -> File(dir, key.groupName + ".json")
+            GameMode.ADVENTURE -> File(dir, key.group.name + "_adventure.json")
+            GameMode.CREATIVE -> File(dir, key.group.name + "_creative.json")
+            GameMode.SPECTATOR -> File(dir, key.group.name + "_spectator.json")
+            GameMode.SURVIVAL -> File(dir, key.group.name + ".json")
         }
     }
 }

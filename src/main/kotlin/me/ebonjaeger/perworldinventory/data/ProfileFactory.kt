@@ -1,6 +1,5 @@
 package me.ebonjaeger.perworldinventory.data
 
-import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.Utils
 import org.bukkit.entity.Player
@@ -10,10 +9,10 @@ import org.bukkit.entity.Player
  *
  * @param plugin PerWorldInventory instance
  */
-class PlayerFactory(private val plugin: PerWorldInventory)
+class ProfileFactory(private val plugin: PerWorldInventory)
 {
 
-    fun create(player: Player, group: Group): PlayerProfile
+    fun create(player: Player): PlayerProfile
     {
         var balance = 0.0
         if (plugin.econEnabled)
@@ -24,9 +23,9 @@ class PlayerFactory(private val plugin: PerWorldInventory)
 
         return if (Utils.checkServerVersion(plugin.server.version, 1, 9, 0))
         {
-            PlayerProfile(player, group, balance, true)
+            PlayerProfile(player, balance, true)
         } else {
-            PlayerProfile(player, group, balance, false)
+            PlayerProfile(player, balance, false)
         }
     }
 }

@@ -2,12 +2,14 @@ package me.ebonjaeger.perworldinventory.listener.player
 
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.GroupManager
+import me.ebonjaeger.perworldinventory.data.ProfileManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerTeleportEvent
 
-class PlayerTeleportListener(private val groupManager: GroupManager) : Listener
+class PlayerTeleportListener(private val groupManager: GroupManager,
+                             private val profileManager: ProfileManager) : Listener
 {
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -33,7 +35,7 @@ class PlayerTeleportListener(private val groupManager: GroupManager) : Listener
             return
         }
 
-        // TODO: Add the player's information to the cache
+        profileManager.addPlayerProfile(player, groupFrom, player.gameMode)
 
         // TODO: Save the player's last location
 

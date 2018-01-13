@@ -2,11 +2,11 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import me.ebonjaeger.perworldinventory.Utils
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
+import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
@@ -49,7 +49,7 @@ class StatSerializer(private val config: Settings)
     {
         val useAttributes = Utils.checkServerVersion(Bukkit.getServer().version, 1, 9, 0)
         val loadGameMode = config.getProperty(PlayerSettings.LOAD_GAMEMODE) &&
-                !config.getProperty(PluginSettings.SEPERATE_GM_INVENTORIES)
+                !config.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES)
 
         if (config.getProperty(PlayerSettings.LOAD_ALLOW_FLIGHT) && stats.has("can-fly"))
             player.allowFlight = stats["can-fly"].asBoolean

@@ -86,9 +86,8 @@ debug-mode: false
 # Defaults to false
 disable-bypass: false
 
-# Set the duration in minutes for player information loaded from the disk to be cached
+# Set the duration in minutes for player profile information to be cached
 cache-duration: 10
 
 # Set the maximum number of player profiles that can be cached at any given time
-# This only applies to data loaded from the disk
 cache-maximum-limit: 1000
