@@ -15,7 +15,7 @@ import javax.inject.Inject
 class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
 {
 
-    val WORLDS_CONFIG_FILE = File(plugin.dataFolder, "worlds.json")
+    private val WORLDS_CONFIG_FILE = File(plugin.dataFolder, "worlds.json")
 
     val groups = mutableMapOf<String, Group>()
 
@@ -73,16 +73,14 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
 
     /**
      * Load the groups configured in the file `worlds.json` into memory.
-     *
-     * @param file The file to load the groups from
      */
     @PostConstruct
-    fun loadGroups(file: File)
+    fun loadGroups()
     {
         groups.clear()
 
         plugin.server.scheduler.runTaskAsynchronously(plugin, {
-            JsonReader(FileReader(file)).use {
+            JsonReader(FileReader(WORLDS_CONFIG_FILE)).use {
                 val parser = JsonParser()
                 val data = parser.parse(it).asJsonObject
                 val root = data["groups"].asJsonObject
@@ -125,7 +123,7 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
 
         root.add("groups", groups)
 
-        FileWriter(plugin.WORLDS_CONFIG_FILE).use {
+        FileWriter(WORLDS_CONFIG_FILE).use {
             it.write(gson.toJson(root))
         }
     }
