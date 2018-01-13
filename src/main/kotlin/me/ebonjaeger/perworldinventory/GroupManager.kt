@@ -32,7 +32,7 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
                 "$worlds Gamemode: ${gameMode.name}")
 
         val group = Group(name, worlds, gameMode)
-        groups.put(name.decapitalize(), group)
+        groups.put(name.toLowerCase(), group)
     }
 
     /**
@@ -43,7 +43,7 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
      * @return The Group
      */
     fun getGroup(name: String): Group?
-            = groups[name.decapitalize()]
+            = groups[name.toLowerCase()]
 
     /**
      * Get the group that contains a specific world. This method iterates
@@ -66,7 +66,7 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
         // If we reach this point, the group doesn't yet exist.
         val worlds = mutableSetOf(world, "${world}_nether", "${world}_the_end")
         val group = Group(world, worlds, GameMode.SURVIVAL)
-        groups.put(world.decapitalize(), group)
+        groups.put(world.toLowerCase(), group)
         ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
                 " Please double check your `worlds.json` file configuration.!")
 
@@ -97,7 +97,7 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
                         val group = gson.fromJson(jsonObject, Group::class.java)
                         group.configured = true
 
-                        groups.put(group.name.decapitalize(), group)
+                        groups.put(group.name.toLowerCase(), group)
                     }
                 })
             }

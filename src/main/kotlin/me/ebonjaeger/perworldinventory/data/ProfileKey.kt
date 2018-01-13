@@ -11,7 +11,7 @@ class ProfileKey(val uuid: UUID,
 
     override fun equals(other: Any?): Boolean
     {
-        if (this == other) return true
+        if (this === other) return true
         if (other !is ProfileKey) return false
 
         return Objects.equals(uuid, other.uuid) &&

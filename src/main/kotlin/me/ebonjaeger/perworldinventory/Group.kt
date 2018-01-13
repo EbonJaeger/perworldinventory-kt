@@ -1,6 +1,7 @@
 package me.ebonjaeger.perworldinventory
 
 import org.bukkit.GameMode
+import java.util.*
 
 /**
  * A group of worlds, typically defined in the worlds.json file.
@@ -55,5 +56,20 @@ data class Group(
     fun addWorld(world: String)
     {
         worlds.add(world)
+    }
+
+    override fun equals(other: Any?): Boolean
+    {
+        if (this === other) return true
+        if (other !is Group) return false
+
+        return Objects.equals(name, other.name) &&
+                Objects.equals(worlds, other.worlds) &&
+                Objects.equals(defaultGameMode, other.defaultGameMode)
+    }
+
+    override fun hashCode(): Int
+    {
+        return Objects.hash(name, worlds.toString(), defaultGameMode)
     }
 }
