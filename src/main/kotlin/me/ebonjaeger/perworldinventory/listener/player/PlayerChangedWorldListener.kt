@@ -40,7 +40,7 @@ class PlayerChangedWorldListener @Inject constructor(private val groupManager: G
         // Check if the groups are actually the same group
         if (groupFrom == groupTo)
         {
-            ConsoleLogger.debug("[PROCESS] Both groups are the same: '${groupFrom.name}'")
+            ConsoleLogger.debug("[PROCESS] Both groups are the same: '$groupFrom'")
             return
         }
 
@@ -63,7 +63,7 @@ class PlayerChangedWorldListener @Inject constructor(private val groupManager: G
 
         // All other checks are done, time to get the data
         ConsoleLogger.debug("[PROCESS] Loading data for player " +
-                "'${player.name}' for group '${groupTo.name}'")
+                "'${player.name}' for group: $groupTo")
 
         val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
                 player.gameMode, groupTo)

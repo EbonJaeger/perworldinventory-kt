@@ -72,4 +72,13 @@ data class Group(
     {
         return Objects.hash(name, worlds.toString(), defaultGameMode)
     }
+
+    override fun toString(): String
+    {
+        return "Group{" +
+                "name='$name'" +
+                ", worlds=$worlds" +
+                ", defaultGameMode='$defaultGameMode'" +
+                "}"
+    }
 }

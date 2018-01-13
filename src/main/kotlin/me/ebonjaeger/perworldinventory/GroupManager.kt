@@ -28,10 +28,8 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
      */
     fun addGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode)
     {
-        ConsoleLogger.debug("Adding group to memory. Group: $name Worlds: " +
-                "$worlds Gamemode: ${gameMode.name}")
-
         val group = Group(name, worlds, gameMode)
+        ConsoleLogger.debug("Adding group to memory: $group")
         groups.put(name.toLowerCase(), group)
     }
 
