@@ -14,7 +14,9 @@ import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
 import me.ebonjaeger.perworldinventory.data.ProfileManager
+import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
+import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import net.milkbowl.vault.economy.Economy
@@ -27,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Files
+import java.util.*
 
 class PerWorldInventory : JavaPlugin()
 {
@@ -52,7 +55,11 @@ class PerWorldInventory : JavaPlugin()
     var isShuttingDown = false
         private set
 
+    val timeouts = hashMapOf<UUID, Int>()
+    var updateTimeoutsTaskId = -1
+
     val DATA_DIRECTORY = File(dataFolder, "data")
+    val SLOT_TIMEOUT = 5
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
 
     override fun onEnable()
@@ -114,12 +121,19 @@ class PerWorldInventory : JavaPlugin()
             startMetrics(settings, injector.getSingleton(GroupManager::class.java))
         }
 
+        // Start task to prevent item duping across worlds
+        updateTimeoutsTaskId = server.scheduler.scheduleSyncRepeatingTask(
+                this, UpdateTimeoutsTask(this), 1L, 1L
+        )
+
         ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!");
     }
 
     override fun onDisable()
     {
         isShuttingDown = true
+        updateTimeoutsTaskId = -1
+        timeouts.clear()
         server.scheduler.cancelTasks(this)
     }
 
@@ -129,7 +143,9 @@ class PerWorldInventory : JavaPlugin()
         injector.getSingleton(PlayerSerializer::class.java)
         injector.getSingleton(ProfileManager::class.java)
 
+        server.pluginManager.registerEvents(injector.getSingleton(InventoryCreativeListener::class.java), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerChangedWorldListener::class.java), this)
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerQuitListener::class.java), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class.java), this)
     }
 

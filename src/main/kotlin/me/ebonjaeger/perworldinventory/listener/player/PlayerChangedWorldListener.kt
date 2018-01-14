@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.listener.player
 
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.GroupManager
+import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.ProfileManager
@@ -14,9 +15,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import javax.inject.Inject
 
-class PlayerChangedWorldListener @Inject constructor(private val groupManager: GroupManager,
-                                 private val profileManager: ProfileManager,
-                                 private val settings: Settings) : Listener
+class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorldInventory,
+                                                     private val groupManager: GroupManager,
+                                                     private val profileManager: ProfileManager,
+                                                     private val settings: Settings) : Listener
 {
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -64,6 +66,12 @@ class PlayerChangedWorldListener @Inject constructor(private val groupManager: G
         // All other checks are done, time to get the data
         ConsoleLogger.debug("[PROCESS] Loading data for player " +
                 "'${player.name}' for group: $groupTo")
+
+        // Add player to the timeouts to prevent item dupe
+        if (plugin.updateTimeoutsTaskId != -1)
+        {
+            plugin.timeouts.put(player.uniqueId, plugin.SLOT_TIMEOUT)
+        }
 
         val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
                 player.gameMode, groupTo)
