@@ -1,11 +1,11 @@
 package me.ebonjaeger.perworldinventory.data
 
-import ch.jalu.injector.Injector
+import ch.jalu.injector.factory.SingletonStore
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import javax.inject.Inject
 import javax.inject.Provider
 
-class DataSourceProvider @Inject constructor (private val injector: Injector) : Provider<DataSource>
+class DataSourceProvider @Inject constructor (private val dataSourceStore: SingletonStore<DataSource>) : Provider<DataSource>
 {
 
     override fun get(): DataSource
@@ -23,6 +23,6 @@ class DataSourceProvider @Inject constructor (private val injector: Injector) : 
     private fun createDataSource(): DataSource
     {
         // Later on we will have logic here to differentiate between flatfile and MySQL.
-        return injector.getSingleton(FlatFile::class.java)
+        return dataSourceStore.getSingleton(FlatFile::class.java)
     }
 }
