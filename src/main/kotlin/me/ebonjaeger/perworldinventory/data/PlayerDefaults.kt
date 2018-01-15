@@ -7,11 +7,6 @@ object PlayerDefaults
 {
 
     /**
-     * Default money balance
-     */
-    val BALANCE = 0
-
-    /**
      * Default health value.
      */
     val HEALTH = 20.0
