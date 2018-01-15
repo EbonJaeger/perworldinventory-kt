@@ -1,7 +1,5 @@
 package me.ebonjaeger.perworldinventory
 
-import ch.jalu.configme.migration.PlainMigrationService
-import ch.jalu.configme.resource.YamlFileResource
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -12,8 +10,10 @@ import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
 import me.ebonjaeger.perworldinventory.data.ProfileManager
+import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
+import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
@@ -25,13 +25,15 @@ import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Files
 import java.util.*
 
-class PerWorldInventory : JavaPlugin()
+class PerWorldInventory : JavaPlugin
 {
 
     /**
@@ -58,9 +60,15 @@ class PerWorldInventory : JavaPlugin()
     val timeouts = hashMapOf<UUID, Int>()
     var updateTimeoutsTaskId = -1
 
-    val DATA_DIRECTORY = File(dataFolder, "data")
+    private val DATA_DIRECTORY = File(dataFolder, "data")
     val SLOT_TIMEOUT = 5
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
+
+    constructor(): super()
+
+    /* Constructor used for tests. */
+    internal constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File?)
+            : super(loader, description, dataFolder, file)
 
     override fun onEnable()
     {
@@ -87,12 +95,10 @@ class PerWorldInventory : JavaPlugin()
         val injector = InjectorBuilder().addDefaultHandlers("me.ebonjaeger.perworldinventory").create()
         injector.register(PerWorldInventory::class, this)
         injector.register(Server::class, server)
+        injector.provide(PluginFolder::class, dataFolder)
+        injector.provide(DataDirectory::class, DATA_DIRECTORY)
         injector.registerProvider(DataSource::class, DataSourceProvider::class)
-        val settings = Settings(YamlFileResource(File(dataFolder, "config.yml")),
-                PlainMigrationService(),
-                PluginSettings::class.java,
-                MetricsSettings::class.java,
-                PlayerSettings::class.java)
+        val settings = Settings.create(File(dataFolder, "config.yml"))
         injector.register(Settings::class, settings)
         injectServices(injector)
 
@@ -137,7 +143,7 @@ class PerWorldInventory : JavaPlugin()
         server.scheduler.cancelTasks(this)
     }
 
-    private fun injectServices(injector: Injector)
+    internal fun injectServices(injector: Injector)
     {
         injector.getSingleton(GroupManager::class)
         injector.getSingleton(PlayerSerializer::class)

@@ -5,6 +5,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
+import me.ebonjaeger.perworldinventory.initialization.PluginFolder
+import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
 import java.io.File
 import java.io.FileReader
@@ -12,10 +14,11 @@ import java.io.FileWriter
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
-class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
+class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
+                                       private val bukkitService: BukkitService)
 {
 
-    private val WORLDS_CONFIG_FILE = File(plugin.dataFolder, "worlds.json")
+    private val WORLDS_CONFIG_FILE = File(pluginFolder, "worlds.json")
 
     val groups = mutableMapOf<String, Group>()
 
@@ -79,13 +82,13 @@ class GroupManager @Inject constructor(private val plugin: PerWorldInventory)
     {
         groups.clear()
 
-        plugin.server.scheduler.runTaskAsynchronously(plugin, {
+        bukkitService.runTaskAsynchronously({
             JsonReader(FileReader(WORLDS_CONFIG_FILE)).use {
                 val parser = JsonParser()
                 val data = parser.parse(it).asJsonObject
                 val root = data["groups"].asJsonObject
 
-                plugin.server.scheduler.runTask(plugin, {
+                bukkitService.runTask({
                     val gson = Gson()
                     for (jsonGroup in root.entrySet())
                     {
