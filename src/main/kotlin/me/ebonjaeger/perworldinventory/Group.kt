@@ -81,6 +81,7 @@ data class Group(
                 "name='$name'" +
                 ", worlds=$worlds" +
                 ", defaultGameMode='${defaultGameMode.toString().toLowerCase()}'" +
+                ", isConfigured='$configured'" +
                 "}"
     }
 }
