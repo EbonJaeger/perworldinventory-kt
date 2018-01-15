@@ -21,7 +21,10 @@ class ProfileKey(val uuid: UUID,
 
     override fun hashCode(): Int
     {
-        return Objects.hash(uuid, group.name, gameMode)
+        var result = uuid.hashCode()
+        result = 31 * result + group.hashCode()
+        result = 31 * result + gameMode.hashCode()
+        return result
     }
 
     override fun toString(): String

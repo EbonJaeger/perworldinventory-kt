@@ -70,7 +70,9 @@ data class Group(
 
     override fun hashCode(): Int
     {
-        return Objects.hash(name, worlds.toString(), defaultGameMode)
+        var result = name.hashCode()
+        result = 31 * result + defaultGameMode.hashCode()
+        return result
     }
 
     override fun toString(): String
@@ -78,7 +80,7 @@ data class Group(
         return "Group{" +
                 "name='$name'" +
                 ", worlds=$worlds" +
-                ", defaultGameMode='$defaultGameMode'" +
+                ", defaultGameMode='${defaultGameMode.toString().toLowerCase()}'" +
                 "}"
     }
 }
