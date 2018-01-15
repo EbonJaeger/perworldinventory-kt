@@ -2,8 +2,6 @@ package me.ebonjaeger.perworldinventory
 
 import ch.jalu.configme.migration.PlainMigrationService
 import ch.jalu.configme.resource.YamlFileResource
-import ch.jalu.injector.Injector
-import ch.jalu.injector.InjectorBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -14,6 +12,8 @@ import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
 import me.ebonjaeger.perworldinventory.data.ProfileManager
+import me.ebonjaeger.perworldinventory.initialization.Injector
+import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
 import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
@@ -85,15 +85,15 @@ class PerWorldInventory : JavaPlugin()
 
         /* Injector initialization */
         val injector = InjectorBuilder().addDefaultHandlers("me.ebonjaeger.perworldinventory").create()
-        injector.register(PerWorldInventory::class.java, this)
-        injector.register(Server::class.java, server)
-        injector.registerProvider(DataSource::class.java, DataSourceProvider::class.java)
+        injector.register(PerWorldInventory::class, this)
+        injector.register(Server::class, server)
+        injector.registerProvider(DataSource::class, DataSourceProvider::class)
         val settings = Settings(YamlFileResource(File(dataFolder, "config.yml")),
                 PlainMigrationService(),
                 PluginSettings::class.java,
                 MetricsSettings::class.java,
                 PlayerSettings::class.java)
-        injector.register(Settings::class.java, settings)
+        injector.register(Settings::class, settings)
         injectServices(injector)
 
         ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
@@ -118,7 +118,7 @@ class PerWorldInventory : JavaPlugin()
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
         {
-            startMetrics(settings, injector.getSingleton(GroupManager::class.java))
+            startMetrics(settings, injector.getSingleton(GroupManager::class))
         }
 
         // Start task to prevent item duping across worlds
@@ -139,14 +139,14 @@ class PerWorldInventory : JavaPlugin()
 
     private fun injectServices(injector: Injector)
     {
-        injector.getSingleton(GroupManager::class.java)
-        injector.getSingleton(PlayerSerializer::class.java)
-        injector.getSingleton(ProfileManager::class.java)
+        injector.getSingleton(GroupManager::class)
+        injector.getSingleton(PlayerSerializer::class)
+        injector.getSingleton(ProfileManager::class)
 
-        server.pluginManager.registerEvents(injector.getSingleton(InventoryCreativeListener::class.java), this)
-        server.pluginManager.registerEvents(injector.getSingleton(PlayerChangedWorldListener::class.java), this)
-        server.pluginManager.registerEvents(injector.getSingleton(PlayerQuitListener::class.java), this)
-        server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class.java), this)
+        server.pluginManager.registerEvents(injector.getSingleton(InventoryCreativeListener::class), this)
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerChangedWorldListener::class), this)
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerQuitListener::class), this)
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class), this)
     }
 
     /**
