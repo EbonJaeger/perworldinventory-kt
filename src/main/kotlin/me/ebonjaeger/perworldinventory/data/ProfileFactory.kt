@@ -1,27 +1,26 @@
 package me.ebonjaeger.perworldinventory.data
 
-import me.ebonjaeger.perworldinventory.PerWorldInventory
-import me.ebonjaeger.perworldinventory.Utils
+import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.entity.Player
 
 /**
  * Factory for creating PlayerProfile objects.
  *
- * @param plugin PerWorldInventory instance
+ * @param bukkitService [BukkitService] instance
  */
-class ProfileFactory(private val plugin: PerWorldInventory)
+class ProfileFactory(private val bukkitService: BukkitService)
 {
 
     fun create(player: Player): PlayerProfile
     {
         var balance = 0.0
-        if (plugin.econEnabled)
+        if (bukkitService.isEconEnabled())
         {
-            val econ = plugin.economy
+            val econ = bukkitService.getEconomy()
             balance = econ!!.getBalance(player)
         }
 
-        return if (Utils.checkServerVersion(plugin.server.version, 1, 9, 0))
+        return if (bukkitService.shouldUseAttributes())
         {
             PlayerProfile(player, balance, true)
         } else {

@@ -1,15 +1,20 @@
-package me.ebonjaeger.perworldinventory
+package me.ebonjaeger.perworldinventory.data
 
 /**
  * A collection of default stats for a Player.
  */
-object PlayerStats
+object PlayerDefaults
 {
+
+    /**
+     * Default money balance
+     */
+    val BALANCE = 0
 
     /**
      * Default health value.
      */
-    val HEALTH = 20
+    val HEALTH = 20.0
 
     /**
      * Default experience value.

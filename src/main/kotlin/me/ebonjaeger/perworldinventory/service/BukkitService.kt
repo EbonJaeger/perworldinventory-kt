@@ -1,6 +1,7 @@
 package me.ebonjaeger.perworldinventory.service
 
 import me.ebonjaeger.perworldinventory.PerWorldInventory
+import me.ebonjaeger.perworldinventory.Utils
 import org.bukkit.scheduler.BukkitTask
 import javax.inject.Inject
 
@@ -14,8 +15,14 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
 
     private val scheduler = plugin.server.scheduler
 
+    fun isEconEnabled() =
+            plugin.econEnabled
+
     fun isShuttingDown() =
         plugin.isShuttingDown
+
+    fun getEconomy() =
+            plugin.economy
 
     fun getServerVersion() =
         plugin.server.version
@@ -26,4 +33,6 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
     fun runTask(task: () -> Unit): BukkitTask =
         scheduler.runTask(plugin, task)
 
+    fun shouldUseAttributes() =
+            Utils.checkServerVersion(getServerVersion(), 1, 9, 0)
 }

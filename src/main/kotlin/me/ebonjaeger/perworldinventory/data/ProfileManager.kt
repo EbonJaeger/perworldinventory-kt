@@ -4,18 +4,19 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
-import me.ebonjaeger.perworldinventory.PerWorldInventory
+import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
-import org.bukkit.Bukkit
+import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
+import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ProfileManager @Inject constructor(private val plugin: PerWorldInventory,
-                     private val dataSource: DataSource,
-                     settings: Settings)
+class ProfileManager @Inject constructor(private val bukkitService: BukkitService,
+                                         private val dataSource: DataSource,
+                                         private val settings: Settings)
 {
 
     private val profileCache: Cache<ProfileKey, PlayerProfile> = CacheBuilder.newBuilder()
@@ -23,7 +24,7 @@ class ProfileManager @Inject constructor(private val plugin: PerWorldInventory,
             .maximumSize(settings.getProperty(PluginSettings.CACHE_MAX_LIMIT).toLong())
             .build()
 
-    private val profileFactory = ProfileFactory(plugin)
+    private val profileFactory = ProfileFactory(bukkitService)
     private val separateGameModes = settings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES)
 
     /**
@@ -43,9 +44,9 @@ class ProfileManager @Inject constructor(private val plugin: PerWorldInventory,
 
         ConsoleLogger.debug("Saving player '${player.name}' to database with key: '$key'")
 
-        if (!plugin.isShuttingDown)
+        if (!bukkitService.isShuttingDown())
         {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, { dataSource.savePlayer(key, profile) })
+            bukkitService.runTaskAsynchronously({ dataSource.savePlayer(key, profile) })
             profile.saved = true
         } else
         {
@@ -75,9 +76,9 @@ class ProfileManager @Inject constructor(private val plugin: PerWorldInventory,
         }
 
         ConsoleLogger.debug("Player '${player.name}' not in cache, loading from disk")
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, {
+        bukkitService.runTaskAsynchronously({
             val data = dataSource.getPlayer(key, player)
-            Bukkit.getScheduler().runTask(plugin, {
+            bukkitService.runTask({
                 if (data != null)
                 {
                     // TODO: Set player data from Json
@@ -94,8 +95,77 @@ class ProfileManager @Inject constructor(private val plugin: PerWorldInventory,
         // TODO: Apply stuff to the player
     }
 
+    /**
+     * Set a player to the base defaults, based on the plugin configuration.
+     *
+     * @param player The Player to affect
+     */
     private fun applyDefaults(player: Player)
     {
-        // TODO: Apply defaults to the player
+        // Time for a massive line of if-statements . . .
+        if (settings.getProperty(PlayerSettings.LOAD_INVENTORY))
+        {
+            player.inventory.clear()
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_ENDER_CHEST))
+        {
+            player.enderChest.clear()
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_EXHAUSTION))
+        {
+            player.exhaustion = PlayerDefaults.EXHAUSTION
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_EXP))
+        {
+            player.exp = PlayerDefaults.EXPERIENCE
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_HUNGER))
+        {
+            player.foodLevel = PlayerDefaults.FOOD_LEVEL
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_HEALTH))
+        {
+            if (bukkitService.shouldUseAttributes())
+            {
+                player.getAttribute(Attribute.GENERIC_MAX_HEALTH).baseValue = PlayerDefaults.HEALTH
+            } else
+            {
+                player.maxHealth = PlayerDefaults.HEALTH
+            }
+            player.health = PlayerDefaults.HEALTH
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_LEVEL))
+        {
+            player.level = PlayerDefaults.LEVEL
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_SATURATION))
+        {
+            player.saturation = PlayerDefaults.SATURATION
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_FALL_DISTANCE))
+        {
+            player.fallDistance = PlayerDefaults.FALL_DISTANCE
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_FIRE_TICKS))
+        {
+            player.fireTicks = PlayerDefaults.FIRE_TICKS
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_MAX_AIR))
+        {
+            player.maximumAir = PlayerDefaults.MAXIMUM_AIR
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_REMAINING_AIR))
+        {
+            player.remainingAir = PlayerDefaults.REMAINING_AIR
+        }
+        if (settings.getProperty(PlayerSettings.LOAD_POTION_EFFECTS))
+        {
+            player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
+        }
+        if (bukkitService.isEconEnabled())
+        {
+            val amount = bukkitService.getEconomy()?.getBalance(player) ?: 0.0
+            bukkitService.getEconomy()?.withdrawPlayer(player, amount)
+        }
     }
 }
