@@ -25,13 +25,15 @@ import org.bukkit.Bukkit
 import org.bukkit.Server
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Files
 import java.util.*
 
-class PerWorldInventory : JavaPlugin()
+class PerWorldInventory : JavaPlugin
 {
 
     /**
@@ -61,6 +63,12 @@ class PerWorldInventory : JavaPlugin()
     private val DATA_DIRECTORY = File(dataFolder, "data")
     val SLOT_TIMEOUT = 5
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
+
+    constructor(): super()
+
+    /* Constructor used for tests. */
+    internal constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File?)
+            : super(loader, description, dataFolder, file)
 
     override fun onEnable()
     {
@@ -135,7 +143,7 @@ class PerWorldInventory : JavaPlugin()
         server.scheduler.cancelTasks(this)
     }
 
-    private fun injectServices(injector: Injector)
+    internal fun injectServices(injector: Injector)
     {
         injector.getSingleton(GroupManager::class)
         injector.getSingleton(PlayerSerializer::class)

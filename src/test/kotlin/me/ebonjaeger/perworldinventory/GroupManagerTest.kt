@@ -4,27 +4,26 @@ import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import me.ebonjaeger.perworldinventory.TestHelper.mockGroup
+import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
 import org.junit.Assert.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
+import org.mockito.Mockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
+import java.io.File
 
 /**
  * Test for [GroupManager].
  */
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(PerWorldInventory::class)
+@PrepareForTest(BukkitService::class)
 class GroupManagerTest {
 
-    @InjectMocks
-    lateinit var groupManager: GroupManager
+    private val bukkitService = Mockito.mock(BukkitService::class.java)
 
-    @Mock
-    lateinit var plugin: PerWorldInventory
+    private val groupManager = GroupManager(File(""), bukkitService)
 
     @Test
     fun shouldReturnAbsentValueForNonExistentGroup() {
