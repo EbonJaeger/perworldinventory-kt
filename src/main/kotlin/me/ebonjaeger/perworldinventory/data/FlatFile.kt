@@ -5,7 +5,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.ConsoleLogger
-import me.ebonjaeger.perworldinventory.PerWorldInventory
+import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
 import org.bukkit.GameMode
@@ -18,8 +18,8 @@ import java.io.IOException
 import java.nio.file.Files
 import javax.inject.Inject
 
-class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
-               private val serializer: PlayerSerializer) : DataSource
+class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: File,
+                                   private val serializer: PlayerSerializer) : DataSource
 {
 
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)
@@ -52,7 +52,7 @@ class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
 
     override fun saveLogout(player: PlayerProfile)
     {
-        val dir = File(plugin.DATA_DIRECTORY, player.uuid.toString())
+        val dir = File(dataDirectory, player.uuid.toString())
         val file = File(dir, "last-logout.json")
 
         try
@@ -71,7 +71,7 @@ class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
 
     override fun saveLocation(player: Player, location: Location)
     {
-        val dir = File(plugin.DATA_DIRECTORY, player.uniqueId.toString())
+        val dir = File(dataDirectory, player.uniqueId.toString())
         val file = File(dir, "last-locations.json")
 
         try
@@ -132,7 +132,7 @@ class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
 
     override fun getLogout(player: Player): Location?
     {
-        val dir = File(plugin.DATA_DIRECTORY, player.uniqueId.toString())
+        val dir = File(dataDirectory, player.uniqueId.toString())
         val file = File(dir, "last-logout.json")
 
         // This player is likely logging in for the first time
@@ -151,7 +151,7 @@ class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
 
     override fun getLocation(player: Player, world: String): Location?
     {
-        val dir = File(plugin.DATA_DIRECTORY, player.uniqueId.toString())
+        val dir = File(dataDirectory, player.uniqueId.toString())
         val file = File(dir, "last-locations.json")
 
         // Clearly they haven't visited any other worlds yet
@@ -212,7 +212,7 @@ class FlatFile @Inject constructor(private val plugin: PerWorldInventory,
      */
     private fun getFile(key: ProfileKey): File
     {
-        val dir = File(plugin.DATA_DIRECTORY, key.uuid.toString())
+        val dir = File(dataDirectory, key.uuid.toString())
         return when(key.gameMode)
         {
             GameMode.ADVENTURE -> File(dir, key.group.name + "_adventure.json")

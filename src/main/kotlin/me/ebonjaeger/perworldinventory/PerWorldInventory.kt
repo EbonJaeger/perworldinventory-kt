@@ -1,7 +1,5 @@
 package me.ebonjaeger.perworldinventory
 
-import ch.jalu.configme.migration.PlainMigrationService
-import ch.jalu.configme.resource.YamlFileResource
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -12,8 +10,10 @@ import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
 import me.ebonjaeger.perworldinventory.data.ProfileManager
+import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
+import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
@@ -58,7 +58,7 @@ class PerWorldInventory : JavaPlugin()
     val timeouts = hashMapOf<UUID, Int>()
     var updateTimeoutsTaskId = -1
 
-    val DATA_DIRECTORY = File(dataFolder, "data")
+    private val DATA_DIRECTORY = File(dataFolder, "data")
     val SLOT_TIMEOUT = 5
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
 
@@ -87,12 +87,10 @@ class PerWorldInventory : JavaPlugin()
         val injector = InjectorBuilder().addDefaultHandlers("me.ebonjaeger.perworldinventory").create()
         injector.register(PerWorldInventory::class, this)
         injector.register(Server::class, server)
+        injector.provide(PluginFolder::class, dataFolder)
+        injector.provide(DataDirectory::class, DATA_DIRECTORY)
         injector.registerProvider(DataSource::class, DataSourceProvider::class)
-        val settings = Settings(YamlFileResource(File(dataFolder, "config.yml")),
-                PlainMigrationService(),
-                PluginSettings::class.java,
-                MetricsSettings::class.java,
-                PlayerSettings::class.java)
+        val settings = Settings.create(File(dataFolder, "config.yml"))
         injector.register(Settings::class, settings)
         injectServices(injector)
 
