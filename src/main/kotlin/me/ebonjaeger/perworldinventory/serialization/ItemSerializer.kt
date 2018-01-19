@@ -1,6 +1,7 @@
 package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.ConsoleLogger
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -10,6 +11,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 
 object ItemSerializer
 {
@@ -25,8 +27,9 @@ object ItemSerializer
      * @param index The position in the inventory
      * @return A JsonObject with the encoded item
      */
-    fun serialize(item: ItemStack, index: Int): JsonObject
+    fun serialize(item: ItemStack?, index: Int): JsonObject?
     {
+        if (item == null) return null
         val obj = JsonObject()
 
         /*
@@ -69,8 +72,19 @@ object ItemSerializer
             {
                 0 -> throw IllegalArgumentException("Old data format is not supported!")
                 1, 2 -> {
-                    ByteArrayInputStream(Base64Coder.decodeLines(obj.get("item").asString)).use {
-                        BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
+                    try
+                    {
+                        ByteArrayInputStream(Base64Coder.decodeLines(obj.get("item").asString)).use {
+                            BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
+                        }
+                    } catch (ex: IOException)
+                    {
+                        ConsoleLogger.severe("Unable to deserialize an item:", ex)
+                        ItemStack(Material.AIR)
+                    } catch (ex: ClassNotFoundException)
+                    {
+                        ConsoleLogger.severe("Unable to deserialize an item:", ex)
+                        ItemStack(Material.AIR)
                     }
                 }
                 else -> {

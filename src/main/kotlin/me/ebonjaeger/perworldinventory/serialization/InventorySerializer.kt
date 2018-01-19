@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -39,11 +40,9 @@ object InventorySerializer
     {
         val inventory = JsonArray()
 
-        for (i in contents.indices)
-        {
-            val item = ItemSerializer.serialize(contents[i], i)
-            inventory.add(item)
-        }
+        contents.indices
+                .map { ItemSerializer.serialize(contents[it], it) }
+                .forEach { inventory.add(it) }
 
         return inventory
     }
@@ -80,11 +79,19 @@ object InventorySerializer
 
         for (i in 0..array.size())
         {
-            val obj = array[i].asJsonObject
-            val index = obj["index"].asInt
-            val item = ItemSerializer.deserialize(obj, format)
+            // We don't want to risk failing to deserialize a players inventory.
+            // Try your best to deserialize as much as possible.
+            try
+            {
+                val obj = array[i].asJsonObject
+                val index = obj["index"].asInt
+                val item = ItemSerializer.deserialize(obj, format)
 
-            contents[index] = item
+                contents[index] = item
+            } catch (ex: Exception)
+            {
+                ConsoleLogger.warning("Failed to deserialize item in inventory:", ex)
+            }
         }
 
         return contents
