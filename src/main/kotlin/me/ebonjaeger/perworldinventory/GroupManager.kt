@@ -1,9 +1,6 @@
 package me.ebonjaeger.perworldinventory
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.google.gson.*
 import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.service.BukkitService
@@ -108,7 +105,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
      */
     fun saveGroups()
     {
-        val gson = Gson()
+        val gson = GsonBuilder().setPrettyPrinting().create()
         val root = JsonObject()
         val groups = JsonObject()
 

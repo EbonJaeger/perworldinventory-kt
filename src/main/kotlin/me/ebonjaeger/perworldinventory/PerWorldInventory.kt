@@ -1,6 +1,6 @@
 package me.ebonjaeger.perworldinventory
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
@@ -240,7 +240,7 @@ class PerWorldInventory : JavaPlugin
         Files.createFile(WORLDS_CONFIG_FILE.toPath())
 
         // Save to the new json file
-        val gson = Gson()
+        val gson = GsonBuilder().setPrettyPrinting().create()
         server.scheduler.runTaskAsynchronously(this, {
             FileWriter(WORLDS_CONFIG_FILE).use {
                 it.write(gson.toJson(root))
