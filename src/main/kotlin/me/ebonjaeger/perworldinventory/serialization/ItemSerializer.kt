@@ -16,6 +16,8 @@ import java.io.IOException
 object ItemSerializer
 {
 
+    private val AIR = "AIR"
+
     /**
      * Serialize an ItemStack to a JsonObject.
      *
@@ -27,10 +29,17 @@ object ItemSerializer
      * @param index The position in the inventory
      * @return A JsonObject with the encoded item
      */
-    fun serialize(item: ItemStack?, index: Int): JsonObject?
+    fun serialize(item: ItemStack?, index: Int): JsonObject
     {
-        if (item == null) return null
         val obj = JsonObject()
+
+        // If item is null, return air
+        if (item == null)
+        {
+            obj.addProperty("index", index)
+            obj.addProperty("item", AIR)
+            return obj
+        }
 
         /*
          * Check to see if the item is a skull with a null owner.
@@ -74,8 +83,14 @@ object ItemSerializer
                 1, 2 -> {
                     try
                     {
-                        ByteArrayInputStream(Base64Coder.decodeLines(obj.get("item").asString)).use {
-                            BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
+                        if (obj["item"].asString == AIR)
+                        {
+                            ItemStack(Material.AIR)
+                        } else
+                        {
+                            ByteArrayInputStream(Base64Coder.decodeLines(obj["item"].asString)).use {
+                                BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
+                            }
                         }
                     } catch (ex: IOException)
                     {
