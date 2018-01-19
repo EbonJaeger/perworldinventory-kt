@@ -66,7 +66,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
         val group = Group(world, worlds, GameMode.SURVIVAL)
         groups.put(world.toLowerCase(), group)
         ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
-                " Please double check your `worlds.json` file configuration.!")
+                " Please double check your `worlds.json` file configuration!")
 
         return group
     }
