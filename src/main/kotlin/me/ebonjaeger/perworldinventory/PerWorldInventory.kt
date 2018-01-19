@@ -80,6 +80,12 @@ class PerWorldInventory : JavaPlugin
             Files.createDirectories(DATA_DIRECTORY.toPath())
         }
 
+        // Create config file if it does not exist
+        if (!Files.exists(File(dataFolder, "config.yml").toPath()))
+        {
+            saveResource("config.yml", false)
+        }
+
         // Check if `worlds.yml` exists. If it does, convert it to JSON.
         // Otherwise, save it if it doesn't exist.
         if (Files.exists(File(dataFolder, "worlds.yml").toPath()))
