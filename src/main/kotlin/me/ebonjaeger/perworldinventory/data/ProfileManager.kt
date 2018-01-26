@@ -8,6 +8,7 @@ import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.service.BukkitService
+import me.ebonjaeger.perworldinventory.service.EconomyService
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -16,7 +17,9 @@ import javax.inject.Inject
 
 class ProfileManager @Inject constructor(private val bukkitService: BukkitService,
                                          private val dataSource: DataSource,
-                                         private val settings: Settings)
+                                         private val settings: Settings,
+                                         private val economyService: EconomyService,
+                                         private val profileFactory: ProfileFactory)
 {
 
     private val profileCache: Cache<ProfileKey, PlayerProfile> = CacheBuilder.newBuilder()
@@ -24,7 +27,6 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             .maximumSize(settings.getProperty(PluginSettings.CACHE_MAX_LIMIT).toLong())
             .build()
 
-    private val profileFactory = ProfileFactory(bukkitService)
     private val separateGameModes = settings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES)
 
     /**
@@ -102,30 +104,11 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             player.enderChest.clear()
             player.enderChest.contents = profile.enderChest
         }
-        if (settings.getProperty(PlayerSettings.LOAD_ALLOW_FLIGHT))
-        {
-            player.allowFlight = profile.allowFlight
+
+        for (value in PlayerProperty.values()) run {
+            value.applyFromProfileToPlayer(profile, player, settings)
         }
-        if (settings.getProperty(PlayerSettings.LOAD_DISPLAY_NAME))
-        {
-            player.displayName = profile.displayName
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_EXHAUSTION))
-        {
-            player.exhaustion = profile.exhaustion
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_EXP))
-        {
-            player.exp = profile.experience
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_FLYING))
-        {
-            player.isFlying = profile.isFlying
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_HUNGER))
-        {
-            player.foodLevel = profile.foodLevel
-        }
+
         // TODO: Put this in its own method
         if (settings.getProperty(PlayerSettings.LOAD_HEALTH))
         {
@@ -196,15 +179,8 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         {
             player.remainingAir = profile.remainingAir
         }
-        if (bukkitService.isEconEnabled())
-        {
-            val economy = bukkitService.getEconomy()
-            if (economy != null)
-            {
-                economy.withdrawPlayer(player, economy.getBalance(player))
-                economy.depositPlayer(player, profile.balance)
-            }
-        }
+
+        economyService.overridePlayerBalanceFromProfile(player, profile)
     }
 
     /**
@@ -274,10 +250,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         {
             player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
         }
-        if (bukkitService.isEconEnabled())
-        {
-            val amount = bukkitService.getEconomy()?.getBalance(player) ?: 0.0
-            bukkitService.getEconomy()?.withdrawPlayer(player, amount)
-        }
+
+        economyService.withDrawMoneyFromPlayer(player)
     }
 }
