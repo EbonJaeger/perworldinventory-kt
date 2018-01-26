@@ -1,4 +1,4 @@
-package me.ebonjaeger.perworldinventory.listener.player.entity
+package me.ebonjaeger.perworldinventory.listener.entity
 
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.GroupManager

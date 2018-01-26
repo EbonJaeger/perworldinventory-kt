@@ -19,7 +19,7 @@ import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.listener.player.*
-import me.ebonjaeger.perworldinventory.listener.player.entity.EntityPortalEventListener
+import me.ebonjaeger.perworldinventory.listener.entity.EntityPortalEventListener
 import me.ebonjaeger.perworldinventory.permission.PermissionManager
 import net.milkbowl.vault.economy.Economy
 import org.bstats.bukkit.Metrics
