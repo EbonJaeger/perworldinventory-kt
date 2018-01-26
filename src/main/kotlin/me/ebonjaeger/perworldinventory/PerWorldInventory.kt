@@ -1,8 +1,12 @@
 package me.ebonjaeger.perworldinventory
 
+import co.aikar.commands.BukkitCommandManager
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.command.HelpCommand
+import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
+import me.ebonjaeger.perworldinventory.command.ReloadCommand
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
@@ -13,6 +17,7 @@ import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
+import me.ebonjaeger.perworldinventory.listener.entity.EntityPortalEventListener
 import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
@@ -93,6 +98,11 @@ class PerWorldInventory : JavaPlugin
 
         ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
 
+        val commandManager = BukkitCommandManager(this)
+        commandManager.registerCommand(PWIBaseCommand())
+        commandManager.registerCommand(HelpCommand(this))
+        commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
+
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
         {
@@ -125,6 +135,7 @@ class PerWorldInventory : JavaPlugin
         server.pluginManager.registerEvents(injector.getSingleton(PlayerChangedWorldListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerQuitListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class), this)
+        server.pluginManager.registerEvents(injector.getSingleton(EntityPortalEventListener::class), this)
     }
 
     /**
