@@ -18,8 +18,12 @@ class InventoryLoadEvent(val player: Player,
                          val newGameMode: GameMode,
                          val group: Group) : Event(), Cancellable
 {
+    companion object {
+        private val HANDLERS = HandlerList()
 
-    private val HANDLERS = HandlerList()
+        @JvmStatic
+        fun getHandlerList() = HANDLERS
+    }
 
     private var isEventCancelled = false
 
