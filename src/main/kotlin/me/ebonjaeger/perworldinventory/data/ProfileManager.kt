@@ -102,30 +102,11 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             player.enderChest.clear()
             player.enderChest.contents = profile.enderChest
         }
-        if (settings.getProperty(PlayerSettings.LOAD_ALLOW_FLIGHT))
-        {
-            player.allowFlight = profile.allowFlight
+
+        for (value in PlayerProperty.values()) run {
+            value.applyFromProfileToPlayer(profile, player, settings)
         }
-        if (settings.getProperty(PlayerSettings.LOAD_DISPLAY_NAME))
-        {
-            player.displayName = profile.displayName
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_EXHAUSTION))
-        {
-            player.exhaustion = profile.exhaustion
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_EXP))
-        {
-            player.exp = profile.experience
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_FLYING))
-        {
-            player.isFlying = profile.isFlying
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_HUNGER))
-        {
-            player.foodLevel = profile.foodLevel
-        }
+
         // TODO: Put this in its own method
         if (settings.getProperty(PlayerSettings.LOAD_HEALTH))
         {
