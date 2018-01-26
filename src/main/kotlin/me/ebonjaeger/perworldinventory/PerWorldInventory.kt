@@ -18,6 +18,7 @@ import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
+import me.ebonjaeger.perworldinventory.permission.PermissionManager
 import net.milkbowl.vault.economy.Economy
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
@@ -150,6 +151,7 @@ class PerWorldInventory : JavaPlugin
 
     internal fun injectServices(injector: Injector)
     {
+        injector.getSingleton(PermissionManager::class)
         injector.getSingleton(GroupManager::class)
         injector.getSingleton(ProfileManager::class)
 
