@@ -15,14 +15,8 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
 
     private val scheduler = plugin.server.scheduler
 
-    fun isEconEnabled() =
-            plugin.econEnabled
-
     fun isShuttingDown() =
         plugin.isShuttingDown
-
-    fun getEconomy() =
-            plugin.economy
 
     fun getServerVersion() =
         plugin.server.version

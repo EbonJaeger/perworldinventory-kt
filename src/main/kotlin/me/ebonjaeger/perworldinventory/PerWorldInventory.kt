@@ -8,7 +8,6 @@ import me.ebonjaeger.perworldinventory.command.HelpCommand
 import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
 import me.ebonjaeger.perworldinventory.command.ReloadCommand
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
-import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
@@ -18,10 +17,12 @@ import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
-import me.ebonjaeger.perworldinventory.listener.player.*
 import me.ebonjaeger.perworldinventory.listener.entity.EntityPortalEventListener
+import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
+import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
+import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
+import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
 import me.ebonjaeger.perworldinventory.permission.PermissionManager
-import net.milkbowl.vault.economy.Economy
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Server
@@ -37,21 +38,6 @@ import java.util.*
 
 class PerWorldInventory : JavaPlugin
 {
-
-    /**
-     * Economy from Vault, if Vault is present on the server. If Vault is not
-     * installed or we failed to hook into it, this will return null.
-     */
-    var economy: Economy? = null
-        private set
-
-    /**
-     * If this is true, then Vault has been hooked in to, and the plugin is
-     * configured to perform economy operations on players. If either of
-     * those is not true, then this will return false.
-     */
-    var econEnabled = false
-        private set
 
     /**
      * Get whether or not the server is currently shutting down.
@@ -111,23 +97,6 @@ class PerWorldInventory : JavaPlugin
         injectServices(injector)
 
         ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
-
-        // Register Vault if present
-        if (server.pluginManager.getPlugin("Vault") != null)
-        {
-            ConsoleLogger.info("Vault found! Hooking into it...")
-            val rsp = server.servicesManager.getRegistration(Economy::class.java)
-            if (rsp != null)
-            {
-                economy = rsp.provider
-                ConsoleLogger.info("Hooked into Vault!")
-            } else
-            {
-                ConsoleLogger.warning("Unable to hook into Vault!")
-            }
-        }
-
-        econEnabled = economy != null && settings.getProperty(PlayerSettings.USE_ECONOMY)
 
         val commandManager = BukkitCommandManager(this)
         commandManager.registerCommand(PWIBaseCommand())
