@@ -48,6 +48,7 @@ object PlayerSerializer
             format = data["data-format"].asInt
         }
 
+        // TODO: Check server version as it might not have off-hand slot
         val inventory = InventorySerializer.deserialize(data["inventory"].asJsonArray,
                 37, // 27 storage slots, 9 hotbar slots, and an off-hand slot
                 format)
