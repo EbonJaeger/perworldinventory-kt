@@ -1,8 +1,11 @@
 package me.ebonjaeger.perworldinventory
 
+import co.aikar.commands.BukkitCommandManager
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.command.HelpCommand
+import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
@@ -126,6 +129,10 @@ class PerWorldInventory : JavaPlugin
         }
 
         econEnabled = economy != null && settings.getProperty(PlayerSettings.USE_ECONOMY)
+
+        val commandManager = BukkitCommandManager(this)
+        commandManager.registerCommand(PWIBaseCommand())
+        commandManager.registerCommand(HelpCommand(this))
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
