@@ -92,7 +92,19 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
 
     private fun applyToPlayer(player: Player, profile: PlayerProfile)
     {
-        // Time for a massive line of if-statements . . .
+        // Transfer simple properties
+        for (value in PlayerProperty.values()) run {
+            value.applyFromProfileToPlayerIfConfigured(profile, player, settings)
+        }
+
+        transferInventories(player, profile)
+        transferHealth(player, profile)
+        transferPotionEffects(player, profile)
+
+        economyService.overridePlayerBalanceFromProfile(player, profile)
+    }
+
+    private fun transferInventories(player: Player, profile: PlayerProfile) {
         if (settings.getProperty(PlayerSettings.LOAD_INVENTORY))
         {
             player.inventory.clear()
@@ -104,102 +116,32 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             player.enderChest.clear()
             player.enderChest.contents = profile.enderChest
         }
-        if (settings.getProperty(PlayerSettings.LOAD_ALLOW_FLIGHT))
-        {
-            player.allowFlight = profile.allowFlight
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_DISPLAY_NAME))
-        {
-            player.displayName = profile.displayName
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_EXHAUSTION))
-        {
-            player.exhaustion = profile.exhaustion
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_EXP))
-        {
-            player.exp = profile.experience
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_FLYING))
-        {
-            player.isFlying = profile.isFlying
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_HUNGER))
-        {
-            player.foodLevel = profile.foodLevel
-        }
-        // TODO: Put this in its own method
-        if (settings.getProperty(PlayerSettings.LOAD_HEALTH))
-        {
-            if (bukkitService.shouldUseAttributes())
-            {
-                player.getAttribute(
-                        Attribute.GENERIC_MAX_HEALTH).baseValue = profile.maxHealth
+    }
 
-                if (profile.health <= player.getAttribute(
-                                Attribute.GENERIC_MAX_HEALTH).baseValue)
-                {
-                    if (profile.health <= 0)
-                    {
-                        player.health = profile.maxHealth
-                    } else
-                    {
-                        player.health = profile.health
-                    }
-                } else
-                {
-                    player.health = profile.maxHealth
-                }
-            } else
-            {
-                player.maxHealth = profile.maxHealth
+    private fun transferHealth(player: Player, profile: PlayerProfile) {
+        if (!settings.getProperty(PlayerSettings.LOAD_HEALTH)) {
+            return
+        }
 
-                if (profile.health <= player.maxHealth)
-                {
-                    if (profile.health <= 0)
-                    {
-                        player.health = profile.maxHealth
-                    } else
-                    {
-                        player.health = profile.health
-                    }
-                } else
-                {
-                    player.health = profile.maxHealth
-                }
-            }
+        if (bukkitService.shouldUseAttributes()) {
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).baseValue = profile.maxHealth
+        } else {
+            player.maxHealth = profile.maxHealth
         }
-        if (settings.getProperty(PlayerSettings.LOAD_LEVEL))
-        {
-            player.level = profile.level
+
+        if (profile.health > 0 && profile.health <= profile.maxHealth) {
+            player.health = profile.health
+        } else {
+            player.health = profile.maxHealth
         }
-        if (settings.getProperty(PlayerSettings.LOAD_SATURATION))
-        {
-            player.saturation = profile.saturation
-        }
+    }
+
+    private fun transferPotionEffects(player: Player, profile: PlayerProfile) {
         if (settings.getProperty(PlayerSettings.LOAD_POTION_EFFECTS))
         {
             player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
             player.addPotionEffects(profile.potionEffects)
         }
-        if (settings.getProperty(PlayerSettings.LOAD_FALL_DISTANCE))
-        {
-            player.fallDistance = profile.fallDistance
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_FIRE_TICKS))
-        {
-            player.fireTicks = profile.fireTicks
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_MAX_AIR))
-        {
-            player.maximumAir = profile.maximumAir
-        }
-        if (settings.getProperty(PlayerSettings.LOAD_REMAINING_AIR))
-        {
-            player.remainingAir = profile.remainingAir
-        }
-
-        economyService.overridePlayerBalanceFromProfile(player, profile)
     }
 
     /**
