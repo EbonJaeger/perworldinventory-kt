@@ -2,21 +2,14 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
-import me.ebonjaeger.perworldinventory.PerWorldInventory
-import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
-import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
-import org.bukkit.entity.Player
-import javax.inject.Inject
+import org.bukkit.GameMode
 
-class PlayerSerializer @Inject constructor(private val plugin: PerWorldInventory,
-                       private val settings: Settings)
+object PlayerSerializer
 {
 
-    private val statSerializer = StatSerializer(settings)
-
     /**
-     * Serialize a Player into a JsonObject. The player's EnderChest, inventory
+     * Serialize a [PlayerProfile] into a JsonObject. The player's EnderChest, inventory
      * (including armor) and stats such as experience and potion effects will
      * be saved unless disabled. A data format number is included to tell
      * which methods to use for some serializations/deserializations.
@@ -28,28 +21,26 @@ class PlayerSerializer @Inject constructor(private val plugin: PerWorldInventory
      *     2: Serialize/Deserialize PotionEffects as JsonObjects
      * </p>
      *
-     * @param player The player to serialize
+     * @param player The player profile to serialize
      * @return The serialized player's data in its entirety
      */
     fun serialize(player: PlayerProfile): JsonObject
     {
-        ConsoleLogger.debug("[SERIALIZER] Serializing player '${player.name}'")
+        ConsoleLogger.debug("[SERIALIZER] Serializing player '${player.displayName}'")
         val obj = JsonObject()
 
         obj.addProperty("data-format", 2)
         obj.add("ender-chest", InventorySerializer.serializeInventory(player.enderChest))
         obj.add("inventory", InventorySerializer.serializeAllInventories(player))
-        obj.add("stats", statSerializer.serialize(player))
+        obj.add("stats", StatSerializer.serialize(player))
         obj.add("economy", EconomySerializer.serialize(player))
 
-        ConsoleLogger.debug("[SERIALIZER] Done serializing player '${player.name}'")
+        ConsoleLogger.debug("[SERIALIZER] Done serializing player '${player.displayName}'")
         return obj
     }
 
-    fun deserialize(data: JsonObject, player: Player, cause: DeserializeCause)
+    fun deserialize(data: JsonObject): PlayerProfile
     {
-        ConsoleLogger.debug("[SERIALIZER] Deserializing player '${player.name}'")
-
         // Get the data format being used
         var format = 2
         if (data.has("data-format"))
@@ -57,56 +48,36 @@ class PlayerSerializer @Inject constructor(private val plugin: PerWorldInventory
             format = data["data-format"].asInt
         }
 
-        // Set the player's new EnderChest contents
-        if (settings.getProperty(PlayerSettings.LOAD_ENDER_CHEST) &&
-                data.has("ender-chest"))
-        {
-            player.enderChest.clear()
-            player.enderChest.contents =
-                    InventorySerializer.deserialize(data["ender-chest"].asJsonArray,
-                            player.enderChest.size, format)
-        }
+        val inventory = InventorySerializer.deserialize(data["inventory"].asJsonArray,
+                37, // 27 storage slots, 9 hotbar slots, and an off-hand slot
+                format)
+        val armor = InventorySerializer.deserialize(data["armor"].asJsonArray, 4, format)
+        val enderChest = InventorySerializer.deserialize(data["ender-chest"].asJsonArray,
+                27,
+                format)
+        val stats = data["stats"].asJsonObject
+        val potionEffects = PotionSerializer.deserialize(stats["potion-effects"].asJsonArray)
+        val balance = EconomySerializer.deserialize(data["economy"].asJsonObject)
 
-        // Set the player's new inventory and armor contents
-        if (settings.getProperty(PlayerSettings.LOAD_INVENTORY) &&
-                data.has("inventory"))
-        {
-            InventorySerializer.setInventories(player, data["inventory"].asJsonObject, format)
-        }
-
-        // Apply the player's stats and potion effects
-        if (data.has("stats"))
-        {
-            statSerializer.applyStats(player, data["stats"].asJsonObject, format)
-        }
-
-        if (plugin.econEnabled)
-        {
-            val econ = plugin.economy
-            if (econ == null)
-            {
-                ConsoleLogger.warning("Economy saving is turned on, but no economy found!")
-            } else
-            {
-                ConsoleLogger.debug("[ECON] Withdrawing ${econ.getBalance(player)} from '${player.name}'!")
-                val er = econ.withdrawPlayer(player, econ.getBalance(player))
-
-                if (er.transactionSuccess())
-                {
-                    if (data.has("economy"))
-                    {
-                        EconomySerializer.apply(player, econ, data["economy"].asJsonObject)
-                    }
-                } else
-                {
-                    ConsoleLogger.warning(
-                            "[ECON] Unable to withdraw funds from '${player.name}': ${er.errorMessage}")
-                }
-            }
-        }
-
-        ConsoleLogger.debug("[SERIALIZER] Done deserializing player '${player.name}'")
-
-        // TODO: Call event to signal loading is done
+        return PlayerProfile(armor,
+                enderChest,
+                inventory,
+                stats["can-fly"].asBoolean,
+                stats["display-name"].asString,
+                stats["exhaustion"].asFloat,
+                stats["exp"].asFloat,
+                stats["flying"].asBoolean,
+                stats["food"].asInt,
+                stats["max-health"].asDouble,
+                stats["health"].asDouble,
+                GameMode.valueOf(stats["gamemode"].asString),
+                stats["level"].asInt,
+                stats["saturation"].asFloat,
+                potionEffects,
+                stats["fallDistance"].asFloat,
+                stats["fireTicks"].asInt,
+                stats["maxAir"].asInt,
+                stats["remainingAir"].asInt,
+                balance)
     }
 }

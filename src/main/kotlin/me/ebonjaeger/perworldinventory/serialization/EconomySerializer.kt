@@ -1,10 +1,7 @@
 package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
-import net.milkbowl.vault.economy.Economy
-import org.bukkit.entity.Player
 
 object EconomySerializer
 {
@@ -23,18 +20,17 @@ object EconomySerializer
     }
 
     /**
-     * Apply a player's economical value.
+     * Get a player's currency amount.
      *
-     * @param player The player
-     * @param economy The server's economy hook
      * @param data The JsonObject with the balance data
      */
-    fun apply(player: Player, economy: Economy, data: JsonObject)
+    fun deserialize(data: JsonObject): Double
     {
         if (data.has("balance"))
         {
-            ConsoleLogger.debug("[ECON] Depositing ${data.get("balance").asDouble} to '${player.name}'!")
-            economy.depositPlayer(player, data["balance"].asDouble)
+            return data["balance"].asDouble
         }
+
+        return 0.0
     }
 }

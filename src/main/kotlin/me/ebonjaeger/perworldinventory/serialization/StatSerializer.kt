@@ -2,17 +2,12 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.Utils
-import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
-import me.ebonjaeger.perworldinventory.configuration.PluginSettings
-import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 
-class StatSerializer(private val config: Settings)
+object StatSerializer
 {
 
     /**
@@ -43,65 +38,6 @@ class StatSerializer(private val config: Settings)
         obj.add("potion-effects", PotionSerializer.serialize(player.potionEffects))
 
         return obj
-    }
-
-    fun applyStats(player: Player, stats: JsonObject, format: Int)
-    {
-        val useAttributes = Utils.checkServerVersion(Bukkit.getServer().version, 1, 9, 0)
-        val loadGameMode = config.getProperty(PlayerSettings.LOAD_GAMEMODE) &&
-                !config.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES)
-
-        if (config.getProperty(PlayerSettings.LOAD_ALLOW_FLIGHT) && stats.has("can-fly"))
-            player.allowFlight = stats["can-fly"].asBoolean
-        if (config.getProperty(PlayerSettings.LOAD_DISPLAY_NAME) && stats.has("display-name"))
-            player.displayName = stats["display-name"].asString
-        if (config.getProperty(PlayerSettings.LOAD_EXHAUSTION) && stats.has("exhaustion"))
-            player.exhaustion = stats["exhaustion"].asFloat
-        if (config.getProperty(PlayerSettings.LOAD_EXP) && stats.has("exp"))
-            player.exp = stats["exp"].asFloat
-        if (config.getProperty(PlayerSettings.LOAD_FLYING) && stats.has("flying") && player.allowFlight)
-            player.isFlying = stats["flying"].asBoolean
-        if (config.getProperty(PlayerSettings.LOAD_HUNGER) && stats.has("food"))
-            player.foodLevel = stats["food"].asInt
-        if (config.getProperty(PlayerSettings.LOAD_HEALTH) &&
-                stats.has("health") && stats.has("max-health"))
-        {
-            val maxHealth = stats["max-health"].asDouble
-            val health = stats["health"].asDouble
-
-            // Attributes aren't in older versions of Bukkit/Spigot
-            if (useAttributes)
-            {
-                setHealth(player, maxHealth, health, true)
-            } else
-            {
-                setHealth(player, maxHealth, health, false)
-            }
-        }
-        if (loadGameMode && stats.has("gamemode"))
-            setGameMode(player, stats)
-        if (config.getProperty(PlayerSettings.LOAD_LEVEL) && stats.has("level"))
-            player.level = stats["level"].asInt
-        if (config.getProperty(PlayerSettings.LOAD_SATURATION) && stats.has("saturation"))
-            player.saturation = stats["saturation"].asFloat
-        if (config.getProperty(PlayerSettings.LOAD_FALL_DISTANCE) && stats.has("fallDistance"))
-            player.fallDistance = stats["fallDistance"].asFloat
-        if (config.getProperty(PlayerSettings.LOAD_FIRE_TICKS) && stats.has("fireTicks"))
-            player.fireTicks = stats["fireTicks"].asInt
-        if (config.getProperty(PlayerSettings.LOAD_MAX_AIR) && stats.has("maxAir"))
-            player.maximumAir = stats["maxAir"].asInt
-        if (config.getProperty(PlayerSettings.LOAD_REMAINING_AIR) && stats.has("remainingAir"))
-            player.remainingAir = stats["remainingAir"].asInt
-        if (config.getProperty(PlayerSettings.LOAD_POTION_EFFECTS) && stats.has("potion-effects"))
-        {
-            if (format >= 2)
-            {
-                setPotionEffects(player, stats["potion-effects"].asJsonArray)
-            } else
-            {
-                throw IllegalArgumentException("Older format '$format' for potion effects is no longer supported")
-            }
-        }
     }
 
     /**

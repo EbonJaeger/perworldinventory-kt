@@ -20,11 +20,6 @@ class ProfileFactory(private val bukkitService: BukkitService)
             balance = econ!!.getBalance(player)
         }
 
-        return if (bukkitService.shouldUseAttributes())
-        {
-            PlayerProfile(player, balance, true)
-        } else {
-            PlayerProfile(player, balance, false)
-        }
+        return PlayerProfile(player, balance, bukkitService.shouldUseAttributes())
     }
 }

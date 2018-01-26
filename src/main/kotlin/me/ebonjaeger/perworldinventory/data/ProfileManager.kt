@@ -47,11 +47,9 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         if (!bukkitService.isShuttingDown())
         {
             bukkitService.runTaskAsynchronously({ dataSource.savePlayer(key, profile) })
-            profile.saved = true
         } else
         {
             dataSource.savePlayer(key, profile)
-            profile.saved = true
         }
     }
 

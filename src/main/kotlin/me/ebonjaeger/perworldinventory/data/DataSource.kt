@@ -21,7 +21,7 @@ interface DataSource
      *
      * @param player The player who logged out
      */
-    fun saveLogout(player: PlayerProfile)
+    fun saveLogout(player: Player)
 
     /**
      * Save the location of a player when they teleport to a different world.
@@ -38,8 +38,7 @@ interface DataSource
      * @param player The [Player] that the data will be applied to
      * @return A [JsonObject] with all of the player's information
      */
-    // TODO: Find a better way of doing this
-    fun getPlayer(key: ProfileKey, player: Player): JsonObject?
+    fun getPlayer(key: ProfileKey, player: Player): PlayerProfile?
 
     /**
      * Get the name of the world that a player logged out in.

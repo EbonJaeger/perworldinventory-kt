@@ -18,14 +18,13 @@ import java.io.IOException
 import java.nio.file.Files
 import javax.inject.Inject
 
-class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: File,
-                                   private val serializer: PlayerSerializer) : DataSource
+class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: File) : DataSource
 {
 
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)
     {
         val file = getFile(key)
-        ConsoleLogger.debug("Saving data for player '${player.name}' in file '${file.path}'")
+        ConsoleLogger.debug("Saving data for player '${player.displayName}' in file '${file.path}'")
 
         try
         {
@@ -39,8 +38,8 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             }
         }
 
-        ConsoleLogger.debug("Writing player data for player '${player.name}' to file")
-        val data = serializer.serialize(player)
+        ConsoleLogger.debug("Writing player data for player '${player.displayName}' to file")
+        val data = PlayerSerializer.serialize(player)
         try
         {
             FileWriter(file).use { it.write(Gson().toJson(data)) }
@@ -50,9 +49,9 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         }
     }
 
-    override fun saveLogout(player: PlayerProfile)
+    override fun saveLogout(player: Player)
     {
-        val dir = File(dataDirectory, player.uuid.toString())
+        val dir = File(dataDirectory, player.uniqueId.toString())
         val file = File(dir, "last-logout.json")
 
         try
@@ -112,8 +111,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         }
     }
 
-    // TODO: Find a better way of doing this
-    override fun getPlayer(key: ProfileKey, player: Player): JsonObject?
+    override fun getPlayer(key: ProfileKey, player: Player): PlayerProfile?
     {
         val file = getFile(key)
 
@@ -125,8 +123,9 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
 
         JsonReader(FileReader(file)).use {
             val parser = JsonParser()
+            val data = parser.parse(it).asJsonObject
 
-            return parser.parse(it).asJsonObject
+            return PlayerSerializer.deserialize(data)
         }
     }
 
