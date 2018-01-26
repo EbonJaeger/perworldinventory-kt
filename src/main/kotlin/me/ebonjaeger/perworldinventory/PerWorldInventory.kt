@@ -12,7 +12,6 @@ import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
-import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
@@ -22,7 +21,6 @@ import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
 import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
-import me.ebonjaeger.perworldinventory.permission.PermissionManager
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Server
@@ -127,10 +125,6 @@ class PerWorldInventory : JavaPlugin
 
     internal fun injectServices(injector: Injector)
     {
-        injector.getSingleton(PermissionManager::class)
-        injector.getSingleton(GroupManager::class)
-        injector.getSingleton(ProfileManager::class)
-
         server.pluginManager.registerEvents(injector.getSingleton(InventoryCreativeListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerChangedWorldListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerQuitListener::class), this)
