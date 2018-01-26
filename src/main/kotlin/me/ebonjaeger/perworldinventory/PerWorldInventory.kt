@@ -6,6 +6,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.command.HelpCommand
 import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
+import me.ebonjaeger.perworldinventory.command.ReloadCommand
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
@@ -133,6 +134,7 @@ class PerWorldInventory : JavaPlugin
         val commandManager = BukkitCommandManager(this)
         commandManager.registerCommand(PWIBaseCommand())
         commandManager.registerCommand(HelpCommand(this))
+        commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
