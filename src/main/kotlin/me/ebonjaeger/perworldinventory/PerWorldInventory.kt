@@ -17,10 +17,7 @@ import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.listener.entity.EntityPortalEventListener
-import me.ebonjaeger.perworldinventory.listener.player.InventoryCreativeListener
-import me.ebonjaeger.perworldinventory.listener.player.PlayerChangedWorldListener
-import me.ebonjaeger.perworldinventory.listener.player.PlayerQuitListener
-import me.ebonjaeger.perworldinventory.listener.player.PlayerTeleportListener
+import me.ebonjaeger.perworldinventory.listener.player.*
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Server
@@ -130,6 +127,13 @@ class PerWorldInventory : JavaPlugin
         server.pluginManager.registerEvents(injector.getSingleton(PlayerQuitListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(EntityPortalEventListener::class), this)
+
+        // The PlayerSpawnLocationEvent is only fired in Spigot
+        // As of version 1.9.2
+        if (Bukkit.getVersion().contains("Spigot") && Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 2))
+        {
+            server.pluginManager.registerEvents(injector.getSingleton(PlayerSpawnLocationListener::class), this)
+        }
     }
 
     /**
