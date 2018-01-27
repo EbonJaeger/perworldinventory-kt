@@ -1,9 +1,10 @@
 package me.ebonjaeger.perworldinventory.event;
 
-import com.google.common.collect.ImmutableSet;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.junit.Test;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -21,9 +22,6 @@ import static org.junit.Assert.assertThat;
  */
 public class EventConsistencyTest {
 
-    private static final Set<Class<? extends Event>> EVENT_CLASSES =
-        ImmutableSet.<Class<? extends Event>>of(InventoryLoadEvent.class);
-
     /**
      * Bukkit requires a static getHandlerList() method on all event classes, see {@link Event}.
      * This test checks that such a method is present and that it returns the same instance as the
@@ -31,7 +29,14 @@ public class EventConsistencyTest {
      */
     @Test
     public void shouldHaveStaticEventHandlerMethod() throws Exception {
-        for (Class<? extends Event> clazz : EVENT_CLASSES) {
+        // given
+        Reflections reflections = new Reflections("me.ebonjaeger.perworldinventory", new SubTypesScanner());
+        Set<Class<? extends Event>> eventClasses = reflections.getSubTypesOf(Event.class);
+        if (eventClasses.isEmpty()) {
+            throw new IllegalStateException("Failed to collect any Event classes. Is the package correct?");
+        }
+
+        for (Class<? extends Event> clazz : eventClasses) {
             HandlerList staticHandlerList = getHandlerListFromStaticMethod(clazz);
             assertThat("Handler list should not be null for class " + clazz,
                 staticHandlerList, not(nullValue()));
