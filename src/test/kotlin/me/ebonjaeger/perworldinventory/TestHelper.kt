@@ -11,6 +11,8 @@ import java.net.URISyntaxException
 object TestHelper
 {
 
+    val PROJECT_PACKAGE = "me.ebonjaeger.perworldinventory"
+
     /**
      * Return a [File] to a file in the JAR's resources (main or test).
      *
