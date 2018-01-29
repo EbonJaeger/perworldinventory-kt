@@ -67,14 +67,26 @@
     <dependencies>
         <!-- Kotlin -->
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+
+        <!-- Commands -->
+        <dependency>
             <groupId>co.aikar</groupId>
             <artifactId>acf-bukkit</artifactId> <!-- Change to other platform if not using bukkit -->
             <version>0.5.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jre8</artifactId>
-            <version>${kotlin.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>co.aikar</groupId>
+                    <artifactId>locales</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>co.aikar</groupId>
+                    <artifactId>minecraft-timings</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Spigot -->
@@ -254,6 +266,25 @@
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <minimizeJar>true</minimizeJar>
+
+                    <relocations>
+                        <relocation>
+                            <pattern>co.aikar.commands</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.command.acf</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>ch.jalu.configme</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.configuration.configme</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>ch.jalu.injector</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.initialization.di</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.metrics</shadedPattern>
+                        </relocation>
+                    </relocations>
                 </configuration>
 
                 <executions>
