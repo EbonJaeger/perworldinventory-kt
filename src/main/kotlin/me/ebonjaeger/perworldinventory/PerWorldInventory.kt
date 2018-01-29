@@ -1,6 +1,6 @@
 package me.ebonjaeger.perworldinventory
 
-import co.aikar.commands.BukkitCommandManager
+import co.aikar.commands.PaperCommandManager
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -93,7 +93,7 @@ class PerWorldInventory : JavaPlugin
 
         ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
 
-        val commandManager = BukkitCommandManager(this)
+        val commandManager = PaperCommandManager(this)
         commandManager.registerCommand(PWIBaseCommand())
         commandManager.registerCommand(HelpCommand(this))
         commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
