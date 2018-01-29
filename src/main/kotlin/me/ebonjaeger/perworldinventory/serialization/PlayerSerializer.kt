@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.GameMode
+import org.bukkit.Location
 
 object PlayerSerializer
 {
@@ -34,12 +35,13 @@ object PlayerSerializer
         obj.add("inventory", InventorySerializer.serializeAllInventories(player))
         obj.add("stats", StatSerializer.serialize(player))
         obj.add("economy", EconomySerializer.serialize(player))
+        obj.add("location", LocationSerializer.serialize(player.location))
 
         ConsoleLogger.debug("[SERIALIZER] Done serializing player '${player.displayName}'")
         return obj
     }
 
-    fun deserialize(data: JsonObject): PlayerProfile
+    fun deserialize(data: JsonObject, spawnLoc: Location): PlayerProfile
     {
         // Get the data format being used
         var format = 2
@@ -48,7 +50,7 @@ object PlayerSerializer
             format = data["data-format"].asInt
         }
 
-        // TODO: Check server version as it might not have off-hand slot
+        // TODO: Do something other than hardcoded size number
         val inventory = InventorySerializer.deserialize(data["inventory"].asJsonArray,
                 37, // 27 storage slots, 9 hotbar slots, and an off-hand slot
                 format)
@@ -59,6 +61,13 @@ object PlayerSerializer
         val stats = data["stats"].asJsonObject
         val potionEffects = PotionSerializer.deserialize(stats["potion-effects"].asJsonArray)
         val balance = EconomySerializer.deserialize(data["economy"].asJsonObject)
+        val location = if (data.has("location"))
+        {
+            LocationSerializer.deserialize(data["location"].asJsonObject)
+        } else
+        {
+            spawnLoc
+        }
 
         return PlayerProfile(armor,
                 enderChest,
@@ -79,6 +88,7 @@ object PlayerSerializer
                 stats["fireTicks"].asInt,
                 stats["maxAir"].asInt,
                 stats["remainingAir"].asInt,
-                balance)
+                balance,
+                location)
     }
 }

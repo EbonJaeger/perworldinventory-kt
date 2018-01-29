@@ -12,6 +12,7 @@ import me.ebonjaeger.perworldinventory.service.EconomyService
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerTeleportEvent
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -100,6 +101,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         transferInventories(player, profile)
         transferHealth(player, profile)
         transferPotionEffects(player, profile)
+        transferLocation(player, profile)
 
         economyService.overridePlayerBalanceFromProfile(player, profile)
     }
@@ -141,6 +143,18 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         {
             player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
             player.addPotionEffects(profile.potionEffects)
+        }
+    }
+
+    private fun transferLocation(player: Player, profile: PlayerProfile)
+    {
+        if (settings.getProperty(PlayerSettings.LOAD_LAST_LOCATION))
+        {
+            if (player.location.world == profile.location.world &&
+                    player.location != profile.location)
+            {
+                player.teleport(profile.location, PlayerTeleportEvent.TeleportCause.PLUGIN)
+            }
         }
     }
 
