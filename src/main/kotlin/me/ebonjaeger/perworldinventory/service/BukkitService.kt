@@ -28,5 +28,5 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
         scheduler.runTask(plugin, task)
 
     fun shouldUseAttributes() =
-            Utils.checkServerVersion(getServerVersion(), 1, 9, 0)
+            Utils.checkServerVersion(getServerVersion(), 1, 11, 0)
 }
