@@ -8,6 +8,9 @@ import org.bukkit.GameMode
 object PlayerSerializer
 {
 
+    private const val TOTAL_PLAYER_INVENTORY_SLOTS = 37 // 27 storage slots, 9 hotbar slots, and an off-hand slot
+    private const val TOTAL_ENDERCHEST_SLOTS = 27
+
     /**
      * Serialize a [PlayerProfile] into a JsonObject. The player's EnderChest, inventory
      * (including armor) and stats such as experience and potion effects will
@@ -48,13 +51,12 @@ object PlayerSerializer
             format = data["data-format"].asInt
         }
 
-        // TODO: Check server version as it might not have off-hand slot
         val inventory = InventorySerializer.deserialize(data["inventory"].asJsonArray,
-                37, // 27 storage slots, 9 hotbar slots, and an off-hand slot
+                TOTAL_PLAYER_INVENTORY_SLOTS,
                 format)
         val armor = InventorySerializer.deserialize(data["armor"].asJsonArray, 4, format)
         val enderChest = InventorySerializer.deserialize(data["ender-chest"].asJsonArray,
-                27,
+                TOTAL_ENDERCHEST_SLOTS,
                 format)
         val stats = data["stats"].asJsonObject
         val potionEffects = PotionSerializer.deserialize(stats["potion-effects"].asJsonArray)
