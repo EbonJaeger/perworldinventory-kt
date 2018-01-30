@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI
 import me.ebonjaeger.perworldinventory.command.HelpCommand
 import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
 import me.ebonjaeger.perworldinventory.command.ReloadCommand
@@ -38,6 +39,13 @@ class PerWorldInventory : JavaPlugin
      * Get whether or not the server is currently shutting down.
      */
     var isShuttingDown = false
+        private set
+
+    /**
+     * Get an API class for other plugins to more easily
+     * integrate with PerWorldInventory.
+     */
+    var api: PerWorldInventoryAPI? = null
         private set
 
     val timeouts = hashMapOf<UUID, Int>()
@@ -109,7 +117,7 @@ class PerWorldInventory : JavaPlugin
                 this, UpdateTimeoutsTask(this), 1L, 1L
         )
 
-        ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!");
+        ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!")
     }
 
     override fun onDisable()
@@ -134,6 +142,8 @@ class PerWorldInventory : JavaPlugin
         {
             server.pluginManager.registerEvents(injector.getSingleton(PlayerSpawnLocationListener::class), this)
         }
+
+        api = injector.getSingleton(PerWorldInventoryAPI::class)
     }
 
     /**
