@@ -30,6 +30,9 @@ player:
   ender-chest: true
   # Load players' inventory
   inventory: true
+  # Send players to their last location
+  # Only happens if they're going to the same world they left
+  last-location: false
   # All options for player stats are here:
   stats:
     # Load if a player is able to fly

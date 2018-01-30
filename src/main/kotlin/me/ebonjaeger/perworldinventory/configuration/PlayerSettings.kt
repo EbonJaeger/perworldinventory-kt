@@ -25,6 +25,11 @@ object PlayerSettings : SettingsHolder
     val LOAD_INVENTORY = newProperty("player.inventory", true)
 
     @JvmField
+    @Comment("Send players to their last location",
+            "Only happens if they're going to the same world they left")
+    val LOAD_LAST_LOCATION = newProperty("player.last-location", false)
+
+    @JvmField
     @Comment("Load if a player is able to fly")
     val LOAD_ALLOW_FLIGHT = newProperty("player.stats.can-fly", true)
 

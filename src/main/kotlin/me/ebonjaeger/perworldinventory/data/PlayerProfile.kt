@@ -1,6 +1,7 @@
 package me.ebonjaeger.perworldinventory.data
 
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -31,7 +32,8 @@ data class PlayerProfile constructor(val armor: Array<out ItemStack>,
                                      val fireTicks: Int,
                                      val maximumAir: Int,
                                      val remainingAir: Int,
-                                     val balance: Double)
+                                     val balance: Double,
+                                     val location: Location)
 {
 
     /**
@@ -62,7 +64,8 @@ data class PlayerProfile constructor(val armor: Array<out ItemStack>,
             player.fireTicks,
             player.maximumAir,
             player.remainingAir,
-            balance)
+            balance,
+            player.location)
 
     override fun equals(other: Any?): Boolean
     {
