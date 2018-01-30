@@ -2,6 +2,9 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import me.ebonjaeger.perworldinventory.Utils
+import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -28,7 +31,13 @@ object PotionSerializer
             obj.addProperty("duration", it.duration)
             obj.addProperty("ambient", it.isAmbient)
             obj.addProperty("particles", it.hasParticles())
-            // TODO: Figure out what version of Spigot added the color methods
+
+            // The color augments were added in the 1.9.0 API
+            val saveColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0)
+            if (saveColor)
+            {
+                obj.addProperty("color", it.color.asRGB())
+            }
 
             array.add(obj)
         }
@@ -55,7 +64,17 @@ object PotionSerializer
             val duration = obj["duration"].asInt
             val ambient = obj["ambient"].asBoolean
             val particles = obj["particles"].asBoolean
-            // TODO: Figure out what version of Spigot added the color methods
+
+            // The color augments were added in the 1.9.0 API
+            val getColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0) &&
+                    obj.has("color")
+            if (getColor)
+            {
+                val color = Color.fromRGB(obj["color"].asInt)
+                val effect = PotionEffect(type, duration, amplifier, ambient, particles, color)
+                effects.add(effect)
+                continue
+            }
 
             val effect = PotionEffect(type, duration, amplifier, ambient, particles)
             effects.add(effect)
