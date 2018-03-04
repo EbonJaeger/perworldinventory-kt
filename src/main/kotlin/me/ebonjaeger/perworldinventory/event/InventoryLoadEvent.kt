@@ -28,11 +28,11 @@ enum class Cause
  * loaded. If the event is cancelled, the inventory will not
  * be loaded.
  *
- * @param player The [Player] that caused this event.
- * @param cause The [Cause] of the event.
- * @param oldGameMode The player's old [GameMode].
- * @param newGameMode The player's new [GameMode].
- * @param group The [Group] that the player is going to.
+ * @property player The [Player] that caused this event.
+ * @property cause The [Cause] of the event.
+ * @property oldGameMode The player's old [GameMode].
+ * @property newGameMode The player's new [GameMode].
+ * @property group The [Group] that the player is going to.
  */
 class InventoryLoadEvent(val player: Player,
                          val cause: Cause,
