@@ -7,6 +7,8 @@ import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.event.InventoryLoadEvent
+import me.ebonjaeger.perworldinventory.permission.PermissionManager
+import me.ebonjaeger.perworldinventory.permission.PlayerPermission
 import me.ebonjaeger.perworldinventory.serialization.DeserializeCause
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -18,6 +20,7 @@ import javax.inject.Inject
 class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorldInventory,
                                                      private val groupManager: GroupManager,
                                                      private val profileManager: ProfileManager,
+                                                     private val permissionManager: PermissionManager,
                                                      private val settings: Settings) : Listener
 {
 
@@ -56,8 +59,8 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         }
 
         // Check if the player bypasses the changes
-        if (!settings.getProperty(PluginSettings.DISABLE_BYPASS)
-                // TODO: Check player permission for bypass
+        if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
+                        permissionManager.hasPermission(player, PlayerPermission.BYPASS_WORLDS)
         )
         {
             return
@@ -70,7 +73,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         // Add player to the timeouts to prevent item dupe
         if (plugin.updateTimeoutsTaskId != -1)
         {
-            plugin.timeouts.put(player.uniqueId, plugin.SLOT_TIMEOUT)
+            plugin.timeouts[player.uniqueId] = plugin.SLOT_TIMEOUT
         }
 
         val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
