@@ -17,7 +17,7 @@
         <!-- Project properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.jdkVersion>1.8</project.jdkVersion>
-        <kotlin.version>1.2.21</kotlin.version>
+        <kotlin.version>1.2.30</kotlin.version>
 
         <!-- Output properties -->
         <project.outputName>PerWorldInventory</project.outputName>
