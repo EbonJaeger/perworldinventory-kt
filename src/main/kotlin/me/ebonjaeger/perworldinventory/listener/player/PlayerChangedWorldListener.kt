@@ -77,7 +77,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         }
 
         val loadEvent = InventoryLoadEvent(player, Cause.WORLD_CHANGE,
-                player.gameMode, groupTo)
+                player.gameMode, player.gameMode, groupTo)
         Bukkit.getPluginManager().callEvent(loadEvent)
         if (!loadEvent.isCancelled)
         {
