@@ -6,10 +6,10 @@ import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.ProfileManager
+import me.ebonjaeger.perworldinventory.event.Cause
 import me.ebonjaeger.perworldinventory.event.InventoryLoadEvent
 import me.ebonjaeger.perworldinventory.permission.PermissionManager
 import me.ebonjaeger.perworldinventory.permission.PlayerPermission
-import me.ebonjaeger.perworldinventory.serialization.DeserializeCause
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -76,7 +76,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
             plugin.timeouts[player.uniqueId] = plugin.SLOT_TIMEOUT
         }
 
-        val loadEvent = InventoryLoadEvent(player, DeserializeCause.WORLD_CHANGE,
+        val loadEvent = InventoryLoadEvent(player, Cause.WORLD_CHANGE,
                 player.gameMode, groupTo)
         Bukkit.getPluginManager().callEvent(loadEvent)
         if (!loadEvent.isCancelled)
