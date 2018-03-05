@@ -2,14 +2,18 @@ package me.ebonjaeger.perworldinventory.conversion
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.atLeastOnce
-import com.nhaarman.mockito_kotlin.reset
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
+import me.ebonjaeger.perworldinventory.ReflectionUtils
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import org.bukkit.Server
 import org.bukkit.command.CommandSender
+import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitScheduler
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.hamcrest.MockitoHamcrest.argThat
 import org.powermock.api.mockito.PowerMockito.mock
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
@@ -48,6 +52,28 @@ class ConvertTaskTest
         // then (2)
         // The last player should now be converted
         assertRanConvertWithPlayers(players[5])
+    }
+
+    @Test
+    fun shouldStopAndInformOnComplete()
+    {
+        // given
+        val sender = mock(CommandSender::class.java)
+        val players = emptyArray<OfflinePlayer>()
+        val task = ConvertTask(convertService, sender, players)
+
+        ReflectionUtils.setField(BukkitRunnable::class, task, "taskId", 29457)
+        val server = mock(Server::class.java)
+        val scheduler = mock(BukkitScheduler::class.java)
+        given(server.scheduler).willReturn(scheduler)
+        ReflectionUtils.setField(Bukkit::class, null, "server", server)
+
+        // when
+        task.run()
+
+        // then
+        verify(scheduler).cancelTask(task.taskId)
+        verify(sender).sendMessage(argThat(containsString("Conversion has been completed!")))
     }
 
     private fun assertRanConvertWithPlayers(vararg players: OfflinePlayer)
