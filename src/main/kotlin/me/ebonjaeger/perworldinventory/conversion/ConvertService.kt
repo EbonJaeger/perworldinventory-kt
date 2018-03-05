@@ -13,7 +13,7 @@ import javax.inject.Inject
 /**
  * Initiates conversion tasks.
  */
-open class ConvertService @Inject constructor(private val bukkitService: BukkitService,
+class ConvertService @Inject constructor(private val bukkitService: BukkitService,
                                               private val convertExecutor: ConvertExecutor,
                                               private val groupManager: GroupManager,
                                               private val pluginManager: PluginManager)

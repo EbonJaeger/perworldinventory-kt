@@ -3,19 +3,22 @@ package me.ebonjaeger.perworldinventory.conversion
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.nhaarman.mockito_kotlin.argumentCaptor
+import com.nhaarman.mockito_kotlin.atLeastOnce
 import com.nhaarman.mockito_kotlin.reset
 import com.nhaarman.mockito_kotlin.verify
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
+import org.powermock.api.mockito.PowerMockito.mock
+import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 /**
  * Tests for [ConvertTask].
  */
 @RunWith(PowerMockRunner::class)
+@PrepareForTest(ConvertService::class)
 class ConvertTaskTest
 {
 
@@ -50,7 +53,7 @@ class ConvertTaskTest
     private fun assertRanConvertWithPlayers(vararg players: OfflinePlayer)
     {
         argumentCaptor<Collection<OfflinePlayer>>().apply {
-            verify(convertService).executeConvert(capture())
+            verify(convertService, atLeastOnce()).executeConvert(capture())
             assertThat(lastValue.size, equalTo(players.size))
             //lastValue.forEach { assertThat(players, hasItem(it)) }
         }
