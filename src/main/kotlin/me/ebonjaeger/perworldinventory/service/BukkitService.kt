@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.service
 
 import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.Utils
+import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitTask
 import javax.inject.Inject
 
@@ -18,8 +19,14 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
     fun isShuttingDown() =
         plugin.isShuttingDown
 
+    fun getOfflinePlayers() =
+            Bukkit.getOfflinePlayers()
+
     fun getServerVersion() =
         plugin.server.version
+
+    fun runRepeatingTaskAsynchronously(task: Runnable, delay: Long, period: Long) =
+            scheduler.runTaskTimerAsynchronously(plugin, task, delay, period)
 
     fun runTaskAsynchronously(task: () -> Unit) =
         scheduler.runTaskAsynchronously(plugin, task)
