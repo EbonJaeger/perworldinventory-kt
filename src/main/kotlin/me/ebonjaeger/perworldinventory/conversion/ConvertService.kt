@@ -14,9 +14,9 @@ import javax.inject.Inject
  * Initiates conversion tasks.
  */
 class ConvertService @Inject constructor(private val bukkitService: BukkitService,
-                                              private val convertExecutor: ConvertExecutor,
-                                              private val groupManager: GroupManager,
-                                              private val pluginManager: PluginManager)
+                                         private val convertExecutor: ConvertExecutor,
+                                         private val groupManager: GroupManager,
+                                         private val pluginManager: PluginManager)
 {
 
     /**
@@ -27,16 +27,8 @@ class ConvertService @Inject constructor(private val bukkitService: BukkitServic
      */
     var converting = false
 
-    fun runConversion(sender: CommandSender)
+    fun runConversion(sender: CommandSender, mvinventory: MultiverseInventories)
     {
-        val mvinventory = pluginManager.getPlugin("Multiverse-Inventories") as MultiverseInventories
-        if (mvinventory == null)
-        {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}" +
-                    "Multiverse-Inventories is not currently installed! Cannot convert!")
-            return
-        }
-
         val offlinePlayers = bukkitService.getOfflinePlayers()
         convertPlayers(sender, offlinePlayers, mvinventory)
     }

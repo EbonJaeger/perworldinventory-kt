@@ -4,6 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Subcommand
+import com.onarandombox.multiverseinventories.MultiverseInventories
 import me.ebonjaeger.perworldinventory.conversion.ConvertService
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
@@ -27,6 +28,14 @@ class ConvertCommand @Inject constructor(private val pluginManager: PluginManage
             return
         }
 
-        convertService.runConversion(sender)
+        val mvi = pluginManager.getPlugin("Multiverse-Inventories")
+        if (mvi == null)
+        {
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}" +
+                    "Unable to get Multiverse-Inventories instance!")
+            return
+        }
+
+        convertService.runConversion(sender, mvi as MultiverseInventories)
     }
 }
