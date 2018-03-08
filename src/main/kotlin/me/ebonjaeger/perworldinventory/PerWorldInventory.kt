@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI
+import me.ebonjaeger.perworldinventory.command.ConvertCommand
 import me.ebonjaeger.perworldinventory.command.HelpCommand
 import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
 import me.ebonjaeger.perworldinventory.command.ReloadCommand
@@ -105,6 +106,7 @@ class PerWorldInventory : JavaPlugin
         commandManager.registerCommand(PWIBaseCommand())
         commandManager.registerCommand(HelpCommand(this))
         commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
+        commandManager.registerCommand(injector.getSingleton(ConvertCommand::class))
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
