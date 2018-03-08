@@ -44,9 +44,6 @@ player:
     food: true
     # Load if a player is flying
     flying: true
-    # Load what gamemode a player is in. This is shadow-set to false if
-    # 'manage-gamemodes' is true, to stop infinite loop
-    gamemode: false
     # Load how much health a player has
     health: true
     # Load what level the player is
@@ -64,14 +61,6 @@ player:
     # Load the current remaining air a player has
     remaining-air: true
 
-# Config Version 2 below this line #
-
-# Configure the amount of time between saves, in seconds
-# Default is 5 minutes (300 seconds)
-save-interval: 300
-
-# Config Version 3 Additions below this line #
-
 # Attempt to figure out which world a player last logged off in
 # and save/load the correct data if that world is different.
 # REQUIRES MC 1.9.2 OR NEWER
@@ -79,8 +68,6 @@ load-data-on-join: false
 
 # Print out debug messages to the console for every event that happens in PWI
 debug-mode: false
-
-# Config Version 4 additions below this line #
 
 # Disables bypass regardless of permission
 # Defaults to false

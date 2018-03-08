@@ -49,12 +49,6 @@ object PlayerSettings : SettingsHolder
     val LOAD_FLYING = newProperty("player.stats.flying", true)
 
     @JvmField
-    @Comment(
-        "Load what gamemode a player is in. This is shadow-set to false if",
-        "'manage-gamemodes' is true, to stop infinite loop")
-    val LOAD_GAMEMODE = newProperty("player.stats.gamemode", false)
-
-    @JvmField
     @Comment("Load how much health a player has")
     val LOAD_HEALTH = newProperty("player.stats.health", true)
 

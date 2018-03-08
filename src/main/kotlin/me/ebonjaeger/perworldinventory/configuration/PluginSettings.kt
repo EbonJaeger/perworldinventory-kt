@@ -16,12 +16,6 @@ object PluginSettings : SettingsHolder
 
     @JvmField
     @Comment(
-            "Configure the amount of time between saves, in seconds",
-            "Default is 5 minutes (300 seconds)")
-    val SAVE_INTERVAL = newProperty("save-interval", 300)
-
-    @JvmField
-    @Comment(
         "If true, the server will change player's gamemodes when entering a world",
         "The gamemode set is configured in the worlds.yml file")
     val MANAGE_GAMEMODES = newProperty("manage-gamemodes", false)
