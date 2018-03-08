@@ -81,7 +81,7 @@ class ConvertTaskTest
         argumentCaptor<Collection<OfflinePlayer>>().apply {
             verify(convertService, atLeastOnce()).executeConvert(capture())
             assertThat(lastValue.size, equalTo(players.size))
-            //lastValue.forEach { assertThat(players, hasItem(it)) }
+            lastValue.forEach { assert(players.contains(it)) }
         }
     }
 }
