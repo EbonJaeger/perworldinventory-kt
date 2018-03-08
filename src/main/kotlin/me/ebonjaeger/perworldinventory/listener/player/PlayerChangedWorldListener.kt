@@ -66,6 +66,15 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
             return
         }
 
+        // Check if we manage GameModes. If we do, we can skip loading the data
+        // for a mode they're only going to be in for half a second.
+        if (settings.getProperty(PluginSettings.MANAGE_GAMEMODES) &&
+                !permissionManager.hasPermission(player, PlayerPermission.BYPASS_ENFORCE_GAMEMODE))
+        {
+            player.gameMode = groupTo.defaultGameMode
+            return
+        }
+
         // All other checks are done, time to get the data
         ConsoleLogger.debug("[PROCESS] Loading data for player " +
                 "'${player.name}' for group: $groupTo")

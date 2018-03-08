@@ -8,7 +8,7 @@ enum class PlayerPermission (private val node: String,
 
     BYPASS_GAMEMODE("perworldinventory.bypass.gamemode", DefaultPermission.NOT_ALLOWED),
 
-    BYPASS_ENFORCEGAMEMODE("perworldinventory.bypass.enforcegamemode", DefaultPermission.NOT_ALLOWED);
+    BYPASS_ENFORCE_GAMEMODE("perworldinventory.bypass.enforcegamemode", DefaultPermission.NOT_ALLOWED);
 
     override fun getNode(): String
     {
