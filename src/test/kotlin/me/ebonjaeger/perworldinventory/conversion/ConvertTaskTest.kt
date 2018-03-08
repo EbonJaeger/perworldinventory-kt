@@ -35,7 +35,7 @@ class ConvertTaskTest
         val players = arrayOf(
                 mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java),
                 mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java))
-        reset(convertService)
+
         val task = ConvertTask(convertService, mock(CommandSender::class.java), players)
 
         // when (1 - first run, 5 players per run)
