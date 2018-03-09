@@ -10,15 +10,13 @@ import java.util.*
  *
  * This data class can be serialized/deserialized to and from Json directly.
  *
- * @param name The name of the group
- * @param worlds A Set of world names
- * @param defaultGameMode The default GameMode for players in this group
+ * @property name The name of the group
+ * @property worlds A Set of world names
+ * @property defaultGameMode The default GameMode for players in this group
  */
-data class Group(
-        val name: String,
-        val worlds: MutableSet<String>,
-        val defaultGameMode: GameMode
-        )
+data class Group(val name: String,
+                 val worlds: MutableSet<String>,
+                 val defaultGameMode: GameMode)
 {
 
     /**
