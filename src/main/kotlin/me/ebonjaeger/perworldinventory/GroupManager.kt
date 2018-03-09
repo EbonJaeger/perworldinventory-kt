@@ -1,6 +1,9 @@
 package me.ebonjaeger.perworldinventory
 
-import com.google.gson.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.service.BukkitService
@@ -86,14 +89,18 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
                 val root = data["groups"].asJsonObject
 
                 bukkitService.runTask({
-                    val gson = Gson()
-                    for (jsonGroup in root.entrySet())
-                    {
+                    root.entrySet().forEach { jsonGroup ->
                         val jsonObject = root[jsonGroup.key].asJsonObject
-                        val group = gson.fromJson(jsonObject, Group::class.java)
+                        val name = jsonGroup.key
+
+                        val worlds = mutableSetOf<String>()
+                        jsonObject["worlds"].asJsonArray.forEach { worlds.add(it.asString) }
+
+                        val defaultGameMode = GameMode.valueOf(jsonObject["default-gamemode"].asString.toUpperCase())
+                        val group = Group(name, worlds, defaultGameMode)
                         group.configured = true
 
-                        groups.put(group.name.toLowerCase(), group)
+                        groups[group.name.toLowerCase()] = group
                     }
                 })
             }
