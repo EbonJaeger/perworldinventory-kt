@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.conversion
 
+import ch.jalu.injector.annotations.NoMethodScan
 import com.onarandombox.multiverseinventories.MultiverseInventories
 import me.ebonjaeger.perworldinventory.GroupManager
 import me.ebonjaeger.perworldinventory.service.BukkitService
@@ -13,6 +14,7 @@ import javax.inject.Inject
 /**
  * Initiates conversion tasks.
  */
+@NoMethodScan
 class ConvertService @Inject constructor(private val bukkitService: BukkitService,
                                          private val convertExecutor: ConvertExecutor,
                                          private val groupManager: GroupManager,

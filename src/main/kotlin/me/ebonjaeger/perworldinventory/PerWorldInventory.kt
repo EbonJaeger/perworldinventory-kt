@@ -79,17 +79,6 @@ class PerWorldInventory : JavaPlugin
             saveResource("config.yml", false)
         }
 
-        // Check if `worlds.yml` exists. If it does, convert it to JSON.
-        // Otherwise, save it if it doesn't exist.
-        if (Files.exists(File(dataFolder, "worlds.yml").toPath()))
-        {
-            val configuration = YamlConfiguration.loadConfiguration(File(dataFolder, "worlds.yml"))
-            convertYamlToJson(configuration)
-        } else
-        {
-            saveResource("worlds.json", false)
-        }
-
         /* Injector initialization */
         val injector = InjectorBuilder().addDefaultHandlers("me.ebonjaeger.perworldinventory").create()
         injector.register(PerWorldInventory::class, this)
@@ -100,15 +89,13 @@ class PerWorldInventory : JavaPlugin
         injector.registerProvider(DataSource::class, DataSourceProvider::class)
         val settings = Settings.create(File(dataFolder, "config.yml"))
         injector.register(Settings::class, settings)
-        injectServices(injector)
 
         ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
 
-        val commandManager = PaperCommandManager(this)
-        commandManager.registerCommand(PWIBaseCommand())
-        commandManager.registerCommand(HelpCommand(this))
-        commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
-        commandManager.registerCommand(injector.getSingleton(ConvertCommand::class))
+        // Inject and register all the things
+        setupGroupManager(injector)
+        injectServices(injector)
+        registerCommands(injector)
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
@@ -132,6 +119,27 @@ class PerWorldInventory : JavaPlugin
         server.scheduler.cancelTasks(this)
     }
 
+    private fun setupGroupManager(injector: Injector)
+    {
+        val groupManager = injector.getSingleton(GroupManager::class)
+
+        // Check if `worlds.yml` exists. If it does, convert it to JSON.
+        // Otherwise, save it if it doesn't exist.
+        if (Files.exists(File(dataFolder, "worlds.yml").toPath()))
+        {
+            val configuration = YamlConfiguration.loadConfiguration(File(dataFolder, "worlds.yml"))
+            convertYamlToJson(configuration, groupManager)
+        } else
+        {
+            if (!Files.exists(WORLDS_CONFIG_FILE.toPath()))
+            {
+                saveResource("worlds.json", false)
+            }
+
+            groupManager.loadGroups()
+        }
+    }
+
     internal fun injectServices(injector: Injector)
     {
         server.pluginManager.registerEvents(injector.getSingleton(InventoryCreativeListener::class), this)
@@ -149,6 +157,15 @@ class PerWorldInventory : JavaPlugin
         }
 
         api = injector.getSingleton(PerWorldInventoryAPI::class)
+    }
+
+    private fun registerCommands(injector: Injector)
+    {
+        val commandManager = PaperCommandManager(this)
+        commandManager.registerCommand(PWIBaseCommand())
+        commandManager.registerCommand(HelpCommand(this))
+        commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
+        commandManager.registerCommand(injector.getSingleton(ConvertCommand::class))
     }
 
     /**
@@ -200,8 +217,9 @@ class PerWorldInventory : JavaPlugin
      * created and written to.
      *
      * @param config The Yaml worlds configuration
+     * @param groupManager The [GroupManager] instance
      */
-    private fun convertYamlToJson(config: FileConfiguration)
+    private fun convertYamlToJson(config: FileConfiguration, groupManager: GroupManager)
     {
         val root = JsonObject()
         val groups = JsonObject()
@@ -235,6 +253,9 @@ class PerWorldInventory : JavaPlugin
             FileWriter(WORLDS_CONFIG_FILE).use {
                 it.write(gson.toJson(root))
             }
+
+            // Load the groups into memory
+            server.scheduler.runTask(this, { groupManager.loadGroups() })
         })
     }
 }

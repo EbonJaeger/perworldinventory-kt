@@ -11,7 +11,6 @@ import org.bukkit.GameMode
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
-import javax.annotation.PostConstruct
 import javax.inject.Inject
 
 class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
@@ -77,7 +76,6 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     /**
      * Load the groups configured in the file `worlds.json` into memory.
      */
-    @PostConstruct
     fun loadGroups()
     {
         groups.clear()
@@ -101,6 +99,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
                         group.configured = true
 
                         groups[group.name.toLowerCase()] = group
+                        ConsoleLogger.debug("Loaded group into memory: $group")
                     }
                 })
             }

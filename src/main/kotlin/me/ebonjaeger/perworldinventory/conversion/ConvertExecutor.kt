@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.conversion
 
+import ch.jalu.injector.annotations.NoMethodScan
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.onarandombox.multiverseinventories.ProfileTypes
@@ -24,6 +25,7 @@ import javax.inject.Inject
 /**
  * Class that performs converting operations.
  */
+@NoMethodScan
 class ConvertExecutor @Inject constructor(private val groupManager: GroupManager,
                                           @DataDirectory private val dataDirectory: File)
 {
