@@ -26,6 +26,7 @@ import org.bukkit.Server
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.PluginDescriptionFile
+import org.bukkit.plugin.PluginManager
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
@@ -93,6 +94,7 @@ class PerWorldInventory : JavaPlugin
         val injector = InjectorBuilder().addDefaultHandlers("me.ebonjaeger.perworldinventory").create()
         injector.register(PerWorldInventory::class, this)
         injector.register(Server::class, server)
+        injector.register(PluginManager::class, server.pluginManager)
         injector.provide(PluginFolder::class, dataFolder)
         injector.provide(DataDirectory::class, DATA_DIRECTORY)
         injector.registerProvider(DataSource::class, DataSourceProvider::class)
