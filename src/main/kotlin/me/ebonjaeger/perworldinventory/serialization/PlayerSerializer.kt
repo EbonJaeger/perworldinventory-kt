@@ -51,10 +51,11 @@ object PlayerSerializer
             format = data["data-format"].asInt
         }
 
-        val inventory = InventorySerializer.deserialize(data["inventory"].asJsonArray,
+        val inventory = data["inventory"].asJsonObject
+        val items = InventorySerializer.deserialize(inventory["inventory"].asJsonArray,
                 TOTAL_PLAYER_INVENTORY_SLOTS,
                 format)
-        val armor = InventorySerializer.deserialize(data["armor"].asJsonArray, 4, format)
+        val armor = InventorySerializer.deserialize(inventory["armor"].asJsonArray, 4, format)
         val enderChest = InventorySerializer.deserialize(data["ender-chest"].asJsonArray,
                 TOTAL_ENDERCHEST_SLOTS,
                 format)
@@ -64,7 +65,7 @@ object PlayerSerializer
 
         return PlayerProfile(armor,
                 enderChest,
-                inventory,
+                items,
                 stats["can-fly"].asBoolean,
                 stats["display-name"].asString,
                 stats["exhaustion"].asFloat,
