@@ -86,10 +86,6 @@
             <exclusions>
                 <exclusion>
                     <groupId>co.aikar</groupId>
-                    <artifactId>locales</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>co.aikar</groupId>
                     <artifactId>minecraft-timings</artifactId>
                 </exclusion>
             </exclusions>
@@ -240,6 +236,11 @@
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <version>${kotlin.version}</version>
+
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                    <javaParameters>true</javaParameters>
+                </configuration>
 
                 <executions>
                     <execution>
