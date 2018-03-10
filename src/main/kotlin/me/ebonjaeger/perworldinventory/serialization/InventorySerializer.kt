@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object InventorySerializer
@@ -48,24 +47,6 @@ object InventorySerializer
     }
 
     /**
-     * Sets a player's armor and inventory contents.
-     *
-     * @param player The player whose inventory to update
-     * @param obj The serialized inventory data
-     * @param format The data format being used
-     */
-    fun setInventories(player: Player, obj: JsonObject, format: Int)
-    {
-        val inventory = player.inventory
-        val armor = deserialize(obj["armor"].asJsonArray, 4, format)
-        val inv = deserialize(obj["inventory"].asJsonArray, inventory.size, format)
-
-        inventory.clear()
-        inventory.armorContents = armor
-        inventory.contents = inv
-    }
-
-    /**
      * Gets an ItemStack array from serialized inventory contents.
      *
      * @param array The array of items to deserialize
@@ -77,7 +58,7 @@ object InventorySerializer
     {
         val contents = Array(size, { ItemStack(Material.AIR) })
 
-        for (i in 0..array.size())
+        for (i in 0 until array.size())
         {
             // We don't want to risk failing to deserialize a players inventory.
             // Try your best to deserialize as much as possible.
