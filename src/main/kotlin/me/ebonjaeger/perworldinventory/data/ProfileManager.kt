@@ -90,6 +90,17 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         })
     }
 
+    /**
+     * Invalidate all entries in the cache.
+     *
+     * This ensures that old entries aren't lingering around after a plugin
+     * reload occurs, where groups and worlds might change.
+     */
+    fun invalidateCache()
+    {
+        profileCache.invalidateAll()
+    }
+
     private fun applyToPlayer(player: Player, profile: PlayerProfile)
     {
         // Transfer simple properties
