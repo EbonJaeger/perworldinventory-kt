@@ -8,7 +8,7 @@ Kotlin programming language.
 
 ## Installation and Usage
 
-[![Build Status](https://travis-ci.org/Gnat008/perworldinventory-kt.svg?branch=master)](https://travis-ci.org/Gnat008/perworldinventory-kt)
+[![Build Status](https://ci.codemc.org/job/Gnat008/job/PerWorldInventory-KT/badge/icon)](https://ci.codemc.org/job/Gnat008/job/PerWorldInventory-KT/)
 [![CircleCI](https://circleci.com/gh/Gnat008/perworldinventory-kt.svg?style=svg)](https://circleci.com/gh/Gnat008/perworldinventory-kt)
 [![Coverage Status](https://coveralls.io/repos/github/Gnat008/perworldinventory-kt/badge.svg?branch=master)](https://coveralls.io/github/Gnat008/perworldinventory-kt?branch=master)
 ## Building Prerequisites

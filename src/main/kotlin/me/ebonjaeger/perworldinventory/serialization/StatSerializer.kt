@@ -22,6 +22,7 @@ object StatSerializer
         obj.addProperty("exp", player.experience)
         obj.addProperty("flying", player.isFlying)
         obj.addProperty("food", player.foodLevel)
+        obj.addProperty("gamemode", player.gameMode.toString())
         obj.addProperty("max-health", player.maxHealth)
         obj.addProperty("health", player.health)
         obj.addProperty("level", player.level)
