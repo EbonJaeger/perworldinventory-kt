@@ -245,6 +245,10 @@
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
                     <javaParameters>true</javaParameters>
+
+                    <args>
+                        <arg>-Xnormalize-constructor-calls=enable</arg>
+                    </args>
                 </configuration>
 
                 <executions>

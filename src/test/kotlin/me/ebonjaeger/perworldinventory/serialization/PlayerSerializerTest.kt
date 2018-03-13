@@ -33,9 +33,10 @@ class PlayerSerializerTest
         PowerMockito.mockStatic(Bukkit::class.java)
         val itemFactory = PowerMockito.mock(ItemFactory::class.java)
         given(Bukkit.getItemFactory()).willReturn(itemFactory)
+        val itemMeta = ItemMetaTestImpl()
 
         // No implementation of the ItemMeta interface readily available, so we return our own
-        given(itemFactory.getItemMeta(ArgumentMatchers.any())).willAnswer({ ItemMetaTestImpl() })
+        given(itemFactory.getItemMeta(ArgumentMatchers.any())).willAnswer({ itemMeta })
 
         // Bukkit's serializer needs to know about our test implementation of ItemMeta or it will fail
         ConfigurationSerialization.registerClass(ItemMetaTestImpl::class.java)
@@ -82,13 +83,50 @@ class PlayerSerializerTest
                 ItemStack(Material.DIAMOND))
         val profile = PlayerProfile(armor, enderChest, inventory, false, "Bob",
                 5.0F, 50.5F, false, 20, 20.0, 14.3, GameMode.SURVIVAL, 5, 4.86F,
-                mutableSetOf<PotionEffect>(), 0.0F, 0, 500, 500, 0.0)
+                mutableListOf<PotionEffect>(), 0.0F, 0, 500, 500, 0.0)
 
         // when
         val json = PlayerSerializer.serialize(profile)
 
         // then
         val result = PlayerSerializer.deserialize(json)
-        assertThat(profile, equalTo(result))
+        assertProfilesAreEqual(profile, result)
+    }
+
+    private fun assertProfilesAreEqual(expected: PlayerProfile, actual: PlayerProfile)
+    {
+        for (i in 0 until expected.armor.size)
+        {
+            assertThat(expected.armor[i].type, equalTo(actual.armor[i].type))
+        }
+
+        for (i in 0 until expected.inventory.size)
+        {
+            assertThat(expected.inventory[i].type, equalTo(actual.inventory[i].type))
+        }
+
+        for (i in 0 until expected.enderChest.size)
+        {
+            assertThat(expected.enderChest[i].type, equalTo(actual.enderChest[i].type))
+        }
+
+        assertThat(expected.allowFlight, equalTo(actual.allowFlight))
+        assertThat(expected.displayName, equalTo(actual.displayName))
+        assertThat(expected.exhaustion, equalTo(actual.exhaustion))
+        assertThat(expected.experience, equalTo(actual.experience))
+        assertThat(expected.isFlying, equalTo(actual.isFlying))
+        assertThat(expected.allowFlight, equalTo(actual.allowFlight))
+        assertThat(expected.foodLevel, equalTo(actual.foodLevel))
+        assertThat(expected.maxHealth, equalTo(actual.maxHealth))
+        assertThat(expected.health, equalTo(actual.health))
+        assertThat(expected.gameMode, equalTo(actual.gameMode))
+        assertThat(expected.level, equalTo(actual.level))
+        assertThat(expected.saturation, equalTo(actual.saturation))
+        assertThat(expected.potionEffects, equalTo(actual.potionEffects))
+        assertThat(expected.fallDistance, equalTo(actual.fallDistance))
+        assertThat(expected.fireTicks, equalTo(actual.fireTicks))
+        assertThat(expected.maximumAir, equalTo(actual.maximumAir))
+        assertThat(expected.remainingAir, equalTo(actual.remainingAir))
+        assertThat(expected.balance, equalTo(actual.balance))
     }
 }
