@@ -56,6 +56,16 @@ data class Group(val name: String,
         worlds.add(world)
     }
 
+    /**
+     * Remove a world from this group.
+     *
+     * @param world The name of the world to remove
+     */
+    fun removeWorld(world: String)
+    {
+        worlds.remove(world)
+    }
+
     override fun equals(other: Any?): Boolean
     {
         if (this === other) return true

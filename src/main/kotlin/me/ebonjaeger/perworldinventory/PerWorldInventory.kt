@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI
-import me.ebonjaeger.perworldinventory.command.ConvertCommand
-import me.ebonjaeger.perworldinventory.command.HelpCommand
-import me.ebonjaeger.perworldinventory.command.PWIBaseCommand
-import me.ebonjaeger.perworldinventory.command.ReloadCommand
+import me.ebonjaeger.perworldinventory.command.*
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
@@ -33,6 +30,8 @@ import java.io.File
 import java.io.FileWriter
 import java.nio.file.Files
 import java.util.*
+
+
 
 class PerWorldInventory : JavaPlugin
 {
@@ -95,7 +94,7 @@ class PerWorldInventory : JavaPlugin
         // Inject and register all the things
         setupGroupManager(injector)
         injectServices(injector)
-        registerCommands(injector)
+        registerCommands(injector, injector.getSingleton(GroupManager::class))
 
         // Start bStats metrics
         if (settings.getProperty(MetricsSettings.ENABLE_METRICS))
@@ -159,13 +158,18 @@ class PerWorldInventory : JavaPlugin
         api = injector.getSingleton(PerWorldInventoryAPI::class)
     }
 
-    private fun registerCommands(injector: Injector)
+    private fun registerCommands(injector: Injector, groupManager: GroupManager)
     {
         val commandManager = PaperCommandManager(this)
+
+        commandManager.commandCompletions.registerAsyncCompletion(
+                "@groups", { groupManager.groups.keys })
+
         commandManager.registerCommand(PWIBaseCommand())
         commandManager.registerCommand(HelpCommand(this))
         commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
         commandManager.registerCommand(injector.getSingleton(ConvertCommand::class))
+        commandManager.registerCommand(injector.getSingleton(GroupCommands::class))
     }
 
     /**

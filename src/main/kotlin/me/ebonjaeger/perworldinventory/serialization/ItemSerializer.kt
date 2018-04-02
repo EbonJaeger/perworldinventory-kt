@@ -16,7 +16,7 @@ import java.io.IOException
 object ItemSerializer
 {
 
-    private val AIR = "AIR"
+    private const val AIR = "AIR"
 
     /**
      * Serialize an ItemStack to a JsonObject.

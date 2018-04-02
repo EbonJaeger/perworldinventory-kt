@@ -32,7 +32,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     {
         val group = Group(name, worlds, gameMode)
         ConsoleLogger.debug("Adding group to memory: $group")
-        groups.put(name.toLowerCase(), group)
+        groups[name.toLowerCase()] = group
     }
 
     /**
@@ -66,11 +66,22 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
         // If we reach this point, the group doesn't yet exist.
         val worlds = mutableSetOf(world, "${world}_nether", "${world}_the_end")
         val group = Group(world, worlds, GameMode.SURVIVAL)
-        groups.put(world.toLowerCase(), group)
+        groups[world.toLowerCase()] = group
         ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
                 " Please double check your `worlds.json` file configuration!")
 
         return group
+    }
+
+    /**
+     * Remove a world group.
+     *
+     * @param group The name of the group to remove
+     */
+    fun removeGroup(group: String)
+    {
+        groups.remove(group.toLowerCase())
+        ConsoleLogger.debug("Removed group '$group'")
     }
 
     /**
