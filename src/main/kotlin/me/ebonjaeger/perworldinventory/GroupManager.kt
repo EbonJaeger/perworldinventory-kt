@@ -140,8 +140,10 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
 
         root.add("groups", groups)
 
-        FileWriter(WORLDS_CONFIG_FILE).use {
-            it.write(gson.toJson(root))
-        }
+        bukkitService.runTaskOptionallyAsynchronously({
+            FileWriter(WORLDS_CONFIG_FILE).use {
+                it.write(gson.toJson(root))
+            }
+        }, !bukkitService.isShuttingDown())
     }
 }
