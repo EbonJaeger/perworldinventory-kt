@@ -31,6 +31,16 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
     fun runTaskAsynchronously(task: () -> Unit) =
         scheduler.runTaskAsynchronously(plugin, task)
 
+    /**
+     * Run a task that may or may not be asynchronous depending on the
+     * parameter passed to this function.
+     *
+     * @param task The task to run
+     * @param async If the task should be run asynchronously
+     */
+    fun runTaskOptionallyAsynchronously(task: () -> Unit, async: Boolean) =
+            if (async) { scheduler.runTaskAsynchronously(plugin, task) } else { scheduler.runTask(plugin, task) }
+
     fun runTask(task: () -> Unit): BukkitTask =
         scheduler.runTask(plugin, task)
 
