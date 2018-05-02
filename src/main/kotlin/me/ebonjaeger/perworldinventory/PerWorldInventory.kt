@@ -165,6 +165,9 @@ class PerWorldInventory : JavaPlugin
         commandManager.commandCompletions.registerAsyncCompletion(
                 "@groups", { groupManager.groups.keys })
 
+        // CommandHelp#showHelp() uses an unstable method internally
+        commandManager.enableUnstableAPI("help")
+
         commandManager.registerCommand(PWIBaseCommand())
         commandManager.registerCommand(HelpCommand(this))
         commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
