@@ -62,7 +62,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
 
         addGroup(world, worlds, GameMode.SURVIVAL, false)
         ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
-                " Please double check your `worlds.json` file configuration!")
+                " Please double check your `worlds.yml` file configuration!")
 
         return group
     }
@@ -79,7 +79,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     }
 
     /**
-     * Load the groups configured in the file `worlds.json` into memory.
+     * Load the groups configured in the file `worlds.yml` into memory.
      */
     fun loadGroups()
     {
