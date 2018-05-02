@@ -40,7 +40,7 @@ class GroupManagerTest {
         val gameMode = GameMode.SURVIVAL
 
         // when
-        groupManager.addGroup(name, worlds, gameMode)
+        groupManager.addGroup(name, worlds, gameMode, true)
 
         // then
         val expected = mockGroup(name, worlds, gameMode)
@@ -59,7 +59,7 @@ class GroupManagerTest {
         val gameMode = GameMode.SURVIVAL
 
         // when
-        groupManager.addGroup(name, worlds, gameMode)
+        groupManager.addGroup(name, worlds, gameMode, true)
 
         // then
         val expected = mockGroup(name, worlds, gameMode)
@@ -78,7 +78,7 @@ class GroupManagerTest {
         val gameMode = GameMode.SURVIVAL
 
         // when
-        groupManager.addGroup(name, worlds, gameMode)
+        groupManager.addGroup(name, worlds, gameMode, true)
 
         // then
         val expected = mockGroup(name, worlds, gameMode)
@@ -95,7 +95,7 @@ class GroupManagerTest {
         val name = "test"
         val worlds = mutableSetOf(name)
         val gameMode = GameMode.SURVIVAL
-        groupManager.addGroup(name, worlds, gameMode)
+        groupManager.addGroup(name, worlds, gameMode, true)
 
         // when
         val result = groupManager.getGroupFromWorld(name)
