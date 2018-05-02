@@ -1,8 +1,0 @@
-{
-  "groups": {
-    "default": {
-      "worlds": ["world", "world_nether", "world_the_end"],
-      "default-gamemode": "SURVIVAL"
-    }
-  }
-}

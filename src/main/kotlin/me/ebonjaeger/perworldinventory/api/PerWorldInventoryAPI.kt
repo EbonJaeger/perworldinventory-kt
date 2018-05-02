@@ -19,7 +19,7 @@ class PerWorldInventoryAPI @Inject constructor(private val plugin: PerWorldInven
 
     /**
      * Check if two worlds are a part of the same [Group] and thus can share
-     * inventories. If one of the groups is not configured in the worlds.json,
+     * inventories. If one of the groups is not configured in the worlds.yml,
      * this method will return true if the option for sharing inventories
      * between non-configured worlds is true in the config.yml file.
      *

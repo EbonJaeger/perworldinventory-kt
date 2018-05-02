@@ -1,23 +1,18 @@
 package me.ebonjaeger.perworldinventory
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
+import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
+import java.io.IOException
 import javax.inject.Inject
 
 class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
                                        private val bukkitService: BukkitService)
 {
 
-    private val WORLDS_CONFIG_FILE = File(pluginFolder, "worlds.json")
+    private val WORLDS_CONFIG_FILE = File(pluginFolder, "worlds.yml")
 
     val groups = mutableMapOf<String, Group>()
 
@@ -27,10 +22,12 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
      * @param name The name of the group
      * @param worlds A Set of world names
      * @param gameMode The default GameMode for this group
+     * @param configured If the group was configured (true) or created on the fly (false)
      */
-    fun addGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode)
+    fun addGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode, configured: Boolean)
     {
         val group = Group(name, worlds, gameMode)
+        group.configured = configured
         ConsoleLogger.debug("Adding group to memory: $group")
         groups[name.toLowerCase()] = group
     }
@@ -56,19 +53,16 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
      */
     fun getGroupFromWorld(world: String): Group
     {
-        groups.values.forEach {
-            if (it.containsWorld(world))
-            {
-                return it
-            }
-        }
+        var group = groups.values.firstOrNull { it.containsWorld(world) }
+        if (group != null) return group
 
         // If we reach this point, the group doesn't yet exist.
         val worlds = mutableSetOf(world, "${world}_nether", "${world}_the_end")
-        val group = Group(world, worlds, GameMode.SURVIVAL)
-        groups[world.toLowerCase()] = group
+        group = Group(world, worlds, GameMode.SURVIVAL)
+
+        addGroup(world, worlds, GameMode.SURVIVAL, false)
         ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
-                " Please double check your `worlds.json` file configuration!")
+                " Please double check your `worlds.yml` file configuration!")
 
         return group
     }
@@ -85,34 +79,20 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     }
 
     /**
-     * Load the groups configured in the file `worlds.json` into memory.
+     * Load the groups configured in the file `worlds.yml` into memory.
      */
     fun loadGroups()
     {
         groups.clear()
 
         bukkitService.runTaskAsynchronously({
-            JsonReader(FileReader(WORLDS_CONFIG_FILE)).use {
-                val parser = JsonParser()
-                val data = parser.parse(it).asJsonObject
-                val root = data["groups"].asJsonObject
-
-                bukkitService.runTask({
-                    root.entrySet().forEach { jsonGroup ->
-                        val jsonObject = root[jsonGroup.key].asJsonObject
-                        val name = jsonGroup.key
-
-                        val worlds = mutableSetOf<String>()
-                        jsonObject["worlds"].asJsonArray.forEach { worlds.add(it.asString) }
-
-                        val defaultGameMode = GameMode.valueOf(jsonObject["default-gamemode"].asString.toUpperCase())
-                        val group = Group(name, worlds, defaultGameMode)
-                        group.configured = true
-
-                        groups[group.name.toLowerCase()] = group
-                        ConsoleLogger.debug("Loaded group into memory: $group")
-                    }
-                })
+            val yaml = YamlConfiguration.loadConfiguration(WORLDS_CONFIG_FILE)
+            bukkitService.runTask {
+                yaml.getConfigurationSection("groups.").getKeys(false).forEach { key ->
+                    val worlds = yaml.getStringList("groups.$key.worlds").toMutableSet()
+                    val gameMode = GameMode.valueOf( (yaml.getString("groups.$key.default-gamemode") ?: "SURVIVAL").toUpperCase() )
+                    addGroup(key, worlds, gameMode, true)
+                }
             }
         })
     }
@@ -122,28 +102,25 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
      */
     fun saveGroups()
     {
-        val gson = GsonBuilder().setPrettyPrinting().create()
-        val root = JsonObject()
-        val groups = JsonObject()
+        val config = YamlConfiguration.loadConfiguration(WORLDS_CONFIG_FILE)
+        config.set("groups", null)
 
-        this.groups.values.forEach {
-            val group = JsonObject()
-            group.addProperty("name", it.name)
+        groups.values.forEach { toYaml(it, config) }
 
-            val worlds = JsonArray()
-            it.worlds.forEach { worlds.add(it) }
-            group.add("worlds", worlds)
-            group.addProperty("default-gamemode", it.defaultGameMode.name)
-
-            groups.add(it.name, group)
+        try
+        {
+            config.save(WORLDS_CONFIG_FILE)
+        } catch (ex: IOException)
+        {
+            ConsoleLogger.warning("Could not save the groups config to disk:", ex)
         }
+    }
 
-        root.add("groups", groups)
-
-        bukkitService.runTaskOptionallyAsynchronously({
-            FileWriter(WORLDS_CONFIG_FILE).use {
-                it.write(gson.toJson(root))
-            }
-        }, !bukkitService.isShuttingDown())
+    private fun toYaml(group: Group, config: YamlConfiguration)
+    {
+        val key = "groups.${group.name}"
+        config.set(key, null)
+        config.set("$key.worlds", group.worlds)
+        config.set("$key.default-gamemode", group.defaultGameMode.toString())
     }
 }

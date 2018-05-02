@@ -4,7 +4,7 @@ import org.bukkit.GameMode
 import java.util.*
 
 /**
- * A group of worlds, typically defined in the worlds.json file.
+ * A group of worlds, typically defined in the worlds.yml file.
  * Each Group has a name, and should have a list of worlds in that group, as well as
  * a default GameMode.
  *
@@ -20,7 +20,7 @@ data class Group(val name: String,
 {
 
     /**
-     * If this is true, then this group was configured in the `worlds.json`
+     * If this is true, then this group was configured in the `worlds.yml`
      * file. If the group was created on the fly due to a world not being in
      * a group, then this will be false.
      */

@@ -1,9 +1,6 @@
 package me.ebonjaeger.perworldinventory
 
 import co.aikar.commands.PaperCommandManager
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI
 import me.ebonjaeger.perworldinventory.command.*
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
@@ -20,18 +17,13 @@ import me.ebonjaeger.perworldinventory.listener.player.*
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Server
-import org.bukkit.configuration.file.FileConfiguration
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginManager
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
 import java.io.File
-import java.io.FileWriter
 import java.nio.file.Files
 import java.util.*
-
-
 
 class PerWorldInventory : JavaPlugin
 {
@@ -54,7 +46,7 @@ class PerWorldInventory : JavaPlugin
 
     private val DATA_DIRECTORY = File(dataFolder, "data")
     val SLOT_TIMEOUT = 5
-    val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.json")
+    val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.yml")
 
     constructor(): super()
 
@@ -122,21 +114,12 @@ class PerWorldInventory : JavaPlugin
     {
         val groupManager = injector.getSingleton(GroupManager::class)
 
-        // Check if `worlds.yml` exists. If it does, convert it to JSON.
-        // Otherwise, save it if it doesn't exist.
-        if (Files.exists(File(dataFolder, "worlds.yml").toPath()))
+        if (!Files.exists(WORLDS_CONFIG_FILE.toPath()))
         {
-            val configuration = YamlConfiguration.loadConfiguration(File(dataFolder, "worlds.yml"))
-            convertYamlToJson(configuration, groupManager)
-        } else
-        {
-            if (!Files.exists(WORLDS_CONFIG_FILE.toPath()))
-            {
-                saveResource("worlds.json", false)
-            }
-
-            groupManager.loadGroups()
+            saveResource("worlds.yml", false)
         }
+
+        groupManager.loadGroups()
     }
 
     internal fun injectServices(injector: Injector)
@@ -214,55 +197,5 @@ class PerWorldInventory : JavaPlugin
                 }
             }))
         }
-    }
-
-    /**
-     * Converts an existing YAML worlds configuration to its representation
-     * in JSON.
-     *
-     * The old file will be renamed (not deleted!), and a new json file
-     * created and written to.
-     *
-     * @param config The Yaml worlds configuration
-     * @param groupManager The [GroupManager] instance
-     */
-    private fun convertYamlToJson(config: FileConfiguration, groupManager: GroupManager)
-    {
-        val root = JsonObject()
-        val groups = JsonObject()
-
-        config.getConfigurationSection("groups.").getKeys(false).forEach {
-            val group = JsonObject()
-
-            // Convert the list of worlds
-            val worlds = config.getStringList("groups.$it.worlds")
-            val worldsArray = JsonArray()
-            worlds.forEach { worldsArray.add(it) }
-            group.add("worlds", worldsArray)
-
-            // Convert the default gamemode
-            group.addProperty("default-gamemode", config.getString("groups" +
-                    ".$it.default-gamemode"))
-
-            groups.add(it, group)
-        }
-
-        root.add("groups", groups)
-
-        // Rename old .yml file, and create new json file
-        Files.move(File(dataFolder, "worlds.yml").toPath(), File(dataFolder,
-                "worlds.old.yml").toPath())
-        Files.createFile(WORLDS_CONFIG_FILE.toPath())
-
-        // Save to the new json file
-        val gson = GsonBuilder().setPrettyPrinting().create()
-        server.scheduler.runTaskAsynchronously(this, {
-            FileWriter(WORLDS_CONFIG_FILE).use {
-                it.write(gson.toJson(root))
-            }
-
-            // Load the groups into memory
-            server.scheduler.runTask(this, { groupManager.loadGroups() })
-        })
     }
 }

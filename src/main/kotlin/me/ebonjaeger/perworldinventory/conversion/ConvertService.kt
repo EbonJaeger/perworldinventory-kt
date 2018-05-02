@@ -57,7 +57,7 @@ class ConvertService @Inject constructor(private val bukkitService: BukkitServic
 
             if (pwiGroup == null)
             {
-                groupManager.addGroup(it.name, worlds, GameMode.SURVIVAL)
+                groupManager.addGroup(it.name, worlds, GameMode.SURVIVAL, true)
             } else
             {
                 pwiGroup.addWorlds(worlds)
@@ -68,13 +68,15 @@ class ConvertService @Inject constructor(private val bukkitService: BukkitServic
         bukkitService.runRepeatingTaskAsynchronously(task, 0, 1)
     }
 
-    fun disableMVI()
+    fun finish()
     {
         val mvinventory = pluginManager.getPlugin("Multiverse-Inventories")
         if (mvinventory != null && pluginManager.isPluginEnabled(mvinventory))
         {
             pluginManager.disablePlugin(mvinventory)
         }
+
+        groupManager.saveGroups()
     }
 
     fun executeConvert(batch: Collection<OfflinePlayer>)

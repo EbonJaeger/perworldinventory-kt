@@ -48,7 +48,8 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
             return
         }
 
-        groupManager.addGroup(name, worlds.toMutableSet(), gameMode)
+        groupManager.addGroup(name, worlds.toMutableSet(), gameMode, true)
+        groupManager.saveGroups()
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Group created successfully!")
     }
 
@@ -87,6 +88,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         }
 
         group.addWorld(worldName)
+        groupManager.saveGroups()
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Added the world '$worldName' to group '$groupName'!")
     }
 
@@ -102,6 +104,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         }
 
         groupManager.removeGroup(group)
+        groupManager.saveGroups()
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Group removed successfully!")
     }
 
@@ -147,6 +150,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         }
 
         group.removeWorld(worldName)
+        groupManager.saveGroups()
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Removed the world '$worldName' from group '$groupName'!")
     }
 }

@@ -56,7 +56,7 @@ class ConvertTask (private val convertService: ConvertService,
         sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}Conversion has " +
                 "been completed! Disabling MultiVerse-Inventories...")
 
-        convertService.disableMVI()
+        convertService.finish()
 
         sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}" +
                 "MultiVerse-Inventories disabled! Don't forget to remove the .jar!")

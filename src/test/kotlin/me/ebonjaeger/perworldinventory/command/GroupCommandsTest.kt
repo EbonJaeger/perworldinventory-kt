@@ -36,7 +36,7 @@ class GroupCommandsTest
     @Before
     fun createMocks()
     {
-        PowerMockito.mockStatic(Bukkit::class.java)
+        PowerMockito.mockStatic(Bukkit::class.java, BukkitService::class.java)
     }
 
     @Test
@@ -44,7 +44,7 @@ class GroupCommandsTest
     {
         // given
         val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL)
+        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
 
         // when
         commands.onAddGroup(sender, "test", "survival", "test", "test_nether")
@@ -100,7 +100,7 @@ class GroupCommandsTest
     {
         // given
         val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL)
+        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
 
         // when
         commands.onAddWorld(sender, "test", "invalid")
@@ -117,7 +117,7 @@ class GroupCommandsTest
         val world = mock(World::class.java)
         given(Bukkit.getWorld("bob")).willReturn(world)
         given(world.name).willReturn("bob")
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL)
+        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
 
         // when
         commands.onAddWorld(sender, "test", "bob")
@@ -145,7 +145,7 @@ class GroupCommandsTest
     {
         // given
         val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("bob"), GameMode.ADVENTURE)
+        groupManager.addGroup("test", mutableSetOf("bob"), GameMode.ADVENTURE, true)
 
         // when
         commands.onRemoveGroup(sender, "test")
@@ -172,7 +172,7 @@ class GroupCommandsTest
     {
         // given
         val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL)
+        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
 
         // when
         commands.onRemoveWorld(sender, "test", "invalid")
@@ -189,7 +189,7 @@ class GroupCommandsTest
         val world = mock(World::class.java)
         given(Bukkit.getWorld("bob")).willReturn(world)
         given(world.name).willReturn("bob")
-        groupManager.addGroup("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL)
+        groupManager.addGroup("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL, true)
 
         // when
         commands.onRemoveWorld(sender, "test", "bob")
