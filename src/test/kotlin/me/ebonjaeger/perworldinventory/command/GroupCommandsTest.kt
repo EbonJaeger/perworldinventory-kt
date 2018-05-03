@@ -1,201 +1,215 @@
 package me.ebonjaeger.perworldinventory.command
 
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import com.nhaarman.mockito_kotlin.given
-import com.nhaarman.mockito_kotlin.verify
+import io.mockk.*
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
-import me.ebonjaeger.perworldinventory.service.BukkitService
+import me.ebonjaeger.perworldinventory.TestHelper.mockGroup
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.World
 import org.bukkit.command.CommandSender
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import org.powermock.api.mockito.PowerMockito
+import org.powermock.api.mockito.PowerMockito.mockStatic
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
-import java.io.File
-import kotlin.test.assertNull
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 
 /**
  * Tests for [GroupCommands].
  */
+@PrepareForTest(Bukkit::class)
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(Bukkit::class, BukkitService::class)
 class GroupCommandsTest
 {
 
-    private val bukkitService = mock(BukkitService::class.java)
-    private val groupManager = GroupManager(File(""), bukkitService)
+    private var groupManager = classMockk(GroupManager::class)
     private val commands = GroupCommands(groupManager)
 
-    @Before
-    fun createMocks()
+    @BeforeTest
+    fun setupMocks()
     {
-        PowerMockito.mockStatic(Bukkit::class.java, BukkitService::class.java)
+        mockStatic(Bukkit::class.java)
+
+        every { groupManager.addGroup(any(), any(), any(), any()) } just runs
+        every { groupManager.removeGroup(any()) } just runs
+        every { groupManager.saveGroups() } just runs
     }
 
     @Test
     fun addGroupButAlreadyExists()
     {
         // given
-        val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
+        val sender = mockk<CommandSender>(relaxed = true)
+        val group = Group("test", mutableSetOf(), GameMode.SURVIVAL)
+        every { groupManager.getGroup("test") } returns group
 
         // when
         commands.onAddGroup(sender, "test", "survival", "test", "test_nether")
 
         // then
-        verify(sender).sendMessage("§4» §7A group called 'test' already exists!")
-        assertThat(groupManager.groups.size, equalTo(1))
+        verify(inverse = true) { groupManager.addGroup(any(), any(), any(), any()) }
     }
 
     @Test
     fun addGroupButInvalidGameMode()
     {
         // given
-        val sender = mock(CommandSender::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("test") } returns null
 
         // when
         commands.onAddGroup(sender, "test", "invalid", "creative")
 
         // then
-        verify(sender).sendMessage("§4» §7'invalid' is not a valid GameMode!")
-        assertNull(groupManager.getGroup("test"))
+        verify(inverse = true) { groupManager.addGroup(any(), any(), any(), any()) }
     }
 
     @Test
     fun addGroupSuccessfully()
     {
         // given
-        val sender = mock(CommandSender::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("test") } returns null
 
         // when
         commands.onAddGroup(sender, "test", "creative", "creative")
 
         // then
-        val expected = Group("test", mutableSetOf("creative"), GameMode.CREATIVE)
-        assertThat(groupManager.getGroup("test"), equalTo(expected))
+        verify { groupManager.addGroup("test", mutableSetOf("creative"), GameMode.CREATIVE, true) }
     }
 
     @Test
     fun addWorldInvalidGroup()
     {
         // given
-        val sender = mock(CommandSender::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("bob") } returns null
 
         // when
         commands.onAddWorld(sender, "bob", "bobs_world")
 
         // then
-        verify(sender).sendMessage("§4» §7No group with that name exists!")
+        verify(inverse = true) { groupManager.saveGroups() }
     }
 
     @Test
     fun addWorldInvalidWorld()
     {
         // given
-        val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("test") } returns mockGroup("test")
+        given(Bukkit.getWorld("invalid")).willReturn(null)
 
         // when
         commands.onAddWorld(sender, "test", "invalid")
 
         // then
-        verify(sender).sendMessage("§4» §7No world with that name exists!")
+        verify(inverse = true) { groupManager.saveGroups() }
     }
 
     @Test
     fun addWorldSuccessfully()
     {
         // given
-        val sender = mock(CommandSender::class.java)
-        val world = mock(World::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        val world = mockk<World>(relaxed = true)
+        val group = mockGroup("test", mutableSetOf("test"))
+
         given(Bukkit.getWorld("bob")).willReturn(world)
-        given(world.name).willReturn("bob")
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
+
+        every { world.name } returns "bob"
+        every { groupManager.getGroup("test") } returns group
 
         // when
         commands.onAddWorld(sender, "test", "bob")
 
         // then
         val expected = Group("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL)
-        assertThat(groupManager.getGroup("test"), equalTo(expected))
+        assertEquals(expected, group)
+        verify { groupManager.saveGroups() }
     }
 
     @Test
     fun removeGroupInvalidName()
     {
         // given
-        val sender = mock(CommandSender::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("invalid") } returns null
 
         // when
         commands.onRemoveGroup(sender, "invalid")
 
         // then
-        verify(sender).sendMessage("§4» §7No group with that name exists!")
+        verify(inverse = true) { groupManager.removeGroup(any()) }
+        verify(inverse = true) { groupManager.saveGroups() }
     }
 
     @Test
     fun removeGroupSuccessfully()
     {
         // given
-        val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("bob"), GameMode.ADVENTURE, true)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("test") } returns mockGroup("test")
 
         // when
         commands.onRemoveGroup(sender, "test")
 
         // then
-        assertNull(groupManager.getGroup("test"))
+        verify { groupManager.removeGroup("test") }
+        verify { groupManager.saveGroups() }
     }
 
     @Test
     fun removeWorldInvalidGroup()
     {
         // given
-        val sender = mock(CommandSender::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("bob") } returns null
 
         // when
         commands.onRemoveWorld(sender, "bob", "bobs_world")
 
         // then
-        verify(sender).sendMessage("§4» §7No group with that name exists!")
+        verify(inverse = true) { groupManager.saveGroups() }
     }
 
     @Test
     fun removeWorldInvalidWorld()
     {
         // given
-        val sender = mock(CommandSender::class.java)
-        groupManager.addGroup("test", mutableSetOf("test"), GameMode.SURVIVAL, true)
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("test") } returns mockGroup("test")
+        given(Bukkit.getWorld("invalid")).willReturn(null)
 
         // when
         commands.onRemoveWorld(sender, "test", "invalid")
 
         // then
-        verify(sender).sendMessage("§4» §7No world with that name exists!")
+        verify(inverse = true) { groupManager.saveGroups() }
     }
 
     @Test
     fun removeWorldSuccessfully()
     {
         // given
-        val sender = mock(CommandSender::class.java)
-        val world = mock(World::class.java)
+        val sender = mockk<CommandSender>(relaxed = true)
+        val world = mockk<World>(relaxed = true)
+        val group = mockGroup("test", mutableSetOf("test", "bob"))
+
         given(Bukkit.getWorld("bob")).willReturn(world)
-        given(world.name).willReturn("bob")
-        groupManager.addGroup("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL, true)
+
+        every { world.name } returns "bob"
+        every { groupManager.getGroup("test") } returns group
 
         // when
         commands.onRemoveWorld(sender, "test", "bob")
 
         // then
         val expected = Group("test", mutableSetOf("test"), GameMode.SURVIVAL)
-        assertThat(groupManager.getGroup("test"), equalTo(expected))
+        assertEquals(expected, group)
+        verify { groupManager.saveGroups() }
     }
 }
