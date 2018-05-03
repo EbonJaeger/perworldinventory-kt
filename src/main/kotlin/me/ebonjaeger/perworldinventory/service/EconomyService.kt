@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.service
 
+import ch.jalu.injector.annotations.NoFieldScan
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player
 import javax.annotation.PostConstruct
 import javax.inject.Inject
 
+@NoFieldScan
 class EconomyService @Inject constructor(private val server: Server,
                                          private val settings: Settings) {
 
