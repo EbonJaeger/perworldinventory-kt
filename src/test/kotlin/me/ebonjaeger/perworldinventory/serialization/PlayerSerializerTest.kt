@@ -89,7 +89,7 @@ class PlayerSerializerTest
         val json = PlayerSerializer.serialize(profile)
 
         // then
-        val result = PlayerSerializer.deserialize(json)
+        val result = PlayerSerializer.deserialize(json, inventory.size, enderChest.size)
         assertProfilesAreEqual(profile, result)
     }
 
