@@ -103,6 +103,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     fun saveGroups()
     {
         val config = YamlConfiguration.loadConfiguration(WORLDS_CONFIG_FILE)
+        config.options().header(Utils.getWorldsConfigHeader())
         config.set("groups", null)
 
         groups.values.forEach { toYaml(it, config) }
