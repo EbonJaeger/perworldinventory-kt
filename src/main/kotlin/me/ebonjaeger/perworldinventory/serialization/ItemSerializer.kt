@@ -78,32 +78,32 @@ object ItemSerializer
      */
     fun deserialize(obj: JsonObject, format: Int): ItemStack
             = when (format)
+    {
+        0 -> throw IllegalArgumentException("Old data format is not supported!")
+        1, 2 -> {
+            try
             {
-                0 -> throw IllegalArgumentException("Old data format is not supported!")
-                1, 2 -> {
-                    try
-                    {
-                        if (obj["item"].asString == AIR)
-                        {
-                            ItemStack(Material.AIR)
-                        } else
-                        {
-                            ByteArrayInputStream(Base64Coder.decodeLines(obj["item"].asString)).use {
-                                BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
-                            }
-                        }
-                    } catch (ex: IOException)
-                    {
-                        ConsoleLogger.severe("Unable to deserialize an item:", ex)
-                        ItemStack(Material.AIR)
-                    } catch (ex: ClassNotFoundException)
-                    {
-                        ConsoleLogger.severe("Unable to deserialize an item:", ex)
-                        ItemStack(Material.AIR)
+                if (obj["item"].asString == AIR)
+                {
+                    ItemStack(Material.AIR)
+                } else
+                {
+                    ByteArrayInputStream(Base64Coder.decodeLines(obj["item"].asString)).use {
+                        BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
                     }
                 }
-                else -> {
-                    throw IllegalArgumentException("Unknown data format '$format'.")
-                }
+            } catch (ex: IOException)
+            {
+                ConsoleLogger.severe("Unable to deserialize an item:", ex)
+                ItemStack(Material.AIR)
+            } catch (ex: ClassNotFoundException)
+            {
+                ConsoleLogger.severe("Unable to deserialize an item:", ex)
+                ItemStack(Material.AIR)
             }
+        }
+        else -> {
+            throw IllegalArgumentException("Unknown data format '$format'.")
+        }
+    }
 }
