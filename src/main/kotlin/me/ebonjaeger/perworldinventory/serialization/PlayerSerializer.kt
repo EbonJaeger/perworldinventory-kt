@@ -58,7 +58,13 @@ object PlayerSerializer
                 format)
         val stats = data["stats"].asJsonObject
         val potionEffects = PotionSerializer.deserialize(stats["potion-effects"].asJsonArray)
-        val balance = EconomySerializer.deserialize(data["economy"].asJsonObject)
+        val balance = if (data.has("economy"))
+        {
+            EconomySerializer.deserialize(data["economy"].asJsonObject)
+        } else
+        {
+            0.0
+        }
 
         return PlayerProfile(armor,
                 enderChest,
