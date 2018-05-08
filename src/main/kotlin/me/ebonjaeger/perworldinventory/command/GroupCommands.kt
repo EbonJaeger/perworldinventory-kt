@@ -95,6 +95,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     @Subcommand("removegroup")
     @CommandPermission("perworldinventory.command.groups.remove")
     @Description("Remove a group")
+    @CommandCompletion("@groups")
     fun onRemoveGroup(sender: CommandSender, group: String)
     {
         if (groupManager.getGroup(group) == null)
