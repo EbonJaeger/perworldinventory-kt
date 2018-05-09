@@ -34,7 +34,7 @@ object PotionSerializer
 
             // The color augments were added in the 1.9.0 API
             val saveColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0)
-            if (saveColor)
+            if (saveColor && it.hasParticles() && it.color != null)
             {
                 obj.addProperty("color", it.color.asRGB())
             }
