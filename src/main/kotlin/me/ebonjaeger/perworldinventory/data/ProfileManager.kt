@@ -40,7 +40,12 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
      */
     fun addPlayerProfile(player: Player, group: Group, gameMode: GameMode)
     {
-        val key = ProfileKey(player.uniqueId, group, if (separateGameModes) gameMode else GameMode.SURVIVAL)
+        val gm = when {
+            separateGameModes -> gameMode
+            else -> GameMode.SURVIVAL
+        }
+        
+        val key = ProfileKey(player.uniqueId, group, gm)
         val profile = profileFactory.create(player)
         profileCache.put(key, profile)
 
@@ -65,7 +70,12 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
     // TODO: This should return a PlayerProfile instead of just setting stuff
     fun getPlayerData(player: Player, group: Group, gameMode: GameMode)
     {
-        val key = ProfileKey(player.uniqueId, group, if (separateGameModes) gameMode else GameMode.SURVIVAL)
+        val gm = when {
+            separateGameModes -> gameMode
+            else -> GameMode.SURVIVAL
+        }
+
+        val key = ProfileKey(player.uniqueId, group, gm)
 
         ConsoleLogger.debug("Checking cache for player data for '${player.name}' with key: $key")
         val cached = profileCache.getIfPresent(key)
