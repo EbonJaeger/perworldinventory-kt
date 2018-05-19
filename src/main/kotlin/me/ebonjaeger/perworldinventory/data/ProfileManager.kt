@@ -44,7 +44,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             separateGameModes -> gameMode
             else -> GameMode.SURVIVAL
         }
-        
+
         val key = ProfileKey(player.uniqueId, group, gm)
         val profile = profileFactory.create(player)
         profileCache.put(key, profile)
@@ -122,7 +122,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         transferHealth(player, profile)
         transferPotionEffects(player, profile)
 
-        economyService.overridePlayerBalanceFromProfile(player, profile)
+        economyService.setNewBalance(player, profile.balance)
     }
 
     private fun transferInventories(player: Player, profile: PlayerProfile) {

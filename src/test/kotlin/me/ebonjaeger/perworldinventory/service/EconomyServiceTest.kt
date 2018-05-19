@@ -7,6 +7,7 @@ import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import net.milkbowl.vault.economy.Economy
+import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.Server
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
@@ -99,21 +100,43 @@ class EconomyServiceTest {
     }
 
     @Test
-    fun shouldSetPlayerBalanceFromPlayerProfile() {
+    fun newBalanceGreaterThanOldBalance() {
         // given
         given(settings.getProperty(PlayerSettings.USE_ECONOMY)).willReturn(true)
         economyService.tryLoadEconomy()
 
         val player = mock(Player::class.java)
-        given(economy.getBalance(player)).willReturn(2.81)
-        given(playerProfile.balance).willReturn(1332.49)
+        val oldBalance = 2.81
+        val newBalance = 1332.49
+        given(economy.getBalance(player)).willReturn(oldBalance)
+        given(playerProfile.balance).willReturn(newBalance)
 
         // when
-        economyService.overridePlayerBalanceFromProfile(player, playerProfile)
+        economyService.setNewBalance(player, playerProfile.balance)
 
         // then
-        verify(economy).withdrawPlayer(player, 2.81)
-        verify(economy).depositPlayer(player, 1332.49)
+        verify(economy).depositPlayer(player, (newBalance - oldBalance))
+    }
+
+    @Test
+    fun newBalanceLessThanOldBalance() {
+        // given
+        given(settings.getProperty(PlayerSettings.USE_ECONOMY)).willReturn(true)
+        economyService.tryLoadEconomy()
+
+        val player = mock(Player::class.java)
+        val oldBalance = 1332.49
+        val newBalance = 2.81
+        val er = EconomyResponse((oldBalance - newBalance), newBalance, EconomyResponse.ResponseType.SUCCESS, "Woo?")
+        given(economy.getBalance(player)).willReturn(oldBalance)
+        given(playerProfile.balance).willReturn(newBalance)
+        given(economy.withdrawPlayer(player, (oldBalance - newBalance))).willReturn(er)
+
+        // when
+        economyService.setNewBalance(player, playerProfile.balance)
+
+        // then
+        verify(economy).withdrawPlayer(player, (oldBalance - newBalance))
     }
 
     private fun getEconomyField(): Economy? {

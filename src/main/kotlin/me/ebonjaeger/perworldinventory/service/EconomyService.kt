@@ -4,7 +4,6 @@ import ch.jalu.injector.annotations.NoFieldScan
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
-import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Server
 import org.bukkit.entity.Player
@@ -29,11 +28,39 @@ class EconomyService @Inject constructor(private val server: Server,
         }
     }
 
-    fun overridePlayerBalanceFromProfile(player: Player, profile: PlayerProfile) {
+    /**
+     * Set a player's balance by calculating the difference of the old and new amounts.
+     * This avoids having to set a player's balance to 0 each time. If for some reason
+     * the difference ends up being a negative number and the economy plugin in use
+     * does not permit negative balances, the player's balance will be set to 0.
+     *
+     * @param player The [Player] in the transaction.
+     * @param newBalance The end balance that the player should end up with.
+     */
+    fun setNewBalance(player: Player, newBalance: Double) {
         val econ = economy
-        if (econ != null) {
-            econ.withdrawPlayer(player, econ.getBalance(player))
-            econ.depositPlayer(player, profile.balance)
+        if (econ != null)
+        {
+            val oldBalance = econ.getBalance(player)
+
+            if (newBalance < oldBalance)
+            {
+                // If the new bal is less than old bal, withdraw the difference
+                val response = econ.withdrawPlayer(player, (oldBalance - newBalance))
+                if (!response.transactionSuccess())
+                {
+                    if (response.errorMessage.equals("Loan was not permitted", true))
+                    {
+                        ConsoleLogger.warning("[ECON] Negative balances are not permitted. Setting balance for '${player.name}'" +
+                                " to 0 in '${player.location.world.name}'")
+                        econ.withdrawPlayer(player, oldBalance)
+                    }
+                }
+            } else
+            {
+                // If the new bal is greater than old bal, deposit the difference
+                econ.depositPlayer(player, (newBalance - oldBalance))
+            }
         }
     }
 
