@@ -1,5 +1,7 @@
 package me.ebonjaeger.perworldinventory
 
+import me.ebonjaeger.perworldinventory.configuration.PluginSettings
+import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.initialization.PluginFolder
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
@@ -9,7 +11,8 @@ import java.io.IOException
 import javax.inject.Inject
 
 class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
-                                       private val bukkitService: BukkitService)
+                                       private val bukkitService: BukkitService,
+                                       private val settings: Settings)
 {
 
     private val WORLDS_CONFIG_FILE = File(pluginFolder, "worlds.yml")
@@ -61,8 +64,11 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
         group = Group(world, worlds, GameMode.SURVIVAL)
 
         addGroup(world, worlds, GameMode.SURVIVAL, false)
-        ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
-                " Please double check your `worlds.yml` file configuration!")
+        if (!settings.getProperty(PluginSettings.DISABLE_NAG))
+        {
+            ConsoleLogger.warning("Creating a new group on the fly for '$world'." +
+                    " Please double check your `worlds.yml` file configuration!")
+        }
 
         return group
     }

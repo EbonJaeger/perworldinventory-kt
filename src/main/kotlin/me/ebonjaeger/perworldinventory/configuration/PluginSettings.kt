@@ -48,4 +48,9 @@ object PluginSettings : SettingsHolder
     @JvmField
     @Comment("Set the maximum number of player profiles that can be cached at any given time")
     val CACHE_MAX_LIMIT = newProperty("cache-maximum-limit", 1000)
+
+    @JvmField
+    @Comment("Disables the nagging message when a world is created on the fly",
+            "Intended for users who know what their doing, and don't need to have worlds configured")
+    val DISABLE_NAG = newProperty("disable-nag-message", false)
 }

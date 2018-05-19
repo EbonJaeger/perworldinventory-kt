@@ -12,6 +12,10 @@ separate-gamemode-inventories: true
 # If true, any worlds that are not in the worlds.yml configuration file will share the same inventory
 share-if-unconfigured: false
 
+# Disables the nagging message when a world is created on the fly
+# Intended for users who know what their doing, and don't need to have worlds configured
+disable-nag-message: false
+
 metrics:
   # Choose whether or not to enable metrics sending.
   # See https://bstats.org/getting-started for details.

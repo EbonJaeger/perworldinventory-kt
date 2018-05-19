@@ -3,7 +3,11 @@ package me.ebonjaeger.perworldinventory
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import io.mockk.classMockk
+import io.mockk.every
 import me.ebonjaeger.perworldinventory.TestHelper.mockGroup
+import me.ebonjaeger.perworldinventory.configuration.PluginSettings
+import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
 import org.junit.Assert.assertNotNull
@@ -23,7 +27,9 @@ class GroupManagerTest {
 
     private val bukkitService = Mockito.mock(BukkitService::class.java)
 
-    private val groupManager = GroupManager(File(""), bukkitService)
+    private val settings = classMockk(Settings::class)
+
+    private val groupManager = GroupManager(File(""), bukkitService, settings)
 
     @Test
     fun shouldReturnAbsentValueForNonExistentGroup() {
@@ -110,6 +116,7 @@ class GroupManagerTest {
     fun getGroupFromWorldWhereNotExists()
     {
         // given
+        every { settings.getProperty(PluginSettings.DISABLE_NAG) } returns false
         groupManager.groups.clear()
         val name = "test"
         val worlds = mutableSetOf(name, "${name}_nether", "${name}_the_end")
@@ -129,6 +136,7 @@ class GroupManagerTest {
     fun getGroupAfterCreatedFromGroupFromWorldMethod()
     {
         // given
+        every { settings.getProperty(PluginSettings.DISABLE_NAG) } returns false
         groupManager.groups.clear()
         val name = "test"
         val expected = groupManager.getGroupFromWorld(name)
