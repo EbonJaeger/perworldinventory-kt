@@ -323,6 +323,10 @@
 
                     <relocations>
                         <relocation>
+                            <pattern>kotlin</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.kotlin</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>me.ebonjaeger.perworldinventory.command.acf</shadedPattern>
                         </relocation>
