@@ -29,7 +29,7 @@ class PlayerSpawnLocationListener @Inject constructor(private val dataSource: Da
         ConsoleLogger.fine("onPlayerSpawn: '${player.name}' joining in world '$spawnWorld'")
 
         val location = dataSource.getLogout(player)
-        if (location != null)
+        if (location != null && location.world != null)
         {
             ConsoleLogger.debug("onPlayerSpawn: Logout location found for player '${player.name}': $location")
 
