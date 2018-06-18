@@ -74,7 +74,7 @@ load-data-on-join: false
 # INFO: Print general messages
 # FINE: Print more detailed messages about what the plugin is doing
 # DEBUG: Print detailed messages about everything
-logging-level: INFO
+logging-level: 'INFO'
 
 # Disables bypass regardless of permission
 # Defaults to false
