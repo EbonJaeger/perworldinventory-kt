@@ -16,8 +16,7 @@ class PlayerTeleportListener @Inject constructor(private val groupManager: Group
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerTeleport(event: PlayerTeleportEvent)
     {
-        if (event.isCancelled ||
-                event.from.world == event.to.world)
+        if (event.isCancelled || event.from.world == event.to.world)
         {
             return
         }
@@ -28,8 +27,8 @@ class PlayerTeleportListener @Inject constructor(private val groupManager: Group
         val groupFrom = groupManager.getGroupFromWorld(worldFromName)
         val groupTo = groupManager.getGroupFromWorld(worldToName)
 
-        ConsoleLogger.debug(
-                "[EVENTS] Player '${event.player.name}' going from world '$worldFromName' to world '$worldToName'")
+        ConsoleLogger.fine("onPlayerTeleport: '${event.player.name}' going teleporting to another world")
+        ConsoleLogger.debug("onPlayerTeleport: worldFrom='$worldFromName', worldTo='$worldToName'")
 
         if (groupFrom == groupTo)
         {

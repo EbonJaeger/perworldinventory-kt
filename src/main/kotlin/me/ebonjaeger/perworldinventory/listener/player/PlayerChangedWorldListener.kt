@@ -33,11 +33,12 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         val groupFrom = groupManager.getGroupFromWorld(worldFrom.name)
         val groupTo = groupManager.getGroupFromWorld(worldTo.name)
 
+        ConsoleLogger.fine("onPlayerChangedWorld: ${player.name} changed worlds")
+
         // Check if the FROM group is configured
         if (!groupFrom.configured && settings.getProperty(PluginSettings.SHARE_IF_UNCONFIGURED))
         {
-            ConsoleLogger.debug(
-                    "[PROCESS] FROM group (${groupFrom.name}) is not defined, and plugin configured to share inventory")
+            ConsoleLogger.debug("onPlayerChangedWorld: FROM group (${groupFrom.name}) is not defined, and plugin configured to share inventory")
 
             return
         }
@@ -45,22 +46,20 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         // Check if the groups are actually the same group
         if (groupFrom == groupTo)
         {
-            ConsoleLogger.debug("[PROCESS] Both groups are the same: '$groupFrom'")
+            ConsoleLogger.debug("onPlayerChangedWorld: Both groups are the same: '$groupFrom'")
             return
         }
 
         // Check of the TO group is configured
         if (!groupTo.configured && settings.getProperty(PluginSettings.SHARE_IF_UNCONFIGURED))
         {
-            ConsoleLogger.debug(
-                    "[PROCESS] FROM group (${groupTo.name}) is not defined, and plugin configured to share inventory")
+            ConsoleLogger.debug("onPlayerChangedWorld: FROM group (${groupTo.name}) is not defined, and plugin configured to share inventory")
 
             return
         }
 
         // Check if the player bypasses the changes
-        if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
-                        permissionManager.hasPermission(player, PlayerPermission.BYPASS_WORLDS)
+        if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) && permissionManager.hasPermission(player, PlayerPermission.BYPASS_WORLDS)
         )
         {
             return
@@ -76,8 +75,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         }
 
         // All other checks are done, time to get the data
-        ConsoleLogger.debug("[PROCESS] Loading data for player " +
-                "'${player.name}' for group: $groupTo")
+        ConsoleLogger.fine("onPlayerChangedWorld: Loading data for player '${player.name}' for group: $groupTo")
 
         // Add player to the timeouts to prevent item dupe
         if (plugin.updateTimeoutsTaskId != -1)

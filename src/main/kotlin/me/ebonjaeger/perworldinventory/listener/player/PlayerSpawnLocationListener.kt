@@ -26,20 +26,26 @@ class PlayerSpawnLocationListener @Inject constructor(private val dataSource: Da
 
         val player = event.player
         val spawnWorld = event.spawnLocation.world.name
-        ConsoleLogger.debug("Player '${player.name}' joining! Spawning in world '$spawnWorld'. Getting last logout location")
+        ConsoleLogger.fine("onPlayerSpawn: '${player.name}' joining in world '$spawnWorld'")
 
         val location = dataSource.getLogout(player)
         if (location != null)
         {
-            ConsoleLogger.debug("Logout location found for player '${player.name}'!")
+            ConsoleLogger.debug("onPlayerSpawn: Logout location found for player '${player.name}': $location")
 
             if (location.world.name != spawnWorld)
             {
                 val spawnGroup = groupManager.getGroupFromWorld(spawnWorld)
                 val logoutGroup = groupManager.getGroupFromWorld(location.world.name)
 
-                profileManager.addPlayerProfile(player, logoutGroup, player.gameMode)
-                profileManager.getPlayerData(player, spawnGroup, player.gameMode)
+                if (spawnGroup != logoutGroup)
+                {
+                    ConsoleLogger.fine("onPlayerSpawn: Current group does not match logout group for '${player.name}'")
+                    ConsoleLogger.debug("onPlayerSpawn: spawnGroup=$spawnGroup, logoutGroup=$logoutGroup")
+
+                    profileManager.addPlayerProfile(player, logoutGroup, player.gameMode)
+                    profileManager.getPlayerData(player, spawnGroup, player.gameMode)
+                }
             }
         }
     }

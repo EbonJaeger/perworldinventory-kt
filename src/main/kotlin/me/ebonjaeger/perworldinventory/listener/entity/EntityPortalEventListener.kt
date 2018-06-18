@@ -18,7 +18,7 @@ class EntityPortalEventListener @Inject constructor(private val groupManager: Gr
         if (event.entity !is Item)
             return
 
-        ConsoleLogger.debug("[ENTITYPORTALEVENT] A '${event.entity.name}' is going through a portal!")
+        ConsoleLogger.fine("[ENTITYPORTALEVENT] A '${event.entity.name}' is going through a portal")
 
         val worldFrom = event.from.world.name
 

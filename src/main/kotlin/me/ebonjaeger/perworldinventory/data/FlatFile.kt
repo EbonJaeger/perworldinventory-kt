@@ -24,7 +24,8 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)
     {
         val file = getFile(key)
-        ConsoleLogger.debug("Saving data for player '${player.displayName}' in file '${file.path}'")
+        ConsoleLogger.fine("Saving data for player '${player.displayName}'")
+        ConsoleLogger.debug("Data being saved in file '${file.path}'")
 
         try
         {
@@ -38,7 +39,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             }
         }
 
-        ConsoleLogger.debug("Writing player data for player '${player.displayName}' to file")
+        ConsoleLogger.fine("Writing player data for player '${player.displayName}' to file")
         val data = PlayerSerializer.serialize(player)
         try
         {

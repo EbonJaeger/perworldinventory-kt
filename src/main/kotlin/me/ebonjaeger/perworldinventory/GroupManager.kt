@@ -31,7 +31,8 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     {
         val group = Group(name, worlds, gameMode)
         group.configured = configured
-        ConsoleLogger.debug("Adding group to memory: $group")
+        ConsoleLogger.fine("Adding group to memory: ${group.name}")
+        ConsoleLogger.debug("Group properties: $group")
         groups[name.toLowerCase()] = group
     }
 
@@ -81,7 +82,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     fun removeGroup(group: String)
     {
         groups.remove(group.toLowerCase())
-        ConsoleLogger.debug("Removed group '$group'")
+        ConsoleLogger.fine("Removed group '$group'")
     }
 
     /**

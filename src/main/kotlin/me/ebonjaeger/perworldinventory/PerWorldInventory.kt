@@ -99,7 +99,7 @@ class PerWorldInventory : JavaPlugin
                 this, UpdateTimeoutsTask(this), 1L, 1L
         )
 
-        ConsoleLogger.debug("PerWorldInventory is enabled and debug-mode is active!")
+        ConsoleLogger.fine("PerWorldInventory is enabled with logger level '${settings.getProperty(PluginSettings.LOGGING_LEVEL).name}'")
     }
 
     override fun onDisable()

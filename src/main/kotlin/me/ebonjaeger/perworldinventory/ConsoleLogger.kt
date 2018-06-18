@@ -107,21 +107,6 @@ object ConsoleLogger
         }
     }
 
-    /**
-     * Log a DEBUG message with an error cause if enabled.
-     *
-     * @param message The message to log
-     * @param cause The cause of an error
-     */
-    fun debug(message: String, cause: Throwable)
-    {
-        if (logLevel.includes(LogLevel.DEBUG))
-        {
-            debug(message + " " + formatThrowable(cause))
-            cause.printStackTrace()
-        }
-    }
-
     private fun formatThrowable(throwable: Throwable): String
     {
         return "[" + throwable.javaClass.simpleName + "] " + throwable.message

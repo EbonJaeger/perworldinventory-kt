@@ -49,7 +49,8 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         val profile = profileFactory.create(player)
         profileCache.put(key, profile)
 
-        ConsoleLogger.debug("Saving player '${player.name}' to database with key: '$key'")
+        ConsoleLogger.fine("ProfileManager: Saving player '${player.name}' to database")
+        ConsoleLogger.debug("ProfileManager: Key is: $key")
 
         if (!bukkitService.isShuttingDown())
         {
@@ -77,7 +78,8 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
 
         val key = ProfileKey(player.uniqueId, group, gm)
 
-        ConsoleLogger.debug("Checking cache for player data for '${player.name}' with key: $key")
+        ConsoleLogger.fine("ProfileManager: Checking cache for player data for '${player.name}'")
+        ConsoleLogger.debug("ProfileManager: Checking with key: $key")
         val cached = profileCache.getIfPresent(key)
         if (cached != null)
         {
@@ -85,7 +87,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             return
         }
 
-        ConsoleLogger.debug("Player '${player.name}' not in cache, loading from disk")
+        ConsoleLogger.fine("ProfileManager: Player '${player.name}' not in cache, loading from disk")
         bukkitService.runTaskAsynchronously {
             val data = dataSource.getPlayer(key, player)
             bukkitService.runTask {

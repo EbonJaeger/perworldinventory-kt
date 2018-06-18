@@ -33,8 +33,8 @@ class PlayerGameModeChangeListener @Inject constructor(private val groupManager:
         val player = event.player
         val group = groupManager.getGroupFromWorld(player.world.name)
 
-        ConsoleLogger.debug("[GAMEMODE] Player '${player.name}' switching to GameMode ${event.newGameMode} " +
-                "in group '${group.name}'")
+        ConsoleLogger.fine("onPlayerChangedGameMode: '${player.name}' changing GameModes")
+        ConsoleLogger.debug("onPlayerChangedGameMode: newGameMode: ${event.newGameMode}, group: $group")
 
         // Save the current profile
         profileManager.addPlayerProfile(player, group, player.gameMode)
@@ -43,7 +43,7 @@ class PlayerGameModeChangeListener @Inject constructor(private val groupManager:
         if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
                 permissionManager.hasPermission(player, PlayerPermission.BYPASS_GAMEMODE))
         {
-            ConsoleLogger.debug("[GAMEMODE] Player '${player.name}' is bypassing the inventory switch")
+            ConsoleLogger.debug("onPlayerChangedGameMode: '${player.name}' is bypassing the inventory switch")
             return
         }
 
@@ -54,6 +54,7 @@ class PlayerGameModeChangeListener @Inject constructor(private val groupManager:
         Bukkit.getPluginManager().callEvent(loadEvent)
         if (!event.isCancelled)
         {
+            ConsoleLogger.fine("onPlayerChangedGameMode: Loading profile for '${player.name}'")
             profileManager.getPlayerData(player, group, event.newGameMode)
         }
     }

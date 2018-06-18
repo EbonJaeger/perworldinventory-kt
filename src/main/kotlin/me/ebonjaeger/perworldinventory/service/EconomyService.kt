@@ -47,6 +47,8 @@ class EconomyService @Inject constructor(private val server: Server,
             {
                 // If the new bal is less than old bal, withdraw the difference
                 val response = econ.withdrawPlayer(player, (oldBalance - newBalance))
+                ConsoleLogger.debug("EconomyService: Withdrawing $${(oldBalance - newBalance)} from '${player.name}'")
+
                 if (!response.transactionSuccess())
                 {
                     if (response.errorMessage.equals("Loan was not permitted", true))
@@ -54,12 +56,16 @@ class EconomyService @Inject constructor(private val server: Server,
                         ConsoleLogger.warning("[ECON] Negative balances are not permitted. Setting balance for '${player.name}'" +
                                 " to 0 in '${player.location.world.name}'")
                         econ.withdrawPlayer(player, oldBalance)
+                    } else
+                    {
+                        ConsoleLogger.debug("EconomyService: Withdrawing funds from ${player.name} failed: ${response.errorMessage}")
                     }
                 }
             } else
             {
                 // If the new bal is greater than old bal, deposit the difference
                 econ.depositPlayer(player, (newBalance - oldBalance))
+                ConsoleLogger.debug("EconomyService: Depositing $${(newBalance - oldBalance)} from '${player.name}'")
             }
         }
     }
@@ -68,6 +74,8 @@ class EconomyService @Inject constructor(private val server: Server,
         if (economy != null) {
             val amount = economy?.getBalance(player) ?: 0.0
             economy?.withdrawPlayer(player, amount)
+
+            ConsoleLogger.fine("EconomyService: Withdrew $$amount from '${player.name}'")
         }
     }
 
