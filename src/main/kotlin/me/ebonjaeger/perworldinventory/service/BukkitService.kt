@@ -3,6 +3,7 @@ package me.ebonjaeger.perworldinventory.service
 import me.ebonjaeger.perworldinventory.PerWorldInventory
 import me.ebonjaeger.perworldinventory.Utils
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.scheduler.BukkitTask
 import javax.inject.Inject
 
@@ -19,16 +20,16 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
     fun isShuttingDown() =
         plugin.isShuttingDown
 
-    fun getOfflinePlayers() =
+    fun getOfflinePlayers(): Array<out OfflinePlayer> =
             Bukkit.getOfflinePlayers()
 
-    fun getServerVersion() =
+    fun getServerVersion(): String =
         plugin.server.version
 
-    fun runRepeatingTaskAsynchronously(task: Runnable, delay: Long, period: Long) =
+    fun runRepeatingTaskAsynchronously(task: Runnable, delay: Long, period: Long): BukkitTask =
             scheduler.runTaskTimerAsynchronously(plugin, task, delay, period)
 
-    fun runTaskAsynchronously(task: () -> Unit) =
+    fun runTaskAsynchronously(task: () -> Unit): BukkitTask =
         scheduler.runTaskAsynchronously(plugin, task)
 
     /**
@@ -38,7 +39,7 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
      * @param task The task to run
      * @param async If the task should be run asynchronously
      */
-    fun runTaskOptionallyAsynchronously(task: () -> Unit, async: Boolean) =
+    fun runTaskOptionallyAsynchronously(task: () -> Unit, async: Boolean): BukkitTask =
             if (async) { scheduler.runTaskAsynchronously(plugin, task) } else { scheduler.runTask(plugin, task) }
 
     fun runTask(task: () -> Unit): BukkitTask =

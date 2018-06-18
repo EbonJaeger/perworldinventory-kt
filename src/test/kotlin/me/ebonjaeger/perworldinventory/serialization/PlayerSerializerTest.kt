@@ -10,7 +10,6 @@ import org.bukkit.Material
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.inventory.ItemFactory
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +35,7 @@ class PlayerSerializerTest
         val itemMeta = ItemMetaTestImpl()
 
         // No implementation of the ItemMeta interface readily available, so we return our own
-        given(itemFactory.getItemMeta(ArgumentMatchers.any())).willAnswer({ itemMeta })
+        given(itemFactory.getItemMeta(ArgumentMatchers.any())).willAnswer { itemMeta }
 
         // Bukkit's serializer needs to know about our test implementation of ItemMeta or it will fail
         ConfigurationSerialization.registerClass(ItemMetaTestImpl::class.java)
@@ -83,7 +82,7 @@ class PlayerSerializerTest
                 ItemStack(Material.DIAMOND))
         val profile = PlayerProfile(armor, enderChest, inventory, false, "Bob",
                 5.0F, 50.5F, false, 20, 20.0, 14.3, GameMode.SURVIVAL, 5, 4.86F,
-                mutableListOf<PotionEffect>(), 0.0F, 0, 500, 500, 0.0)
+                mutableListOf(), 0.0F, 0, 500, 500, 0.0)
 
         // when
         val json = PlayerSerializer.serialize(profile)

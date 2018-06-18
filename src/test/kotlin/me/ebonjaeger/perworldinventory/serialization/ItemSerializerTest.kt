@@ -34,7 +34,7 @@ class ItemSerializerTest {
         given(Bukkit.getItemFactory()).willReturn(itemFactory)
 
         // No implementation of the ItemMeta interface readily available, so we return our own
-        given(itemFactory.getItemMeta(any())).willAnswer({ ItemMetaTestImpl() })
+        given(itemFactory.getItemMeta(any())).willAnswer { ItemMetaTestImpl() }
 
         // This is required for ItemStack#setItemMeta to be successful
         given(itemFactory.isApplicable(any(ItemMeta::class.java), any(Material::class.java))).willReturn(true)

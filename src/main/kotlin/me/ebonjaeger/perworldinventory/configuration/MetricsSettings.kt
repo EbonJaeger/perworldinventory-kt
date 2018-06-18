@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.configuration
 
 import ch.jalu.configme.Comment
 import ch.jalu.configme.SettingsHolder
+import ch.jalu.configme.properties.Property
 import ch.jalu.configme.properties.PropertyInitializer.newProperty
 
 /**
@@ -15,16 +16,16 @@ object MetricsSettings : SettingsHolder
         "Choose whether or not to enable metrics sending.",
         "See https://bstats.org/getting-started for details."
     )
-    val ENABLE_METRICS = newProperty("metrics.enable", true)
+    val ENABLE_METRICS: Property<Boolean> = newProperty("metrics.enable", true)
 
     @JvmField
     @Comment(
         "Send the number of configured groups.",
         "No group names will be sent!"
     )
-    val SEND_NUM_GROUPS = newProperty("metrics.send-number-of-groups", true)
+    val SEND_NUM_GROUPS: Property<Boolean>? = newProperty("metrics.send-number-of-groups", true)
 
     @JvmField
     @Comment("Send the total number of worlds on the server.")
-    val SEND_NUM_WORLDS = newProperty("metrics.send-number-of-worlds", true)
+    val SEND_NUM_WORLDS: Property<Boolean>? = newProperty("metrics.send-number-of-worlds", true)
 }

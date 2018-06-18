@@ -53,7 +53,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
 
         if (!bukkitService.isShuttingDown())
         {
-            bukkitService.runTaskAsynchronously({ dataSource.savePlayer(key, profile) })
+            bukkitService.runTaskAsynchronously { dataSource.savePlayer(key, profile) }
         } else
         {
             dataSource.savePlayer(key, profile)
@@ -86,9 +86,9 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         }
 
         ConsoleLogger.debug("Player '${player.name}' not in cache, loading from disk")
-        bukkitService.runTaskAsynchronously({
+        bukkitService.runTaskAsynchronously {
             val data = dataSource.getPlayer(key, player)
-            bukkitService.runTask({
+            bukkitService.runTask {
                 if (data != null)
                 {
                     applyToPlayer(player, data)
@@ -96,8 +96,8 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
                 {
                     applyDefaults(player)
                 }
-            })
-        })
+            }
+        }
     }
 
     /**

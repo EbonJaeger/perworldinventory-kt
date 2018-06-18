@@ -147,7 +147,7 @@ class PerWorldInventory : JavaPlugin
         val commandManager = PaperCommandManager(this)
 
         commandManager.commandCompletions.registerAsyncCompletion(
-                "@groups", { groupManager.groups.keys })
+                "@groups") { groupManager.groups.keys }
 
         // CommandHelp#showHelp() uses an unstable method internally
         commandManager.enableUnstableAPI("help")
@@ -173,17 +173,17 @@ class PerWorldInventory : JavaPlugin
         if (settings.getProperty(MetricsSettings.SEND_NUM_GROUPS))
         {
             // Get the total number of configured Groups
-            bStats.addCustomChart(Metrics.SimplePie("num_groups", {
+            bStats.addCustomChart(Metrics.SimplePie("num_groups") {
                 val numGroups = groupManager.groups.size
 
                 return@SimplePie numGroups.toString()
-            }))
+            })
         }
 
         if (settings.getProperty(MetricsSettings.SEND_NUM_WORLDS))
         {
             // Get the total number of worlds (configured or not)
-            bStats.addCustomChart(Metrics.SimplePie("num_worlds", {
+            bStats.addCustomChart(Metrics.SimplePie("num_worlds") {
                 val numWorlds = Bukkit.getWorlds().size
 
                 when
@@ -196,7 +196,7 @@ class PerWorldInventory : JavaPlugin
                     numWorlds <= 30 -> return@SimplePie "26-30"
                     else -> return@SimplePie numWorlds.toString()
                 }
-            }))
+            })
         }
     }
 }

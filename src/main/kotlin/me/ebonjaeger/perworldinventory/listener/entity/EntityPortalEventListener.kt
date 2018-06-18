@@ -24,7 +24,7 @@ class EntityPortalEventListener @Inject constructor(private val groupManager: Gr
 
         if (event.to == null || event.to.world == null)
         {
-            ConsoleLogger.debug("[ENTITYPORTALEVENT] event.getTo().getWorld().getName() would throw a NPE! Exiting method!");
+            ConsoleLogger.debug("[ENTITYPORTALEVENT] event.getTo().getWorld().getName() would throw a NPE! Exiting method!")
             return
         }
         val worldTo = event.to.world.name
@@ -34,7 +34,7 @@ class EntityPortalEventListener @Inject constructor(private val groupManager: Gr
         // If the groups are different, cancel the event
         if (from != to)
         {
-            ConsoleLogger.debug("[ENTITYPORTALEVENT] Group '${from.name}' and group '${to.name}' are different! Canceling event!");
+            ConsoleLogger.debug("[ENTITYPORTALEVENT] Group '${from.name}' and group '${to.name}' are different! Canceling event!")
             event.isCancelled = true
         }
     }

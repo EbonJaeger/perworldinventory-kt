@@ -91,7 +91,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     {
         groups.clear()
 
-        bukkitService.runTaskAsynchronously({
+        bukkitService.runTaskAsynchronously {
             val yaml = YamlConfiguration.loadConfiguration(WORLDS_CONFIG_FILE)
             bukkitService.runTask {
                 yaml.getConfigurationSection("groups.").getKeys(false).forEach { key ->
@@ -100,7 +100,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
                     addGroup(key, worlds, gameMode, true)
                 }
             }
-        })
+        }
     }
 
     /**

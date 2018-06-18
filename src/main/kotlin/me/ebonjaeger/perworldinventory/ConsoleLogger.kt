@@ -58,7 +58,7 @@ object ConsoleLogger
     {
         if (useDebug)
         {
-            logger?.info("[DEBUG] " + message)
+            logger?.info("[DEBUG] $message")
         }
     }
 

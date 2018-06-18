@@ -48,7 +48,8 @@ public class EventConsistencyTest {
         return (HandlerList) staticHandlerListMethod.invoke(null);
     }
 
-    private static Method getStaticHandlerListMethod(Class<?> clz) throws NoSuchMethodException {
+    private static Method getStaticHandlerListMethod(Class<?> clz)
+    {
         Method method = null;
         try {
             method = clz.getMethod("getHandlerList");

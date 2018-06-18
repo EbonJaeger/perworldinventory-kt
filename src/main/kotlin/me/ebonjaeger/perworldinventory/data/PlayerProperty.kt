@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
  * Properties that can be conditionally transferred from a [PlayerProfile] to a [Player],
  * depending on a configurable setting.
  */
-enum class PlayerProperty(private val property: Property<Boolean>,
+enum class PlayerProperty(private val property: Property<Boolean>?,
                           private val accessors: ValueAccessors<out Any>) {
 
     ALLOW_FLIGHT(PlayerSettings.LOAD_ALLOW_FLIGHT,

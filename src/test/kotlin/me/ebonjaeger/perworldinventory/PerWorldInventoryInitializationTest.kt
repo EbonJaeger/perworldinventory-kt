@@ -73,8 +73,7 @@ class PerWorldInventoryInitializationTest {
         given(server.pluginManager).willReturn(pluginManager)
         given(server.version).willReturn("1.9.4-RC1")
 
-        given(settings.getProperty(any(Property::class.java))).willAnswer(
-                { invocation -> (invocation.arguments[0] as Property<*>).defaultValue })
+        given(settings.getProperty(any(Property::class.java))).willAnswer { invocation -> (invocation.arguments[0] as Property<*>).defaultValue }
 
         // PluginDescriptionFile is final and so cannot be mocked
         val descriptionFile = PluginDescriptionFile(

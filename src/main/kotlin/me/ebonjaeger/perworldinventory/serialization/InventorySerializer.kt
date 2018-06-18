@@ -56,7 +56,7 @@ object InventorySerializer
      */
     fun deserialize(array: JsonArray, size: Int, format: Int): Array<out ItemStack>
     {
-        val contents = Array(size, { ItemStack(Material.AIR) })
+        val contents = Array(size) { ItemStack(Material.AIR) }
 
         for (i in 0 until array.size())
         {

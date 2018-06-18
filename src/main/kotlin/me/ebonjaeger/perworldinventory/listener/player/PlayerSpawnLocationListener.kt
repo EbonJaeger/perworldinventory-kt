@@ -31,7 +31,7 @@ class PlayerSpawnLocationListener @Inject constructor(private val dataSource: Da
         val location = dataSource.getLogout(player)
         if (location != null)
         {
-            ConsoleLogger.debug("Logout location found for player '${player.getName()}'!")
+            ConsoleLogger.debug("Logout location found for player '${player.name}'!")
 
             if (location.world.name != spawnWorld)
             {
