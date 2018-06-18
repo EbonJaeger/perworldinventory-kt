@@ -24,7 +24,7 @@ class ReloadCommand @Inject constructor(private val groupManager: GroupManager,
     fun onReload(sender: CommandSender)
     {
         settings.reload()
-        ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
+        ConsoleLogger.setLogLevel(settings.getProperty(PluginSettings.LOGGING_LEVEL))
         groupManager.loadGroups()
         profileManager.invalidateCache()
 

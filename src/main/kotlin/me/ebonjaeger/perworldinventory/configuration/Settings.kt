@@ -3,7 +3,6 @@ package me.ebonjaeger.perworldinventory.configuration
 import ch.jalu.configme.SettingsHolder
 import ch.jalu.configme.SettingsManager
 import ch.jalu.configme.migration.MigrationService
-import ch.jalu.configme.migration.PlainMigrationService
 import ch.jalu.configme.resource.YamlFileResource
 import java.io.File
 
@@ -24,7 +23,9 @@ class Settings private constructor(file: YamlFileResource,
 
         /** All [SettingsHolder] classes of PerWorldInventory. */
         private val PROPERTY_HOLDERS = arrayOf(
-            PluginSettings::class.java, MetricsSettings::class.java, PlayerSettings::class.java)
+                PluginSettings::class.java,
+                MetricsSettings::class.java,
+                PlayerSettings::class.java)
 
         /**
          * Creates a [Settings] instance, using the given file as config file.
@@ -34,7 +35,7 @@ class Settings private constructor(file: YamlFileResource,
          */
         fun create(file: File): Settings {
             val fileResource = YamlFileResource(file)
-            val migrater = PlainMigrationService()
+            val migrater = PwiMigrationService()
 
             return Settings(fileResource, migrater, *PROPERTY_HOLDERS)
         }

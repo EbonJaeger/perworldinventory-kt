@@ -70,8 +70,11 @@ player:
 # REQUIRES MC 1.9.2 OR NEWER
 load-data-on-join: false
 
-# Print out debug messages to the console for every event that happens in PWI
-debug-mode: false
+# Set the level of debug messages shown by PWI.
+# INFO: Print general messages
+# FINE: Print more detailed messages about what the plugin is doing
+# DEBUG: Print detailed messages about everything
+logging-level: INFO
 
 # Disables bypass regardless of permission
 # Defaults to false

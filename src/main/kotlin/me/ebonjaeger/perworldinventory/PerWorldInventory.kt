@@ -81,7 +81,7 @@ class PerWorldInventory : JavaPlugin
         val settings = Settings.create(File(dataFolder, "config.yml"))
         injector.register(Settings::class, settings)
 
-        ConsoleLogger.setUseDebug(settings.getProperty(PluginSettings.DEBUG_MODE))
+        ConsoleLogger.setLogLevel(settings.getProperty(PluginSettings.LOGGING_LEVEL))
 
         // Inject and register all the things
         setupGroupManager(injector)

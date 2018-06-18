@@ -4,6 +4,7 @@ import ch.jalu.configme.Comment
 import ch.jalu.configme.SettingsHolder
 import ch.jalu.configme.properties.Property
 import ch.jalu.configme.properties.PropertyInitializer.newProperty
+import me.ebonjaeger.perworldinventory.LogLevel
 
 /**
  * Object to hold settings for general plugin operation.
@@ -12,8 +13,11 @@ object PluginSettings : SettingsHolder
 {
 
     @JvmField
-    @Comment("Print out debug messages to the console for every event that happens in PWI")
-    val DEBUG_MODE: Property<Boolean>? = newProperty("debug-mode", false)
+    @Comment("Set the level of debug messages shown by PWI.",
+            "INFO: Print general messages",
+            "FINE: Print more detailed messages about what the plugin is doing",
+            "DEBUG: Print detailed messages about everything")
+    val LOGGING_LEVEL: Property<LogLevel>? = newProperty(LogLevel::class.java, "logging-level", LogLevel.INFO)
 
     @JvmField
     @Comment(
