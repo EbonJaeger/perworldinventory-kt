@@ -128,7 +128,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
     {
         val key = "groups.${group.name}"
         config.set(key, null)
-        config.set("$key.worlds", group.worlds)
+        config.set("$key.worlds", group.worlds.toList())
         config.set("$key.default-gamemode", group.defaultGameMode.toString())
     }
 }
