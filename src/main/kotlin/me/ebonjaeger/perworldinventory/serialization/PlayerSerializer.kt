@@ -39,7 +39,7 @@ object PlayerSerializer
         return obj
     }
 
-    fun deserialize(data: JsonObject, inventorySize: Int, eChestSize: Int): PlayerProfile
+    fun deserialize(data: JsonObject, playerName: String, inventorySize: Int, eChestSize: Int): PlayerProfile
     {
         // Get the data format being used
         var format = 2
@@ -56,7 +56,7 @@ object PlayerSerializer
         val enderChest = InventorySerializer.deserialize(data["ender-chest"].asJsonArray,
                 eChestSize,
                 format)
-        val stats = StatSerializer.validateStats(data["stats"].asJsonObject)
+        val stats = StatSerializer.validateStats(data["stats"].asJsonObject, playerName)
         val potionEffects = PotionSerializer.deserialize(stats["potion-effects"].asJsonArray)
         val balance = if (data.has("economy"))
         {

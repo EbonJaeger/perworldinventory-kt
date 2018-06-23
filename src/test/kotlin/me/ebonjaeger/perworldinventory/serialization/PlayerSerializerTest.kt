@@ -88,7 +88,28 @@ class PlayerSerializerTest
         val json = PlayerSerializer.serialize(profile)
 
         // then
-        val result = PlayerSerializer.deserialize(json, inventory.size, enderChest.size)
+        val result = PlayerSerializer.deserialize(json, "Bob", inventory.size, enderChest.size)
+        assertProfilesAreEqual(profile, result)
+    }
+
+    @Test
+    fun verifyCorrectSerializationMissingDisplayName()
+    {
+        // given
+        val armor = arrayOf(ItemStack(Material.AIR), ItemStack(Material.DIAMOND_CHESTPLATE),
+                ItemStack(Material.IRON_LEGGINGS), ItemStack(Material.AIR))
+        val enderChest = arrayOf(ItemStack(Material.GOLDEN_APPLE))
+        val inventory = arrayOf(ItemStack(Material.DIAMOND))
+        val profile = PlayerProfile(armor, enderChest, inventory, false, "Bob",
+                5.0F, 50.5F, false, 20, 20.0, 14.3, GameMode.SURVIVAL, 5, 4.86F,
+                mutableListOf(), 0.0F, 0, 500, 500, 0.0)
+
+        // when
+        val json = PlayerSerializer.serialize(profile)
+
+        // then
+        json["stats"].asJsonObject.remove("display-name")
+        val result = PlayerSerializer.deserialize(json, "Bob", inventory.size, enderChest.size)
         assertProfilesAreEqual(profile, result)
     }
 
@@ -127,5 +148,10 @@ class PlayerSerializerTest
         assertThat(expected.maximumAir, equalTo(actual.maximumAir))
         assertThat(expected.remainingAir, equalTo(actual.remainingAir))
         assertThat(expected.balance, equalTo(actual.balance))
+    }
+
+    private fun fillInventory(): Array<out ItemStack>
+    {
+        return arrayOf()
     }
 }

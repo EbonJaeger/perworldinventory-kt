@@ -127,7 +127,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             val parser = JsonParser()
             val data = parser.parse(it).asJsonObject
 
-            return PlayerSerializer.deserialize(data, player.inventory.size, player.enderChest.size)
+            return PlayerSerializer.deserialize(data, player.name, player.inventory.size, player.enderChest.size)
         }
     }
 
