@@ -32,6 +32,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         val worldTo = player.world
         val groupFrom = groupManager.getGroupFromWorld(worldFrom.name)
         val groupTo = groupManager.getGroupFromWorld(worldTo.name)
+        val startingGameMode = player.gameMode
 
         ConsoleLogger.fine("onPlayerChangedWorld: ${player.name} changed worlds")
 
@@ -59,9 +60,10 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         }
 
         // Check if the player bypasses the changes
-        if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) && permissionManager.hasPermission(player, PlayerPermission.BYPASS_WORLDS)
-        )
+        if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
+                permissionManager.hasPermission(player, PlayerPermission.BYPASS_WORLDS))
         {
+            ConsoleLogger.debug("onPlayerChangedWorld: Player '${player.name}' has bypass worlds permission")
             return
         }
 
@@ -70,8 +72,23 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         if (settings.getProperty(PluginSettings.MANAGE_GAMEMODES) &&
                 !permissionManager.hasPermission(player, PlayerPermission.BYPASS_ENFORCE_GAMEMODE))
         {
-            player.gameMode = groupTo.defaultGameMode
-            return
+            if (player.gameMode != groupTo.defaultGameMode)
+            {
+                ConsoleLogger.debug("onPlayerChangedWorld: We manage GameModes and the GameMode for this group is different from ${player.name}'s current GameMode")
+                player.gameMode = groupTo.defaultGameMode
+
+                // If GameMode inventories are separated, then the other listener will
+                // handle it, so we do nothing more here. Else, we do still have to load
+                // a new inventory, which shouldn't be a problem because if GameModes
+                // aren't separated, the other listener will return early. Thus it should
+                // be perfectly safe to load the data from here.
+
+                if (settings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES))
+                {
+                    ConsoleLogger.debug("onPlayerChangedWorld: GameMode inventories are separated, so returning from here")
+                    return
+                }
+            }
         }
 
         // All other checks are done, time to get the data
@@ -84,7 +101,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         }
 
         val loadEvent = InventoryLoadEvent(player, Cause.WORLD_CHANGE,
-                player.gameMode, player.gameMode, groupTo)
+                startingGameMode, player.gameMode, groupTo)
         Bukkit.getPluginManager().callEvent(loadEvent)
         if (!loadEvent.isCancelled)
         {
