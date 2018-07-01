@@ -14,7 +14,7 @@ import javax.inject.Inject
 class GroupCommands @Inject constructor(private val groupManager: GroupManager) : BaseCommand()
 {
 
-    @Subcommand("listgroups")
+    @Subcommand("group list")
     @CommandPermission("perworldinventory.command.groups.list")
     @Description("Shows all of the current group names")
     fun onListGroups(sender: CommandSender)
@@ -27,9 +27,9 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         }
     }
 
-    @Subcommand("addgroup")
+    @Subcommand("group create")
     @CommandPermission("perworldinventory.command.groups.add")
-    @Description("Add a new world group")
+    @Description("Create a new world group")
     fun onAddGroup(sender: CommandSender, name: String, @Default("SURVIVAL") defaultGameMode: String, vararg worlds: String)
     {
         // Check if this group already exists
@@ -54,7 +54,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Group created successfully!")
     }
 
-    @Subcommand("addworld")
+    @Subcommand("group addworld|aw")
     @CommandPermission("perworldinventory.command.groups.modify")
     @Description("Add a world to a group")
     @CommandCompletion("@groups @worlds")
@@ -93,7 +93,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Added the world '$worldName' to group '$groupName'!")
     }
 
-    @Subcommand("removegroup")
+    @Subcommand("group delete")
     @CommandPermission("perworldinventory.command.groups.remove")
     @Description("Remove a group")
     @CommandCompletion("@groups")
@@ -110,7 +110,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Group removed successfully!")
     }
 
-    @Subcommand("removeworld")
+    @Subcommand("group removeworld|rw")
     @CommandPermission("perworldinventory.command.groups.modify")
     @Description("Remove a world from a group")
     @CommandCompletion("@groups @worlds")
