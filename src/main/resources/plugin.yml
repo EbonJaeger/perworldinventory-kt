@@ -16,7 +16,6 @@ permissions:
       perworldinventory.convert: true
       perworldinventory.help: true
       perworldinventory.reload: true
-      perworldinventory.setdefaults: true
       perworldinventory.version: true
       perworldinventory.command.groups.list: true
       perworldinventory.command.groups.add: true
@@ -32,8 +31,6 @@ permissions:
   perworldinventory.help:
     default: false
   perworldinventory.reload:
-    default: false
-  perworldinventory.setdefaults:
     default: false
   perworldinventory.version:
     default: false
