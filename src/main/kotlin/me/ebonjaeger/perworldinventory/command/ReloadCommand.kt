@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.command
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @CommandAlias("perworldinventory|pwi")
 class ReloadCommand @Inject constructor(private val groupManager: GroupManager,
                                         private val profileManager: ProfileManager,
-                                        private val settings: Settings) : PWIBaseCommand()
+                                        private val settings: Settings) : BaseCommand()
 {
     @Subcommand("reload")
     @CommandPermission("perworldinventory.reload")

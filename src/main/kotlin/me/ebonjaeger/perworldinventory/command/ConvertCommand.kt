@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.command
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
@@ -13,7 +14,7 @@ import javax.inject.Inject
 
 @CommandAlias("perworldinventory|pwi")
 class ConvertCommand @Inject constructor(private val pluginManager: PluginManager,
-                                         private val convertService: ConvertService) : PWIBaseCommand()
+                                         private val convertService: ConvertService) : BaseCommand()
 {
 
     @Subcommand("convert")

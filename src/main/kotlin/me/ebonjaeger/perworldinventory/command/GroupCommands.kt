@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.command
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
 import me.ebonjaeger.perworldinventory.GroupManager
 import org.bukkit.Bukkit
@@ -10,7 +11,7 @@ import org.bukkit.entity.Player
 import javax.inject.Inject
 
 @CommandAlias("perworldinventory|pwi")
-class GroupCommands @Inject constructor(private val groupManager: GroupManager) : PWIBaseCommand()
+class GroupCommands @Inject constructor(private val groupManager: GroupManager) : BaseCommand()
 {
 
     @Subcommand("listgroups")

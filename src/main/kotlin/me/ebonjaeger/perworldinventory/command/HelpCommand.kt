@@ -1,17 +1,15 @@
 package me.ebonjaeger.perworldinventory.command
 
+import co.aikar.commands.BaseCommand
 import co.aikar.commands.CommandHelp
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandPermission
-import co.aikar.commands.annotation.Description
+import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.HelpCommand
-import co.aikar.commands.annotation.Subcommand
 import me.ebonjaeger.perworldinventory.PerWorldInventory
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
 @CommandAlias("perworldinventory|pwi")
-class HelpCommand (private val plugin: PerWorldInventory) : PWIBaseCommand()
+class HelpCommand (private val plugin: PerWorldInventory) : BaseCommand()
 {
 
     @HelpCommand
