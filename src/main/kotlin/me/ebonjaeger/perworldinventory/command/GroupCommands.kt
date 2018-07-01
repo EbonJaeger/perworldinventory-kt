@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.command
 
 import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
+import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -25,6 +26,37 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
             val key = groupManager.groups.keys.elementAt(i)
             sender.sendMessage("${ChatColor.BLUE} $i${ChatColor.GRAY}: $key")
         }
+    }
+
+    @Subcommand("group info")
+    @CommandPermission("perworldinventory.command.groups.info")
+    @Description("Display information about a group")
+    fun onGroupInfo(sender: CommandSender, @Optional groupName: String)
+    {
+        var group: Group? = null
+        if (groupName !== null)
+        {
+            group = groupManager.getGroup(groupName)
+
+        }
+
+        if (group === null)
+        {
+            if (sender is Player)
+            {
+                group = groupManager.getGroupFromWorld(sender.location.world.name)
+            } else
+            {
+                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unknown group '$groupName'!")
+                return
+            }
+        }
+
+        sender.sendMessage("${ChatColor.BLUE}Group Name: ${ChatColor.GRAY}${group.name}")
+        sender.sendMessage("${ChatColor.BLUE}Number of Worlds: ${ChatColor.GRAY}${group.worlds.count()}")
+        sender.sendMessage("${ChatColor.BLUE}Worlds:")
+        group.worlds.forEach { sender.sendMessage("${ChatColor.GRAY} - $it") }
+        sender.sendMessage("${ChatColor.BLUE}Default GameMode: ${ChatColor.GRAY}${group.defaultGameMode.name}")
     }
 
     @Subcommand("group create")
