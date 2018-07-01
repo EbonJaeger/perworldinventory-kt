@@ -13,10 +13,10 @@ permissions:
   perworldinventory.admin:
     default: op
     children:
-      perworldinventory.convert: true
-      perworldinventory.help: true
-      perworldinventory.reload: true
-      perworldinventory.version: true
+      perworldinventory.command.convert: true
+      perworldinventory.command.help: true
+      perworldinventory.command.reload: true
+      perworldinventory.command.version: true
       perworldinventory.command.groups.list: true
       perworldinventory.command.groups.add: true
       perworldinventory.command.groups.modify: true
@@ -26,13 +26,13 @@ permissions:
     children:
       perworldinventory.bypass.gamemode: true
       perworldinventory.bypass.world: true
-  perworldinventory.convert:
+  perworldinventory.command.convert:
     default: false
-  perworldinventory.help:
+  perworldinventory.command.help:
     default: false
-  perworldinventory.reload:
+  perworldinventory.command.reload:
     default: false
-  perworldinventory.version:
+  perworldinventory.command.version:
     default: false
   perworldinventory.command.groups.list:
     default: false
