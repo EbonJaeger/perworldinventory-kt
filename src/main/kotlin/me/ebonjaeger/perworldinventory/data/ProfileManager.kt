@@ -90,21 +90,17 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         }
 
         ConsoleLogger.fine("ProfileManager: Player '${player.name}' not in cache, loading from disk")
-        bukkitService.runTaskAsynchronously {
-            val data = dataSource.getPlayer(key, player)
-            bukkitService.runTask {
-                if (data != null)
-                {
-                    applyToPlayer(player, data)
-                } else
-                {
-                    applyDefaults(player)
-                }
-
-                val event = InventoryLoadCompleteEvent(player, group, gm)
-                Bukkit.getPluginManager().callEvent(event)
-            }
+        val data = dataSource.getPlayer(key, player)
+        if (data != null)
+        {
+            applyToPlayer(player, data)
+        } else
+        {
+            applyDefaults(player)
         }
+
+        val event = InventoryLoadCompleteEvent(player, group, gm)
+        Bukkit.getPluginManager().callEvent(event)
     }
 
     /**
