@@ -7,8 +7,10 @@ import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.configuration.PlayerSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
+import me.ebonjaeger.perworldinventory.event.InventoryLoadCompleteEvent
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import me.ebonjaeger.perworldinventory.service.EconomyService
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -98,6 +100,9 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
                 {
                     applyDefaults(player)
                 }
+
+                val event = InventoryLoadCompleteEvent(player, group, gm)
+                Bukkit.getPluginManager().callEvent(event)
             }
         }
     }
