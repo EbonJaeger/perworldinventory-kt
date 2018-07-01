@@ -18,6 +18,10 @@ permissions:
       perworldinventory.reload: true
       perworldinventory.setdefaults: true
       perworldinventory.version: true
+      perworldinventory.command.groups.list: true
+      perworldinventory.command.groups.add: true
+      perworldinventory.command.groups.modify: true
+      perworldinventory.command.groups.remove: true
   perworldinventory.bypass.*:
     default: false
     children:
@@ -32,6 +36,14 @@ permissions:
   perworldinventory.setdefaults:
     default: false
   perworldinventory.version:
+    default: false
+  perworldinventory.command.groups.list:
+    default: false
+  perworldinventory.command.groups.add:
+    default: false
+  perworldinventory.command.groups.modify:
+    default: false
+  perworldinventory.command.groups.remove:
     default: false
   perworldinventory.bypass.gamemode:
     default: false
