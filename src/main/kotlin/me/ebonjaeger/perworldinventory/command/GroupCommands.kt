@@ -31,6 +31,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     @Subcommand("group info")
     @CommandPermission("perworldinventory.command.groups.info")
     @Description("Display information about a group")
+    @CommandCompletion("@groups")
     fun onGroupInfo(sender: CommandSender, @Optional groupName: String)
     {
         var group: Group? = null
