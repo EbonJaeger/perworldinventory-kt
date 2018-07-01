@@ -7,7 +7,6 @@ import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.event.Cause
 import me.ebonjaeger.perworldinventory.event.InventoryLoadEvent
-import me.ebonjaeger.perworldinventory.permission.PermissionManager
 import me.ebonjaeger.perworldinventory.permission.PlayerPermission
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -18,7 +17,6 @@ import javax.inject.Inject
 
 class PlayerGameModeChangeListener @Inject constructor(private val groupManager: GroupManager,
                                                        private val profileManager: ProfileManager,
-                                                       private val permissionManager: PermissionManager,
                                                        private val settings: Settings) : Listener
 {
 
@@ -41,7 +39,7 @@ class PlayerGameModeChangeListener @Inject constructor(private val groupManager:
 
         // Check if the player can bypass the inventory switch
         if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
-                permissionManager.hasPermission(player, PlayerPermission.BYPASS_GAMEMODE))
+                player.hasPermission(PlayerPermission.BYPASS_GAMEMODE.getNode()))
         {
             ConsoleLogger.debug("onPlayerChangedGameMode: '${player.name}' is bypassing the inventory switch")
             return

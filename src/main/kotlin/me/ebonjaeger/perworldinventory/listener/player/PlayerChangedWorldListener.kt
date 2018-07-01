@@ -8,7 +8,6 @@ import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.ProfileManager
 import me.ebonjaeger.perworldinventory.event.Cause
 import me.ebonjaeger.perworldinventory.event.InventoryLoadEvent
-import me.ebonjaeger.perworldinventory.permission.PermissionManager
 import me.ebonjaeger.perworldinventory.permission.PlayerPermission
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -20,7 +19,6 @@ import javax.inject.Inject
 class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorldInventory,
                                                      private val groupManager: GroupManager,
                                                      private val profileManager: ProfileManager,
-                                                     private val permissionManager: PermissionManager,
                                                      private val settings: Settings) : Listener
 {
 
@@ -61,7 +59,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
 
         // Check if the player bypasses the changes
         if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
-                permissionManager.hasPermission(player, PlayerPermission.BYPASS_WORLDS))
+                player.hasPermission(PlayerPermission.BYPASS_WORLDS.getNode()))
         {
             ConsoleLogger.debug("onPlayerChangedWorld: Player '${player.name}' has bypass worlds permission")
             return
@@ -70,7 +68,7 @@ class PlayerChangedWorldListener @Inject constructor(private val plugin: PerWorl
         // Check if we manage GameModes. If we do, we can skip loading the data
         // for a mode they're only going to be in for half a second.
         if (settings.getProperty(PluginSettings.MANAGE_GAMEMODES) &&
-                !permissionManager.hasPermission(player, PlayerPermission.BYPASS_ENFORCE_GAMEMODE))
+                !player.hasPermission(PlayerPermission.BYPASS_ENFORCE_GAMEMODE.getNode()))
         {
             if (player.gameMode != groupTo.defaultGameMode)
             {
