@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.ItemMeta
 
 /**
@@ -10,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta
  * As a stand-in for state, a [map][providedMap] is maintained, which should be preserved during
  * serialization and deserialization.
  */
-class ItemMetaTestImpl : ItemMeta {
+class ItemMetaTestImpl : ItemMeta, Damageable {
 
     val providedMap: MutableMap<String, Any>
 
@@ -32,7 +33,7 @@ class ItemMetaTestImpl : ItemMeta {
     override fun serialize(): MutableMap<String, Any> =
             HashMap(this.providedMap)
 
-    override fun clone(): ItemMeta {
+    override fun clone(): ItemMetaTestImpl {
         val mapClone = HashMap(providedMap)
         return ItemMetaTestImpl(mapClone)
     }
@@ -126,6 +127,21 @@ class ItemMetaTestImpl : ItemMeta {
     }
 
     override fun hasLocalizedName(): Boolean {
+        throw NotImplementedError("not implemented")
+    }
+
+    override fun getDamage(): Int
+    {
+        return 0
+    }
+
+    override fun hasDamage(): Boolean
+    {
+        throw NotImplementedError("not implemented")
+    }
+
+    override fun setDamage(damage: Int)
+    {
         throw NotImplementedError("not implemented")
     }
 }

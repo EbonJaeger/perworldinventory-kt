@@ -3,6 +3,7 @@ version: maven-version
 name: maven-name
 author: maven-authors
 softdepend: [Vault]
+api-version: 1.13
 
 commands:
   pwi:

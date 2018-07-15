@@ -7,6 +7,7 @@ import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.UnsafeValues
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.inventory.ItemFactory
 import org.bukkit.inventory.ItemStack
@@ -14,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
+import org.mockito.BDDMockito
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
@@ -39,6 +41,12 @@ class PlayerSerializerTest
 
         // Bukkit's serializer needs to know about our test implementation of ItemMeta or it will fail
         ConfigurationSerialization.registerClass(ItemMetaTestImpl::class.java)
+
+        // As of 1.13, Bukkit has a compatibility layer, and serializing an item
+        // now checks the data version to see what Material name to use.
+        val unsafe = PowerMockito.mock(UnsafeValues::class.java)
+        BDDMockito.given(Bukkit.getUnsafe()).willReturn(unsafe)
+        BDDMockito.given(unsafe.dataVersion).willReturn(1513)
     }
 
     @Test
@@ -148,10 +156,5 @@ class PlayerSerializerTest
         assertThat(expected.maximumAir, equalTo(actual.maximumAir))
         assertThat(expected.remainingAir, equalTo(actual.remainingAir))
         assertThat(expected.balance, equalTo(actual.balance))
-    }
-
-    private fun fillInventory(): Array<out ItemStack>
-    {
-        return arrayOf()
     }
 }

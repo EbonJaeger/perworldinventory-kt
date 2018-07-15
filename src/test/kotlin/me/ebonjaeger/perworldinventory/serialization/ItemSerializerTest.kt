@@ -1,9 +1,8 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.UnsafeValues
 import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.inventory.ItemFactory
 import org.bukkit.inventory.ItemStack
@@ -19,6 +18,7 @@ import org.powermock.api.mockito.PowerMockito.mock
 import org.powermock.api.mockito.PowerMockito.mockStatic
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
+import kotlin.test.assertEquals
 
 /**
  * Tests for [ItemSerializer].
@@ -39,9 +39,16 @@ class ItemSerializerTest {
         // This is required for ItemStack#setItemMeta to be successful
         given(itemFactory.isApplicable(any(ItemMeta::class.java), any(Material::class.java))).willReturn(true)
         given(itemFactory.asMetaFor(any(ItemMeta::class.java), any(Material::class.java))).willAnswer(ReturnsArgumentAt(0))
+        given(itemFactory.updateMaterial(any(ItemMeta::class.java), any(Material::class.java))).willAnswer(ReturnsArgumentAt(1))
 
         // Bukkit's serializer needs to know about our test implementation of ItemMeta or it will fail
         ConfigurationSerialization.registerClass(ItemMetaTestImpl::class.java)
+
+        // As of 1.13, Bukkit has a compatibility layer, and serializing an item
+        // now checks the data version to see what Material name to use.
+        val unsafe = mock(UnsafeValues::class.java)
+        given(Bukkit.getUnsafe()).willReturn(unsafe)
+        given(unsafe.dataVersion).willReturn(1513)
     }
 
     @Test
@@ -70,15 +77,15 @@ class ItemSerializerTest {
         // then
         // deserialize item and test for match
         val result = ItemSerializer.deserialize(json, 2)
-        assertHasSameProperties(result, item)
+        assertHasSameProperties(item, result)
         assertItemMetaMapsAreEqual(result, item)
     }
 
-    private fun assertHasSameProperties(given: ItemStack, expected: ItemStack) {
-        assertThat(given.type, equalTo(expected.type))
-        assertThat(given.amount, equalTo(expected.amount))
-        assertThat(given.data, equalTo(expected.data))
-        assertThat(given.durability, equalTo(expected.durability))
+    private fun assertHasSameProperties(expected: ItemStack, actual: ItemStack) {
+        assertEquals(expected.type, actual.type)
+        assertEquals(expected.amount, actual.amount)
+        assertEquals(expected.data, actual.data)
+        assertEquals(expected.durability, actual.durability)
     }
 
     /**
@@ -87,8 +94,7 @@ class ItemSerializerTest {
      */
     private fun setItemMetaOrFail(item: ItemStack, meta: ItemMeta) {
         val isSuccessful = item.setItemMeta(meta)
-        assertThat("Setting ItemMeta to ItemStack was unsuccessful; this is likely a missing mock behavior",
-            isSuccessful, equalTo(true))
+        assertEquals(isSuccessful, true, "Setting ItemMeta to ItemStack was unsuccessful; this is likely a missing mock behavior")
     }
 
     private fun assertItemMetaMapsAreEqual(given: ItemStack, expected: ItemStack) {
@@ -99,7 +105,7 @@ class ItemSerializerTest {
                 fail("Map is empty!")
             } else {
                 for (entry in expectedItemMeta.providedMap.entries) {
-                    assertThat(givenItemMeta.providedMap[entry.key], equalTo(entry.value))
+                    assertEquals(givenItemMeta.providedMap[entry.key], entry.value)
                 }
             }
         } else {
