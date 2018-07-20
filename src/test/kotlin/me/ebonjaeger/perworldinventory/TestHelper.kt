@@ -73,6 +73,6 @@ object TestHelper
      */
     fun mockGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode): Group
     {
-        return Group(name, worlds, gameMode)
+        return Group(name, worlds, gameMode, null)
     }
 }

@@ -13,7 +13,7 @@ class GroupTest {
     @Test
     fun shouldCreateNewGroup() {
         // given
-        val group = Group("test", mutableSetOf("world1", "world2"), GameMode.SURVIVAL)
+        val group = Group("test", mutableSetOf("world1", "world2"), GameMode.SURVIVAL, null)
 
         // when / then
         assertThat(group.containsWorld("world2"), equalTo(true))
@@ -23,7 +23,7 @@ class GroupTest {
     @Test
     fun shouldAddNewWorlds() {
         // given
-        val group = Group("my_group", mutableSetOf("world1"), GameMode.ADVENTURE)
+        val group = Group("my_group", mutableSetOf("world1"), GameMode.ADVENTURE, null)
 
         // when
         group.addWorld("other")
