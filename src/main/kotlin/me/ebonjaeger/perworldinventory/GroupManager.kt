@@ -29,7 +29,21 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
      */
     fun addGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode, configured: Boolean)
     {
-        val group = Group(name, worlds, gameMode)
+        addGroup(name, worlds, gameMode, null, configured)
+    }
+
+    /**
+     * Add a Group.
+     *
+     * @param name The name of the group
+     * @param worlds A Set of world names
+     * @param gameMode The default GameMode for this group
+     * @param respawnWorld The world players will spawn in on death
+     * @param configured If the group was configured (true) or created on the fly (false)
+     */
+    fun addGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode, respawnWorld: String?, configured: Boolean)
+    {
+        val group = Group(name, worlds, gameMode, respawnWorld)
         group.configured = configured
         ConsoleLogger.fine("Adding group to memory: ${group.name}")
         ConsoleLogger.debug("Group properties: $group")
@@ -62,7 +76,7 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
 
         // If we reach this point, the group doesn't yet exist.
         val worlds = mutableSetOf(world, "${world}_nether", "${world}_the_end")
-        group = Group(world, worlds, GameMode.SURVIVAL)
+        group = Group(world, worlds, GameMode.SURVIVAL, null)
 
         addGroup(world, worlds, GameMode.SURVIVAL, false)
         if (!settings.getProperty(PluginSettings.DISABLE_NAG))
@@ -98,7 +112,15 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
                 yaml.getConfigurationSection("groups.").getKeys(false).forEach { key ->
                     val worlds = yaml.getStringList("groups.$key.worlds").toMutableSet()
                     val gameMode = GameMode.valueOf( (yaml.getString("groups.$key.default-gamemode") ?: "SURVIVAL").toUpperCase() )
-                    addGroup(key, worlds, gameMode, true)
+                    val respawnWorld = if (yaml.contains("groups.$key.respawnWorld"))
+                    {
+                        yaml.getString("groups.$key.respawnWorld")
+                    } else
+                    {
+                        null
+                    }
+
+                    addGroup(key, worlds, gameMode, respawnWorld, true)
                 }
             }
         }
@@ -130,5 +152,6 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
         config.set(key, null)
         config.set("$key.worlds", group.worlds.toList())
         config.set("$key.default-gamemode", group.defaultGameMode.toString())
+        config.set("$key.respawnWorld", group.respawnWorld)
     }
 }

@@ -34,6 +34,10 @@ object PluginSettings : SettingsHolder
     val SHARE_IF_UNCONFIGURED: Property<Boolean>? = newProperty("share-if-unconfigured", false)
 
     @JvmField
+    @Comment("True if PWI should set the respawn world when a player dies")
+    val MANAGE_DEATH_RESPAWN: Property<Boolean>? = newProperty("manage-death-respawn", false)
+
+    @JvmField
     @Comment(
         "Attempt to figure out which world a player last logged off in",
         "and save/load the correct data if that world is different.",

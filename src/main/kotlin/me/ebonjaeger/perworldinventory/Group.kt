@@ -13,10 +13,12 @@ import java.util.*
  * @property name The name of the group
  * @property worlds A Set of world names
  * @property defaultGameMode The default GameMode for players in this group
+ * @property respawnWorld The world that players will spawn in when they die
  */
 data class Group(val name: String,
                  val worlds: MutableSet<String>,
-                 val defaultGameMode: GameMode)
+                 val defaultGameMode: GameMode,
+                 var respawnWorld: String?)
 {
 
     /**
@@ -73,7 +75,8 @@ data class Group(val name: String,
 
         return Objects.equals(name, other.name) &&
                 Objects.equals(worlds, other.worlds) &&
-                Objects.equals(defaultGameMode, other.defaultGameMode)
+                Objects.equals(defaultGameMode, other.defaultGameMode) &&
+                Objects.equals(respawnWorld, other.respawnWorld)
     }
 
     override fun hashCode(): Int
@@ -89,6 +92,7 @@ data class Group(val name: String,
                 "name='$name'" +
                 ", worlds=$worlds" +
                 ", defaultGameMode='${defaultGameMode.toString().toLowerCase()}'" +
+                ", respawnWorld='$respawnWorld'" +
                 ", isConfigured='$configured'" +
                 "}"
     }

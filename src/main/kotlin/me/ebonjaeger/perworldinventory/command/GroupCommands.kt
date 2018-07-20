@@ -188,4 +188,50 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         groupManager.saveGroups()
         sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Removed the world '$worldName' from group '$groupName'!")
     }
+
+    @Subcommand("group setrespawn|sw")
+    @CommandPermission("perworldinventory.command.groups.modify")
+    @Description("Set the default spawn world for a group")
+    @CommandCompletion("@groups @worlds")
+    fun onSetRespawnWorld(sender: CommandSender, groupName: String, @Optional world: String)
+    {
+        val group = groupManager.getGroup(groupName)
+
+        // Check if the group exists
+        if (group == null)
+        {
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No group with that name exists!")
+            return
+        }
+
+        var worldName = world
+
+        // Check if the sender specified a world, and if that world exists
+        if (world != null && Bukkit.getWorld(world) == null)
+        {
+            // User specified a world, but it doesn't exist
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
+            return
+        } else if (world == null) // Else, get the world from the sender's current location
+        {
+            if (sender !is Player)
+            {
+                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Must be a player to execute this command without a world!")
+                return
+            }
+
+            worldName = sender.location.world.name
+        }
+
+        // Make sure the group actually has the world in it
+        if (!group.containsWorld(worldName))
+        {
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Respawn world must be in the group!")
+            return
+        }
+
+        group.respawnWorld = worldName
+        groupManager.saveGroups()
+        sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Respawn world for group '${group.name}' set!")
+    }
 }

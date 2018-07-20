@@ -134,6 +134,7 @@ class PerWorldInventory : JavaPlugin
         server.pluginManager.registerEvents(injector.getSingleton(PlayerTeleportListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(EntityPortalEventListener::class), this)
         server.pluginManager.registerEvents(injector.getSingleton(PlayerDeathListener::class), this)
+        server.pluginManager.registerEvents(injector.getSingleton(PlayerRespawnListener::class), this)
 
         // The PlayerSpawnLocationEvent is only fired in Spigot
         // As of version 1.9.2

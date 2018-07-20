@@ -43,7 +43,7 @@ class GroupCommandsTest
     {
         // given
         val sender = mockk<CommandSender>(relaxed = true)
-        val group = Group("test", mutableSetOf(), GameMode.SURVIVAL)
+        val group = Group("test", mutableSetOf(), GameMode.SURVIVAL, null)
         every { groupManager.getGroup("test") } returns group
 
         // when
@@ -127,7 +127,7 @@ class GroupCommandsTest
         commands.onAddWorld(sender, "test", "bob")
 
         // then
-        val expected = Group("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL)
+        val expected = Group("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL, null)
         assertEquals(expected, group)
         verify { groupManager.saveGroups() }
     }
@@ -208,7 +208,58 @@ class GroupCommandsTest
         commands.onRemoveWorld(sender, "test", "bob")
 
         // then
-        val expected = Group("test", mutableSetOf("test"), GameMode.SURVIVAL)
+        val expected = Group("test", mutableSetOf("test"), GameMode.SURVIVAL, null)
+        assertEquals(expected, group)
+        verify { groupManager.saveGroups() }
+    }
+
+    @Test
+    fun setRespawnInvalidGroup()
+    {
+        // given
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("bob") } returns null
+
+        // when
+        commands.onSetRespawnWorld(sender, "bob", "bobs_world")
+
+        // then
+        verify(inverse = true) { groupManager.saveGroups() }
+    }
+
+    @Test
+    fun setRespawnInvalidWorld()
+    {
+        // given
+        val sender = mockk<CommandSender>(relaxed = true)
+        every { groupManager.getGroup("test") } returns mockGroup("test")
+        given(Bukkit.getWorld("invalid")).willReturn(null)
+
+        // when
+        commands.onSetRespawnWorld(sender, "test", "invalid")
+
+        // then
+        verify(inverse = true) { groupManager.saveGroups() }
+    }
+
+    @Test
+    fun setRespawnSuccessfully()
+    {
+        // given
+        val sender = mockk<CommandSender>(relaxed = true)
+        val world = mockk<World>(relaxed = true)
+        val group = mockGroup("test", mutableSetOf("test", "bob"))
+
+        given(Bukkit.getWorld("bob")).willReturn(world)
+
+        every { world.name } returns "bob"
+        every { groupManager.getGroup("test") } returns group
+
+        // when
+        commands.onSetRespawnWorld(sender, "test", "bob")
+
+        // then
+        val expected = Group("test", mutableSetOf("test", "bob"), GameMode.SURVIVAL, "bob")
         assertEquals(expected, group)
         verify { groupManager.saveGroups() }
     }
