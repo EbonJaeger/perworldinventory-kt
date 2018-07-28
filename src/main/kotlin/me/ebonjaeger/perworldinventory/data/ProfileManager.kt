@@ -86,6 +86,10 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         if (cached != null)
         {
             applyToPlayer(player, cached)
+
+            val event = InventoryLoadCompleteEvent(player, group, gm)
+            Bukkit.getPluginManager().callEvent(event)
+
             return
         }
 
