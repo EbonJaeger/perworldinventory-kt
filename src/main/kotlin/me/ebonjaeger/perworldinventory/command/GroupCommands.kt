@@ -53,11 +53,15 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
             }
         }
 
-        sender.sendMessage("${ChatColor.BLUE}Group Name: ${ChatColor.GRAY}${group.name}")
-        sender.sendMessage("${ChatColor.BLUE}Number of Worlds: ${ChatColor.GRAY}${group.worlds.count()}")
+        sender.sendMessage("${ChatColor.BLUE}Group name: ${ChatColor.GRAY}${group.name}")
+        sender.sendMessage("${ChatColor.BLUE}Number of worlds: ${ChatColor.GRAY}${group.worlds.count()}")
         sender.sendMessage("${ChatColor.BLUE}Worlds:")
         group.worlds.forEach { sender.sendMessage("${ChatColor.GRAY} - $it") }
         sender.sendMessage("${ChatColor.BLUE}Default GameMode: ${ChatColor.GRAY}${group.defaultGameMode.name}")
+        if (group.respawnWorld != null)
+        {
+            sender.sendMessage("${ChatColor.BLUE}Default respawn world: ${group.respawnWorld}")
+        }
     }
 
     @Subcommand("group create")
