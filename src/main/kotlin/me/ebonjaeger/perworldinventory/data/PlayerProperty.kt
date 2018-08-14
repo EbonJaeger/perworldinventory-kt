@@ -24,9 +24,6 @@ enum class PlayerProperty(private val property: Property<Boolean>?,
     EXPERIENCE(PlayerSettings.LOAD_EXP,
         ValueAccessors(Player::setExp, PlayerProfile::experience)),
 
-    FLYING(PlayerSettings.LOAD_FLYING,
-        ValueAccessors(Player::setFlying, PlayerProfile::isFlying)),
-
     FOOD_LEVEL(PlayerSettings.LOAD_HUNGER,
         ValueAccessors(Player::setFoodLevel, PlayerProfile::foodLevel)),
 

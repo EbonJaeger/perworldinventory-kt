@@ -128,11 +128,13 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         transferInventories(player, profile)
         transferHealth(player, profile)
         transferPotionEffects(player, profile)
+        transferFlying(player, profile)
 
         economyService.setNewBalance(player, profile.balance)
     }
 
-    private fun transferInventories(player: Player, profile: PlayerProfile) {
+    private fun transferInventories(player: Player, profile: PlayerProfile)
+    {
         if (settings.getProperty(PlayerSettings.LOAD_INVENTORY))
         {
             player.inventory.clear()
@@ -146,7 +148,8 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         }
     }
 
-    private fun transferHealth(player: Player, profile: PlayerProfile) {
+    private fun transferHealth(player: Player, profile: PlayerProfile)
+    {
         if (!settings.getProperty(PlayerSettings.LOAD_HEALTH)) {
             return
         }
@@ -164,12 +167,32 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         }
     }
 
-    private fun transferPotionEffects(player: Player, profile: PlayerProfile) {
+    private fun transferPotionEffects(player: Player, profile: PlayerProfile)
+    {
         if (settings.getProperty(PlayerSettings.LOAD_POTION_EFFECTS))
         {
             player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
             player.addPotionEffects(profile.potionEffects)
         }
+    }
+
+    /*
+     * Flying needs some special handling because for some reason, it is
+     * possible for players to not be able to fly when trying to set their
+     * flight mode to true.
+     *
+     * If the player was flying when they're profile was saved, then it stands
+     * to reason that they should be able to fly when going back to the same group.
+     * Therefore, set their allow flight to true before setting their fly mode.
+     */
+    private fun transferFlying(player: Player, profile: PlayerProfile)
+    {
+        if (profile.isFlying && !player.allowFlight)
+        {
+            player.allowFlight = true
+        }
+
+        player.isFlying = profile.isFlying
     }
 
     /**
