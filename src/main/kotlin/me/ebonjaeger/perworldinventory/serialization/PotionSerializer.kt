@@ -2,9 +2,6 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import me.ebonjaeger.perworldinventory.Utils
-import org.bukkit.Bukkit
-import org.bukkit.Color
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -31,13 +28,7 @@ object PotionSerializer
             obj.addProperty("duration", it.duration)
             obj.addProperty("ambient", it.isAmbient)
             obj.addProperty("particles", it.hasParticles())
-
-            // The color augments were added in the 1.9.0 API
-            val saveColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0)
-            if (saveColor && it.hasParticles() && it.color != null)
-            {
-                obj.addProperty("color", it.color.asRGB())
-            }
+            obj.addProperty("hasIcon", it.hasIcon())
 
             array.add(obj)
         }
@@ -65,18 +56,10 @@ object PotionSerializer
             val ambient = obj["ambient"].asBoolean
             val particles = obj["particles"].asBoolean
 
-            // The color augments were added in the 1.9.0 API
-            val getColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0) &&
-                    obj.has("color")
-            if (getColor)
-            {
-                val color = Color.fromRGB(obj["color"].asInt)
-                val effect = PotionEffect(type, duration, amplifier, ambient, particles, color)
-                effects.add(effect)
-                continue
-            }
+            // Randomly in 1.13, color stopped being a thing, and now icon is. Yay.
+            val hasIcon = if (obj.has("hasIcon")) obj["hasIcon"].asBoolean else false
 
-            val effect = PotionEffect(type, duration, amplifier, ambient, particles)
+            val effect = PotionEffect(type, duration, amplifier, ambient, particles, hasIcon)
             effects.add(effect)
         }
 
