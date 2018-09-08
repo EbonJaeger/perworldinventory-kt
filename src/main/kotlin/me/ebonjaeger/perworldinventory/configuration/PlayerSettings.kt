@@ -1,8 +1,8 @@
 package me.ebonjaeger.perworldinventory.configuration
 
 import ch.jalu.configme.Comment
-import ch.jalu.configme.SectionComments
 import ch.jalu.configme.SettingsHolder
+import ch.jalu.configme.configurationdata.CommentsConfiguration
 import ch.jalu.configme.properties.Property
 import ch.jalu.configme.properties.PropertyInitializer.newProperty
 
@@ -81,14 +81,8 @@ object PlayerSettings : SettingsHolder
     @Comment("Load the current remaining air a player has")
     val LOAD_REMAINING_AIR: Property<Boolean>? = newProperty("player.stats.remaining-air", true)
 
-    @JvmStatic
-    @SectionComments
-    fun buildSectionComments(): MutableMap<String, Array<out String>>
-    {
-        val comments = HashMap<String, Array<out String>>()
-        comments["player"] = arrayOf("All settings for players are here:")
-        comments["player.stats"] = arrayOf("All options for player stats are here:")
-
-        return comments
+    override fun registerComments(conf: CommentsConfiguration) {
+        conf.setComment("player", "All settings for players are here:")
+        conf.setComment("player.stats", "All options for player stats are here:")
     }
 }
