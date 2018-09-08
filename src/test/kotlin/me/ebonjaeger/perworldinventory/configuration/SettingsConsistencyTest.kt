@@ -1,12 +1,12 @@
 package me.ebonjaeger.perworldinventory.configuration
 
 import ch.jalu.configme.configurationdata.ConfigurationDataBuilder
+import ch.jalu.configme.resource.YamlFileReader
 import com.google.common.collect.Sets
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.isEmpty
 import me.ebonjaeger.perworldinventory.TestHelper.getFromJar
-import org.bukkit.configuration.file.YamlConfiguration
 import org.junit.Test
 
 /**
@@ -15,15 +15,12 @@ import org.junit.Test
 class SettingsConsistencyTest
 {
 
-    /** Bukkit's FileConfiguration#getKeys returns all inner nodes also. We want to exclude those in tests. */
-    private val YAML_INNER_NODES = listOf("metrics", "player", "player.stats")
-
-    private val configData = ConfigurationDataBuilder.collectData(
+    private val configData = ConfigurationDataBuilder.createConfiguration(
             PluginSettings::class.java,
             PlayerSettings::class.java,
             MetricsSettings::class.java)
 
-    private val yamlConfig = YamlConfiguration.loadConfiguration(getFromJar("/config.yml"))
+    private val yamlReader = YamlFileReader(getFromJar("/config.yml"))
 
     @Test
     fun shouldContainAllPropertiesWithSameDefaultValue()
@@ -31,14 +28,9 @@ class SettingsConsistencyTest
         // given / when / then
         configData.properties.forEach {
             assertThat("config.yml does not have property for $it",
-                    yamlConfig.contains(it.path), equalTo(true))
-
-            // TODO: Figure out a way to make this work with the new logging level property
-            if (it.path != "logging-level")
-            {
-                assertThat("config.yml does not have same default value for $it",
-                        it.defaultValue, equalTo(yamlConfig[it.path]))
-            }
+                    it.isPresent(yamlReader), equalTo(true))
+            assertThat("config.yml does not have same default value for $it",
+                    it.determineValue(yamlReader), equalTo(it.defaultValue))
         }
     }
 
@@ -46,8 +38,7 @@ class SettingsConsistencyTest
     fun shouldNotHaveUnknownProperties()
     {
         // given
-        val keysInYaml = yamlConfig.getKeys(true)
-        keysInYaml.removeAll(YAML_INNER_NODES)
+        val keysInYaml = yamlReader.getKeys(true)
 
         val keysInCode = configData.properties.map { it.path }.toSet()
 
