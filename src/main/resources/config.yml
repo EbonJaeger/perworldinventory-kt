@@ -79,6 +79,10 @@ load-data-on-join: false
 # DEBUG: Print detailed messages about everything
 logging-level: 'INFO'
 
+# Set the language used for plugin messages.
+# List of languages supported can be found here: <link>
+messages-locale: 'en'
+
 # Disables bypass regardless of permission
 # Defaults to false
 disable-bypass: false

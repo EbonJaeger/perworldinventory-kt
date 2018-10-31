@@ -1,5 +1,11 @@
 package me.ebonjaeger.perworldinventory
 
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.lang.String.format
+import java.nio.file.Files
+
 /**
  * Object that holds utility methods.
  */
@@ -42,6 +48,54 @@ object Utils
         } catch (ex: NumberFormatException)
         {
             return false
+        }
+
+        return false
+    }
+
+    /**
+     * Returns a file from the plugin JAR as a stream. Returns null if it doesn't exist.
+     *
+     * @param path The local path (starting from resources project, e.g. "config.yml" for 'resources/config.yml')
+     * @return the stream if the file exists, or false otherwise
+     */
+    fun getResourceFromJar(path: String): InputStream
+    {
+        // ClassLoader#getResourceAsStream does not deal with the '\' path separator: replace to '/'
+        val normalizedPath = path.replace("\\", "/")
+        return PerWorldInventory::class.java.classLoader.getResourceAsStream(normalizedPath)
+    }
+
+    /**
+     * Copy a resource file from the JAR to the given file if it doesn't exist.
+     *
+     * @param destination The file to check and copy to (outside of JAR)
+     * @param resourcePath Local path to the resource file (path to file within JAR)
+     *
+     * @return False if the file does not exist and could not be copied, true otherwise
+     */
+    fun copyFileFromResource(destination: File, resourcePath: String): Boolean
+    {
+        if (destination.exists()) return true
+        else Files.createDirectories(destination.parentFile.toPath())
+
+        try
+        {
+            getResourceFromJar(resourcePath).use {
+                if (it == null)
+                {
+                    ConsoleLogger.warning(format("Cannot copy resource '%s' to file '%s': cannot load resource",
+                            resourcePath, destination.getPath()))
+                } else
+                {
+                    Files.copy(it, destination.toPath())
+                    return true
+                }
+            }
+        } catch (ex: IOException)
+        {
+            ConsoleLogger.severe(format("Cannot copy resource '%s' to file '%s':",
+                    resourcePath, destination.getPath()), ex);
         }
 
         return false

@@ -1,0 +1,14 @@
+# Group command related messages
+groups:
+  unknown_group: "No group named '%group' found!"
+  name_exists: "A group called '%name' already exists!"
+  invalid_gamemode: "'%game_mode' is not a valid GameMode!"
+  created_successfully: "Group created successfully!"
+  unknown_world: "No world named '%world' exists!"
+  must_be_player: "Must be a player to execute this command without a world!"
+  added_world: "Added the world '%world' to group '%group'!"
+  removed_group: "Group removed successfully!"
+  world_not_in_group: "No world in group '%group' called '%world'!"
+  world_removed: "Removed the world '%world' from group '%group'!"
+  respawn_not_in_group: "Respawn world must be in the group!"
+  respawn_world_set: "Respawn world for group '%group' set!"

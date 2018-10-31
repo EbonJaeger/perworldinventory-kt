@@ -20,6 +20,11 @@ object PluginSettings : SettingsHolder
     val LOGGING_LEVEL: Property<LogLevel>? = newProperty(LogLevel::class.java, "logging-level", LogLevel.INFO)
 
     @JvmField
+    @Comment("Set the language used for plugin messages.",
+            "List of languages supported can be found here: <link>")
+    val LOCALE: Property<String>? = newProperty("messages-locale", "en")
+
+    @JvmField
     @Comment(
         "If true, the server will change player's gamemodes when entering a world",
         "The gamemode set is configured in the worlds.yml file")

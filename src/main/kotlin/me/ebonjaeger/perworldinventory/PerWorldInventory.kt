@@ -50,6 +50,7 @@ class PerWorldInventory : JavaPlugin
     private val DATA_DIRECTORY = File(dataFolder, "data")
     val SLOT_TIMEOUT = 5
     val WORLDS_CONFIG_FILE = File(dataFolder, "worlds.yml")
+    val l18nFolder = File(dataFolder, "messages")
 
     constructor(): super()
 
@@ -65,6 +66,12 @@ class PerWorldInventory : JavaPlugin
         if (!Files.exists(DATA_DIRECTORY.toPath()))
         {
             Files.createDirectories(DATA_DIRECTORY.toPath())
+        }
+
+        // Make the localization folder
+        if (!Files.exists(l18nFolder.toPath()))
+        {
+            Files.createDirectories(l18nFolder.toPath())
         }
 
         // Create config file if it does not exist

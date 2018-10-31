@@ -4,6 +4,9 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
+import me.ebonjaeger.perworldinventory.locale.MessageHandler
+import me.ebonjaeger.perworldinventory.locale.MessageKey
+import me.ebonjaeger.perworldinventory.locale.MessageType
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -12,7 +15,8 @@ import org.bukkit.entity.Player
 import javax.inject.Inject
 
 @CommandAlias("perworldinventory|pwi")
-class GroupCommands @Inject constructor(private val groupManager: GroupManager) : BaseCommand()
+class GroupCommands @Inject constructor(private val groupManager: GroupManager,
+                                        private val messageHandler: MessageHandler) : BaseCommand()
 {
 
     @Subcommand("group list")
@@ -48,7 +52,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
                 group = groupManager.getGroupFromWorld(sender.location.world.name)
             } else
             {
-                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unknown group '$groupName'!")
+                messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_GROUP, groupName)
                 return
             }
         }
@@ -72,7 +76,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         // Check if this group already exists
         if (groupManager.getGroup(name) != null)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}A group called '$name' already exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.NAME_EXISTS, name)
             return
         }
 
@@ -82,13 +86,13 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
             GameMode.valueOf(defaultGameMode.toUpperCase())
         } catch (ex: IllegalArgumentException)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}'$defaultGameMode' is not a valid GameMode!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.INVALID_GAMEMODE, defaultGameMode)
             return
         }
 
         groupManager.addGroup(name, worlds.toMutableSet(), gameMode, true)
         groupManager.saveGroups()
-        sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Group created successfully!")
+        messageHandler.sendMessage(sender, MessageType.SUCCESS, MessageKey.CREATED_SUCCESSFULLY)
     }
 
     @Subcommand("group addworld|aw")
@@ -102,7 +106,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         // Check if the group exists
         if (group == null)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No group with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_GROUP, groupName)
             return
         }
 
@@ -112,13 +116,13 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         if (world != null && Bukkit.getWorld(world) == null)
         {
             // User specified a world, but it doesn't exist
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_WORLD, worldName)
             return
         } else if (world == null) // Else, get the world from the sender's current location
         {
             if (sender !is Player)
             {
-                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Must be a player to execute this command without a world!")
+                messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.MUST_BE_PLAYER)
                 return
             }
 
@@ -127,7 +131,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
 
         group.addWorld(worldName)
         groupManager.saveGroups()
-        sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Added the world '$worldName' to group '$groupName'!")
+        messageHandler.sendMessage(sender, MessageType.SUCCESS, MessageKey.ADDED_WORLD, worldName, groupName)
     }
 
     @Subcommand("group delete")
@@ -138,13 +142,13 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     {
         if (groupManager.getGroup(group) == null)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No group with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_GROUP, group)
             return
         }
 
         groupManager.removeGroup(group)
         groupManager.saveGroups()
-        sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Group removed successfully!")
+        messageHandler.sendMessage(sender, MessageType.SUCCESS, MessageKey.REMOVED_GROUP)
     }
 
     @Subcommand("group removeworld|rw")
@@ -158,7 +162,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         // Check if the group exists
         if (group == null)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No group with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_GROUP, groupName)
             return
         }
 
@@ -168,13 +172,13 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         if (world != null && Bukkit.getWorld(world) == null)
         {
             // User specified a world, but it doesn't exist
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_WORLD, worldName)
             return
         } else if (world == null) // Else, get the world from the sender's current location
         {
             if (sender !is Player)
             {
-                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Must be a player to execute this command without a world!")
+                messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.MUST_BE_PLAYER)
                 return
             }
 
@@ -184,13 +188,13 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         // Make sure the group actually has the world in it
         if (!group.containsWorld(worldName))
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world in group '$groupName' called '$worldName'!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.WORLD_NOT_IN_GROUP, groupName, worldName)
             return
         }
 
         group.removeWorld(worldName)
         groupManager.saveGroups()
-        sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Removed the world '$worldName' from group '$groupName'!")
+        messageHandler.sendMessage(sender, MessageType.SUCCESS, MessageKey.WORLD_REMOVED, worldName, groupName)
     }
 
     @Subcommand("group setrespawn|sw")
@@ -204,7 +208,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         // Check if the group exists
         if (group == null)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No group with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_GROUP, groupName)
             return
         }
 
@@ -214,13 +218,13 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         if (world != null && Bukkit.getWorld(world) == null)
         {
             // User specified a world, but it doesn't exist
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.UNKNOWN_WORLD, worldName)
             return
         } else if (world == null) // Else, get the world from the sender's current location
         {
             if (sender !is Player)
             {
-                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Must be a player to execute this command without a world!")
+                messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.MUST_BE_PLAYER)
                 return
             }
 
@@ -230,12 +234,12 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         // Make sure the group actually has the world in it
         if (!group.containsWorld(worldName))
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Respawn world must be in the group!")
+            messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.RESPAWN_NOT_IN_GROUP)
             return
         }
 
         group.respawnWorld = worldName
         groupManager.saveGroups()
-        sender.sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Respawn world for group '${group.name}' set!")
+        messageHandler.sendMessage(sender, MessageType.SUCCESS, MessageKey.RESPAWN_SET, groupName)
     }
 }

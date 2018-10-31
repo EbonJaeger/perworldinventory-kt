@@ -5,6 +5,7 @@ import io.mockk.*
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
 import me.ebonjaeger.perworldinventory.TestHelper.mockGroup
+import me.ebonjaeger.perworldinventory.locale.MessageHandler
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.World
@@ -25,8 +26,9 @@ import kotlin.test.assertEquals
 class GroupCommandsTest
 {
 
-    private var groupManager = classMockk(GroupManager::class)
-    private val commands = GroupCommands(groupManager)
+    private val groupManager = classMockk(GroupManager::class)
+    private val messageHandler = classMockk(MessageHandler::class)
+    private val commands = GroupCommands(groupManager, messageHandler)
 
     @BeforeTest
     fun setupMocks()
@@ -36,6 +38,8 @@ class GroupCommandsTest
         every { groupManager.addGroup(any(), any(), any(), any()) } just runs
         every { groupManager.removeGroup(any()) } just runs
         every { groupManager.saveGroups() } just runs
+        every { messageHandler.sendMessage(any(), any(), any()) } just runs
+        every { messageHandler.sendMessage(any(), any(), any(), any()) } just runs
     }
 
     @Test
@@ -51,6 +55,7 @@ class GroupCommandsTest
 
         // then
         verify(inverse = true) { groupManager.addGroup(any(), any(), any(), any()) }
+        //verify { messageHandler.sendMessage(sender, MessageType.ERROR, MessageKey.NAME_EXISTS, "test_nether") }
     }
 
     @Test
