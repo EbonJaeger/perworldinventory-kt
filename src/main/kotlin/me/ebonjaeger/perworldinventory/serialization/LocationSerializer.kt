@@ -1,6 +1,6 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.google.gson.JsonObject
+import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Location
 
@@ -13,15 +13,15 @@ object LocationSerializer
      * @param location The location to serialize
      * @return A JsonObject with the world name and location properties
      */
-    fun serialize(location: Location): JsonObject
+    fun serialize(location: Location): JSONObject
     {
-        val obj = JsonObject()
-        obj.addProperty("world", location.world.name)
-        obj.addProperty("x", location.x)
-        obj.addProperty("y", location.y)
-        obj.addProperty("z", location.z)
-        obj.addProperty("pitch", location.pitch)
-        obj.addProperty("yaw", location.yaw)
+        val obj = JSONObject()
+        obj["world"] = location.world.name
+        obj["x"] = location.x
+        obj["y"] = location.y
+        obj["z"] = location.z
+        obj["pitch"] = location.pitch
+        obj["yaw"] = location.yaw
 
         return obj
     }
@@ -32,14 +32,14 @@ object LocationSerializer
      * @param obj The JsonObject to deserialize
      * @return A new location from the properties of the JsonObject
      */
-    fun deserialize(obj: JsonObject): Location
+    fun deserialize(obj: JSONObject): Location
     {
-        val world = Bukkit.getWorld(obj["world"].asString)
-        val x = obj["x"].asDouble
-        val y = obj["y"].asDouble
-        val z = obj["z"].asDouble
-        val pitch = obj["pitch"].asFloat
-        val yaw = obj["yaw"].asFloat
+        val world = Bukkit.getWorld(obj["world"] as String)
+        val x = obj["x"] as Double
+        val y = obj["y"] as Double
+        val z = obj["z"] as Double
+        val pitch = obj["pitch"] as Float
+        val yaw = obj["yaw"] as Float
 
         return Location(world, x, y, z, yaw, pitch)
     }

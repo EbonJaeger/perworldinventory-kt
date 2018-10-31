@@ -1,9 +1,9 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
+import net.minidev.json.JSONArray
+import net.minidev.json.JSONObject
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -17,14 +17,14 @@ object InventorySerializer
      * @param player The player to serialize
      * @return A JsonObject with a player's armor and inventory contents
      */
-    fun serializeAllInventories(player: PlayerProfile): JsonObject
+    fun serializeAllInventories(player: PlayerProfile): JSONObject
     {
-        val obj = JsonObject()
+        val obj = JSONObject()
         val inventory = serializeInventory(player.inventory)
         val armor = serializeInventory(player.armor)
 
-        obj.add("inventory", inventory)
-        obj.add("armor", armor)
+        obj["inventory"] = inventory
+        obj["armor"] = armor
 
         return obj
     }
@@ -35,9 +35,9 @@ object InventorySerializer
      * @param contents The items in the inventory
      * @return A JsonArray containing the inventory contents
      */
-    fun serializeInventory(contents: Array<out ItemStack>): JsonArray
+    fun serializeInventory(contents: Array<out ItemStack>): JSONArray
     {
-        val inventory = JsonArray()
+        val inventory = JSONArray()
 
         contents.indices
                 .map { ItemSerializer.serialize(contents[it], it) }
@@ -54,18 +54,18 @@ object InventorySerializer
      * @param format The data format being used
      * @return An array of ItemStacks
      */
-    fun deserialize(array: JsonArray, size: Int, format: Int): Array<out ItemStack>
+    fun deserialize(array: JSONArray, size: Int, format: Int): Array<out ItemStack>
     {
         val contents = Array(size) { ItemStack(Material.AIR) }
 
-        for (i in 0 until array.size())
+        for (i in 0 until array.size)
         {
             // We don't want to risk failing to deserialize a players inventory.
             // Try your best to deserialize as much as possible.
             try
             {
-                val obj = array[i].asJsonObject
-                val index = obj["index"].asInt
+                val obj = array[i] as JSONObject
+                val index = obj["index"] as Int
                 val item = ItemSerializer.deserialize(obj, format)
 
                 contents[index] = item

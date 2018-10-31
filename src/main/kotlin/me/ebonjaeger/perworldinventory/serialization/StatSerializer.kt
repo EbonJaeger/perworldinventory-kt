@@ -1,39 +1,39 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.data.PlayerDefaults
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
+import net.minidev.json.JSONObject
 import org.bukkit.GameMode
 
 object StatSerializer
 {
 
     /**
-     * Serialize a player's stats into a [JsonObject].
+     * Serialize a player's stats into a [JSONObject].
      *
      * @param player The player whose stats to serialize
      * @return The serialized stats
      */
-    fun serialize(player: PlayerProfile): JsonObject
+    fun serialize(player: PlayerProfile): JSONObject
     {
-        val obj = JsonObject()
+        val obj = JSONObject()
 
-        obj.addProperty("can-fly", player.allowFlight)
-        obj.addProperty("display-name", player.displayName)
-        obj.addProperty("exhaustion", player.exhaustion)
-        obj.addProperty("exp", player.experience)
-        obj.addProperty("flying", player.isFlying)
-        obj.addProperty("food", player.foodLevel)
-        obj.addProperty("gamemode", player.gameMode.toString())
-        obj.addProperty("max-health", player.maxHealth)
-        obj.addProperty("health", player.health)
-        obj.addProperty("level", player.level)
-        obj.addProperty("saturation", player.saturation)
-        obj.addProperty("fallDistance", player.fallDistance)
-        obj.addProperty("fireTicks", player.fireTicks)
-        obj.addProperty("maxAir", player.maximumAir)
-        obj.addProperty("remainingAir", player.remainingAir)
-        obj.add("potion-effects", PotionSerializer.serialize(player.potionEffects))
+        obj["can-fly"] = player.allowFlight
+        obj["display-name"] = player.displayName
+        obj["exhaustion"] = player.exhaustion
+        obj["exp"] = player.experience
+        obj["flying"] = player.isFlying
+        obj["food"] = player.foodLevel
+        obj["gamemode"] = player.gameMode.toString()
+        obj["max-health"] = player.maxHealth
+        obj["health"] = player.health
+        obj["level"] = player.level
+        obj["saturation"] = player.saturation
+        obj["fallDistance"] = player.fallDistance
+        obj["fireTicks"] = player.fireTicks
+        obj["maxAir"] = player.maximumAir
+        obj["remainingAir"] = player.remainingAir
+        obj["potion-effects"] = PotionSerializer.serialize(player.potionEffects)
 
         return obj
     }
@@ -48,23 +48,23 @@ object StatSerializer
      * display name is not stored in the data
      * @return The data with all stats present
      */
-    fun validateStats(data: JsonObject, playerName: String): JsonObject
+    fun validateStats(data: JSONObject, playerName: String): JSONObject
     {
-        if (!data.has("can-fly")) data.addProperty("can-fly", false)
-        if (!data.has("display-name")) data.addProperty("display-name", playerName)
-        if (!data.has("exhaustion")) data.addProperty("exhaustion", PlayerDefaults.EXHAUSTION)
-        if (!data.has("exp")) data.addProperty("exp", PlayerDefaults.EXPERIENCE)
-        if (!data.has("flying")) data.addProperty("flying", false)
-        if (!data.has("food")) data.addProperty("food", PlayerDefaults.FOOD_LEVEL)
-        if (!data.has("gamemode")) data.addProperty("gamemode", GameMode.SURVIVAL.toString())
-        if (!data.has("max-health")) data.addProperty("max-health", PlayerDefaults.HEALTH)
-        if (!data.has("health")) data.addProperty("health", PlayerDefaults.HEALTH)
-        if (!data.has("level")) data.addProperty("level", PlayerDefaults.LEVEL)
-        if (!data.has("saturation")) data.addProperty("saturation", PlayerDefaults.SATURATION)
-        if (!data.has("fallDistance")) data.addProperty("fallDistance", PlayerDefaults.FALL_DISTANCE)
-        if (!data.has("fireTicks")) data.addProperty("fireTicks", PlayerDefaults.FIRE_TICKS)
-        if (!data.has("maxAir")) data.addProperty("maxAir", PlayerDefaults.MAXIMUM_AIR)
-        if (!data.has("remainingAir")) data.addProperty("remainingAir", PlayerDefaults.REMAINING_AIR)
+        if (!data.containsKey("can-fly")) data["can-fly"] = false
+        if (!data.containsKey("display-name")) data["display-name"] = playerName
+        if (!data.containsKey("exhaustion")) data["exhaustion"] = PlayerDefaults.EXHAUSTION
+        if (!data.containsKey("exp")) data["exp"] = PlayerDefaults.EXPERIENCE
+        if (!data.containsKey("flying")) data["flying"] = false
+        if (!data.containsKey("food")) data["food"] = PlayerDefaults.FOOD_LEVEL
+        if (!data.containsKey("gamemode")) data["gamemode"] = GameMode.SURVIVAL.toString()
+        if (!data.containsKey("max-health")) data["max-health"] = PlayerDefaults.HEALTH
+        if (!data.containsKey("health")) data["health"] = PlayerDefaults.HEALTH
+        if (!data.containsKey("level")) data["level"] = PlayerDefaults.LEVEL
+        if (!data.containsKey("saturation")) data["saturation"] = PlayerDefaults.SATURATION
+        if (!data.containsKey("fallDistance")) data["fallDistance"] = PlayerDefaults.FALL_DISTANCE
+        if (!data.containsKey("fireTicks")) data["fireTicks"] = PlayerDefaults.FIRE_TICKS
+        if (!data.containsKey("maxAir")) data["maxAir"] = PlayerDefaults.MAXIMUM_AIR
+        if (!data.containsKey("remainingAir")) data["remainingAir"] = PlayerDefaults.REMAINING_AIR
 
         return data
     }

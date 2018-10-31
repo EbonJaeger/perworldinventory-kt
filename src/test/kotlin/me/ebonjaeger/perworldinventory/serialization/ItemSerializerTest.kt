@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.UnsafeValues
@@ -7,6 +8,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.inventory.ItemFactory
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.util.io.BukkitObjectOutputStream
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
@@ -18,6 +20,8 @@ import org.powermock.api.mockito.PowerMockito.mock
 import org.powermock.api.mockito.PowerMockito.mockStatic
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
+import java.io.ByteArrayOutputStream
 import kotlin.test.assertEquals
 
 /**
@@ -60,7 +64,7 @@ class ItemSerializerTest {
         val json = ItemSerializer.serialize(item, 1)
 
         // then
-        val result = ItemSerializer.deserialize(json, 2)
+        val result = ItemSerializer.deserialize(json, 3)
         assertHasSameProperties(item, result)
     }
 
@@ -76,9 +80,32 @@ class ItemSerializerTest {
 
         // then
         // deserialize item and test for match
-        val result = ItemSerializer.deserialize(json, 2)
+        val result = ItemSerializer.deserialize(json, 3)
         assertHasSameProperties(item, result)
         assertItemMetaMapsAreEqual(result, item)
+    }
+
+    @Test
+    fun verifyEncodedDeserialization()
+    {
+        // given
+        val expected = ItemStack(Material.TORCH, 16)
+
+        val obj = JSONObject()
+        ByteArrayOutputStream().use {
+            BukkitObjectOutputStream(it).use {
+                it.writeObject(expected)
+            }
+
+            val encoded = Base64Coder.encodeLines(it.toByteArray())
+            obj["item"] = encoded
+        }
+
+        // when
+        val actual = ItemSerializer.deserialize(obj, 2)
+
+        // then
+        assertHasSameProperties(expected, actual)
     }
 
     private fun assertHasSameProperties(expected: ItemStack, actual: ItemStack) {
