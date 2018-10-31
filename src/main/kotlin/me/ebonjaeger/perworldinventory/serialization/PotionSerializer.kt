@@ -1,7 +1,7 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
+import net.minidev.json.JSONArray
+import net.minidev.json.JSONObject
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -16,19 +16,19 @@ object PotionSerializer
      * @param effects The PotionEffects to serialize
      * @return The serialized PotionEffects
      */
-    fun serialize(effects: MutableCollection<PotionEffect>): JsonArray
+    fun serialize(effects: MutableCollection<PotionEffect>): JSONArray
     {
-        val array = JsonArray()
+        val array = JSONArray()
 
         effects.forEach {
-            val obj = JsonObject()
+            val obj = JSONObject()
 
-            obj.addProperty("type", it.type.name)
-            obj.addProperty("amp", it.amplifier)
-            obj.addProperty("duration", it.duration)
-            obj.addProperty("ambient", it.isAmbient)
-            obj.addProperty("particles", it.hasParticles())
-            obj.addProperty("hasIcon", it.hasIcon())
+            obj["type"] = it.type.name
+            obj["amp"] = it.amplifier
+            obj["duration"] = it.duration
+            obj["ambient"] = it.isAmbient
+            obj["particles"] = it.hasParticles()
+            obj["hasIcon"] = it.hasIcon()
 
             array.add(obj)
         }
@@ -42,22 +42,22 @@ object PotionSerializer
      * @param array The serialized PotionEffects
      * @return The PotionEffects
      */
-    fun deserialize(array: JsonArray): MutableCollection<PotionEffect>
+    fun deserialize(array: JSONArray): MutableCollection<PotionEffect>
     {
         val effects = mutableListOf<PotionEffect>()
 
-        for (i in 0 until array.size())
+        for (i in 0 until array.size)
         {
-            val obj = array[i].asJsonObject
+            val obj = array[i] as JSONObject
 
-            val type = PotionEffectType.getByName(obj["type"].asString)
-            val amplifier = obj["amp"].asInt
-            val duration = obj["duration"].asInt
-            val ambient = obj["ambient"].asBoolean
-            val particles = obj["particles"].asBoolean
+            val type = PotionEffectType.getByName(obj["type"] as String)
+            val amplifier = obj["amp"] as Int
+            val duration = obj["duration"] as Int
+            val ambient = obj["ambient"] as Boolean
+            val particles = obj["particles"] as Boolean
 
             // Randomly in 1.13, color stopped being a thing, and now icon is. Yay.
-            val hasIcon = if (obj.has("hasIcon")) obj["hasIcon"].asBoolean else false
+            val hasIcon = if (obj.containsKey("hasIcon")) obj["hasIcon"] as Boolean else false
 
             val effect = PotionEffect(type, duration, amplifier, ambient, particles, hasIcon)
             effects.add(effect)

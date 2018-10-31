@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.nhaarman.mockito_kotlin.given
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
+import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -116,7 +117,7 @@ class PlayerSerializerTest
         val json = PlayerSerializer.serialize(profile)
 
         // then
-        json["stats"].asJsonObject.remove("display-name")
+        (json["stats"] as JSONObject).remove("display-name")
         val result = PlayerSerializer.deserialize(json, "Bob", inventory.size, enderChest.size)
         assertProfilesAreEqual(profile, result)
     }

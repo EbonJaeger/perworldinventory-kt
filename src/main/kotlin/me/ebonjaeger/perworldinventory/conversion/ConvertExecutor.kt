@@ -1,8 +1,6 @@
 package me.ebonjaeger.perworldinventory.conversion
 
 import ch.jalu.injector.annotations.NoMethodScan
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.onarandombox.multiverseinventories.ProfileTypes
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile
@@ -13,6 +11,8 @@ import me.ebonjaeger.perworldinventory.GroupManager
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.serialization.InventorySerializer
 import me.ebonjaeger.perworldinventory.serialization.PotionSerializer
+import net.minidev.json.JSONObject
+import net.minidev.json.JSONStyle
 import org.bukkit.GameMode
 import org.bukkit.OfflinePlayer
 import org.bukkit.potion.PotionEffect
@@ -42,7 +42,6 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
         val profileTypes = arrayOf(ProfileTypes.ADVENTURE,
                 ProfileTypes.CREATIVE,
                 ProfileTypes.SURVIVAL)
-        val gson = Gson()
 
         if (mvGroups == null)
         {
@@ -74,7 +73,7 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
                         if (!file.exists())
                             Files.createFile(file.toPath())
 
-                        FileWriter(file).use { it.write(gson.toJson(data)) }
+                        FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
                     }
                 } catch (ex: Exception)
                 {
@@ -85,61 +84,61 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
         }
     }
 
-    private fun convertData(profile: PlayerProfile): JsonObject
+    private fun convertData(profile: PlayerProfile): JSONObject
     {
-        val obj = JsonObject()
-        obj.addProperty("data-format", 2)
+        val obj = JSONObject()
+        obj["data-format"] = 2
 
         // Inventory and armor
-        val inventory = JsonObject()
+        val inventory = JSONObject()
         if (profile[Sharables.INVENTORY] != null)
-            inventory.add("inventory", InventorySerializer.serializeInventory(profile[Sharables.INVENTORY]))
+            inventory["inventory"] = InventorySerializer.serializeInventory(profile[Sharables.INVENTORY])
         if (profile[Sharables.ARMOR] != null)
-            inventory.add("armor", InventorySerializer.serializeInventory(profile[Sharables.ARMOR]))
+            inventory["armor"] = InventorySerializer.serializeInventory(profile[Sharables.ARMOR])
 
-        obj.add("inventory", inventory)
+        obj["inventory"] = inventory
 
         // Ender chest
         if (profile[Sharables.ENDER_CHEST] != null)
-            obj.add("ender-chest", InventorySerializer.serializeInventory(profile[Sharables.ENDER_CHEST]))
+            obj["ender-chest"] = InventorySerializer.serializeInventory(profile[Sharables.ENDER_CHEST])
 
         // Player stats
-        val stats = JsonObject()
+        val stats = JSONObject()
         if (profile[Sharables.EXHAUSTION] != null)
-            stats.addProperty("exhaustion", profile[Sharables.EXHAUSTION])
+            stats["exhaustion"] = profile[Sharables.EXHAUSTION]
         if (profile[Sharables.EXPERIENCE] != null)
-            stats.addProperty("experience", profile[Sharables.EXPERIENCE])
+            stats["experience"] = profile[Sharables.EXPERIENCE]
         if (profile[Sharables.FOOD_LEVEL] != null)
-            stats.addProperty("food", profile[Sharables.FOOD_LEVEL])
+            stats["food"] = profile[Sharables.FOOD_LEVEL]
         if (profile[Sharables.HEALTH] != null)
-            stats.addProperty("health", profile[Sharables.HEALTH])
+            stats["health"] = profile[Sharables.HEALTH]
         if (profile[Sharables.LEVEL] != null)
-            stats.addProperty("level", profile[Sharables.LEVEL])
+            stats["level"] = profile[Sharables.LEVEL]
         if (profile[Sharables.POTIONS] != null)
         {
             val effects = mutableListOf<PotionEffect>()
             effects.addAll(profile[Sharables.POTIONS])
-            stats.add("potion-effects", PotionSerializer.serialize(effects))
+            stats["potion-effects"] = PotionSerializer.serialize(effects)
         }
         if (profile[Sharables.SATURATION] != null)
-            stats.addProperty("saturation", profile[Sharables.SATURATION])
+            stats["saturation"] = profile[Sharables.SATURATION]
         if (profile[Sharables.FALL_DISTANCE] != null)
-            stats.addProperty("fallDistance", profile[Sharables.FALL_DISTANCE])
+            stats["fallDistance"] = profile[Sharables.FALL_DISTANCE]
         if (profile[Sharables.FIRE_TICKS] != null)
-            stats.addProperty("fireTicks", profile[Sharables.FIRE_TICKS])
+            stats["fireTicks"] = profile[Sharables.FIRE_TICKS]
         if (profile[Sharables.MAXIMUM_AIR] != null)
-            stats.addProperty("maxAir", profile[Sharables.MAXIMUM_AIR])
+            stats["maxAir"] = profile[Sharables.MAXIMUM_AIR]
         if (profile[Sharables.REMAINING_AIR] != null)
-            stats.addProperty("remainingAir", profile[Sharables.REMAINING_AIR])
+            stats["remainingAir"] = profile[Sharables.REMAINING_AIR]
 
-        obj.add("stats", stats)
+        obj["stats"] = stats
 
         // Economy stuffs
         if (profile[Sharables.ECONOMY] != null)
         {
-            val econ = JsonObject()
-            econ.addProperty("balance", profile[Sharables.ECONOMY])
-            obj.add("economy", econ)
+            val econ = JSONObject()
+            econ["balance"] = profile[Sharables.ECONOMY]
+            obj["economy"] = econ
         }
 
         return obj

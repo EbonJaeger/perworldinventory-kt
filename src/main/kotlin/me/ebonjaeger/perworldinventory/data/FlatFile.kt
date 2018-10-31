@@ -1,13 +1,12 @@
 package me.ebonjaeger.perworldinventory.data
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
 import me.ebonjaeger.perworldinventory.serialization.PlayerSerializer
+import net.minidev.json.JSONObject
+import net.minidev.json.JSONStyle
+import net.minidev.json.parser.JSONParser
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -44,7 +43,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         val data = PlayerSerializer.serialize(player)
         try
         {
-            FileWriter(file).use { it.write(Gson().toJson(data)) }
+            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
         } catch (ex: IOException)
         {
             ConsoleLogger.severe("Could not write data to file '$file':", ex)
@@ -60,7 +59,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         {
             createFileIfNotExists(file)
             val data = LocationSerializer.serialize(player.location)
-            FileWriter(file).use { it.write(Gson().toJson(data)) }
+            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
         } catch (ex: IOException)
         {
             if (ex !is FileAlreadyExistsException)
@@ -82,27 +81,27 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             val key = location.world.name
 
             // Get any existing data
-            JsonReader(FileReader(file)).use {
-                val parser = JsonParser()
-                val root = parser.parse(it).asJsonObject
-                val locations = if (root.has("locations"))
+            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            FileReader(file).use {
+                val root = parser.parse(it) as JSONObject
+                val locations = if (root.containsKey("locations"))
                 {
-                    root["locations"].asJsonObject
+                    root["locations"] as JSONObject
                 } else
                 {
-                    JsonObject()
+                    JSONObject()
                 }
 
                 // If a location for this world already exists, remove it.
-                if (locations.has(key))
+                if (locations.containsKey(key))
                 {
                     locations.remove(key)
                 }
 
                 // Write the latest data to disk
-                locations.add(key, data)
-                root.add("locations", locations)
-                FileWriter(file).use { it.write(Gson().toJson(root)) }
+                locations[key] = data
+                root["locations"] = locations
+                FileWriter(file).use { it.write(root.toJSONString(JSONStyle.LT_COMPRESS)) }
             }
         } catch (ex: IOException)
         {
@@ -123,9 +122,9 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             return null
         }
 
-        JsonReader(FileReader(file)).use {
-            val parser = JsonParser()
-            val data = parser.parse(it).asJsonObject
+        FileReader(file).use {
+            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val data = parser.parse(it) as JSONObject
 
             return PlayerSerializer.deserialize(data, player.name, player.inventory.size, player.enderChest.size)
         }
@@ -142,9 +141,9 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             return null
         }
 
-        JsonReader(FileReader(file)).use {
-            val parser = JsonParser()
-            val data = parser.parse(it).asJsonObject
+        FileReader(file).use {
+            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val data = parser.parse(it) as JSONObject
 
             return LocationSerializer.deserialize(data)
         }
@@ -161,19 +160,19 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             return null
         }
 
-        JsonReader(FileReader(file)).use {
-            val parser = JsonParser()
-            val root = parser.parse(it).asJsonObject
-            if (!root.has("locations"))
+        FileReader(file).use {
+            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val root = parser.parse(it) as JSONObject
+            if (!root.containsKey("locations"))
             {
                 // Somehow the file exists, but still no locations
                 return null
             }
 
-            val locations = root["locations"].asJsonObject
-            return if (locations.has(world))
+            val locations = root["locations"] as JSONObject
+            return if (locations.containsKey(world))
             {
-                LocationSerializer.deserialize(locations["world"].asJsonObject)
+                LocationSerializer.deserialize(locations["world"] as JSONObject)
             } else
             {
                 // They haven't been to this world before, so no data
