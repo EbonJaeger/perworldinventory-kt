@@ -354,6 +354,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>me.ebonjaeger.perworldinventory.metrics</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>net.minidev.json</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.libs.json</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
 
