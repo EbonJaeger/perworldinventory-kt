@@ -43,7 +43,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         val data = PlayerSerializer.serialize(player)
         try
         {
-            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.MAX_COMPRESS)) }
+            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
         } catch (ex: IOException)
         {
             ConsoleLogger.severe("Could not write data to file '$file':", ex)
@@ -59,7 +59,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         {
             createFileIfNotExists(file)
             val data = LocationSerializer.serialize(player.location)
-            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.MAX_COMPRESS)) }
+            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
         } catch (ex: IOException)
         {
             if (ex !is FileAlreadyExistsException)
@@ -101,7 +101,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
                 // Write the latest data to disk
                 locations[key] = data
                 root["locations"] = locations
-                FileWriter(file).use { it.write(root.toJSONString(JSONStyle.MAX_COMPRESS)) }
+                FileWriter(file).use { it.write(root.toJSONString(JSONStyle.LT_COMPRESS)) }
             }
         } catch (ex: IOException)
         {
