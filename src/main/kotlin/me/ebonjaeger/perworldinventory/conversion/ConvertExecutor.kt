@@ -73,7 +73,7 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
                         if (!file.exists())
                             Files.createFile(file.toPath())
 
-                        FileWriter(file).use { it.write(data.toJSONString(JSONStyle.MAX_COMPRESS)) }
+                        FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
                     }
                 } catch (ex: Exception)
                 {

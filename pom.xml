@@ -354,6 +354,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>me.ebonjaeger.perworldinventory.metrics</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>net.minidev.json</pattern>
+                            <shadedPattern>me.ebonjaeger.perworldinventory.libs.json</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
 
@@ -387,6 +391,17 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- CircleCI build workaround -->
+                    <reuseForks>true</reuseForks>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                </configuration>
+                <version>2.20.1</version>
             </plugin>
 
             <!-- Coveralls data -->
