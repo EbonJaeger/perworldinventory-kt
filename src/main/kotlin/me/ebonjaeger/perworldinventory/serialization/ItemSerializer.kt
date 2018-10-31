@@ -61,6 +61,7 @@ object ItemSerializer
      * @param format The data format being used. Refer to {@link PlayerSerializer#serialize(PWIPlayer)}
      * @return The deserialized item stack
      */
+    @Suppress("UNCHECKED_CAST") // Reading a map we created; it's safe to assume the Map types
     fun deserialize(obj: JSONObject, format: Int): ItemStack
     {
         when (format)
