@@ -1,7 +1,7 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
+import net.minidev.json.JSONObject
 
 object EconomySerializer
 {
@@ -12,10 +12,10 @@ object EconomySerializer
      * @param player The player's information
      * @return A JsonObject containing the balance
      */
-    fun serialize(player: PlayerProfile): JsonObject
+    fun serialize(player: PlayerProfile): JSONObject
     {
-        val obj = JsonObject()
-        obj.addProperty("balance", player.balance)
+        val obj = JSONObject()
+        obj["balance"] = player.balance
         return obj
     }
 
@@ -24,11 +24,11 @@ object EconomySerializer
      *
      * @param data The JsonObject with the balance data
      */
-    fun deserialize(data: JsonObject): Double
+    fun deserialize(data: JSONObject): Double
     {
-        if (data.has("balance"))
+        if (data.containsKey("balance"))
         {
-            return data["balance"].asDouble
+            return data["balance"] as Double
         }
 
         return 0.0

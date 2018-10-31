@@ -113,6 +113,13 @@
             <version>1.0</version>
         </dependency>
 
+        <!-- Json Smart -->
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.3</version>
+        </dependency>
+
         <!-- Vault -->
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
@@ -148,6 +155,11 @@
                 <exclusion>
                     <groupId>net.milkbowl.vault</groupId>
                     <artifactId>Vault</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.codehaus.jettison</groupId>
+                    <artifactId>jettison</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

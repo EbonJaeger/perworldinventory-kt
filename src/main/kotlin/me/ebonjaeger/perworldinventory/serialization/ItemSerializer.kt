@@ -1,16 +1,14 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.ConsoleLogger
+import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.util.io.BukkitObjectInputStream
-import org.bukkit.util.io.BukkitObjectOutputStream
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 object ItemSerializer
@@ -21,23 +19,19 @@ object ItemSerializer
     /**
      * Serialize an ItemStack to a JsonObject.
      *
-     * The item itself will be saved as a Base64 encoded string to
-     * simplify the serialization and deserialization process. The result is
-     * not human readable.
-     *
      * @param item The item to serialize
      * @param index The position in the inventory
-     * @return A JsonObject with the encoded item
+     * @return A JsonObject with the item and its index
      */
-    fun serialize(item: ItemStack?, index: Int): JsonObject
+    fun serialize(item: ItemStack?, index: Int): JSONObject
     {
-        val obj = JsonObject()
+        val obj = JSONObject()
+        obj["index"] = index
 
         // If item is null, return air
         if (item == null)
         {
-            obj.addProperty("index", index)
-            obj.addProperty("item", AIR)
+            obj["item"] = AIR
             return obj
         }
 
@@ -55,16 +49,7 @@ object ItemSerializer
             }
         }
 
-        obj.addProperty("index", index)
-
-        ByteArrayOutputStream().use {
-            BukkitObjectOutputStream(it).use {
-                it.writeObject(item)
-            }
-
-            val encoded = Base64Coder.encodeLines(it.toByteArray())
-            obj.addProperty("item", encoded)
-        }
+        obj["item"] = item.serialize()
 
         return obj
     }
@@ -76,34 +61,55 @@ object ItemSerializer
      * @param format The data format being used. Refer to {@link PlayerSerializer#serialize(PWIPlayer)}
      * @return The deserialized item stack
      */
-    fun deserialize(obj: JsonObject, format: Int): ItemStack
-            = when (format)
+    fun deserialize(obj: JSONObject, format: Int): ItemStack
     {
-        0 -> throw IllegalArgumentException("Old data format is not supported!")
-        1, 2 -> {
-            try
+        when (format)
+        {
+            0 -> throw IllegalArgumentException("Old data format is not supported!")
+            1, 2 ->
             {
-                if (obj["item"].asString == AIR)
+                val encoded = obj["item"] as String
+                return decodeItem(encoded)
+            }
+            3 ->
+            {
+                return if (obj["item"] is Map<*, *>)
                 {
-                    ItemStack(Material.AIR)
+                    val item = obj["item"] as Map<String, Any>
+                    ItemStack.deserialize(item)
                 } else
                 {
-                    ByteArrayInputStream(Base64Coder.decodeLines(obj["item"].asString)).use {
-                        BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
-                    }
+                    ItemStack(Material.AIR)
                 }
-            } catch (ex: IOException)
+            }
+            else ->
             {
-                ConsoleLogger.severe("Unable to deserialize an item:", ex)
-                ItemStack(Material.AIR)
-            } catch (ex: ClassNotFoundException)
-            {
-                ConsoleLogger.severe("Unable to deserialize an item:", ex)
-                ItemStack(Material.AIR)
+                throw IllegalArgumentException("Unknown data format '$format'.")
             }
         }
-        else -> {
-            throw IllegalArgumentException("Unknown data format '$format'.")
+    }
+
+    private fun decodeItem(encoded: String): ItemStack
+    {
+        try
+        {
+            if (encoded == AIR)
+            {
+                return ItemStack(Material.AIR)
+            } else
+            {
+                ByteArrayInputStream(Base64Coder.decodeLines(encoded)).use {
+                    BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
+                }
+            }
+        } catch (ex: IOException)
+        {
+            ConsoleLogger.severe("Unable to deserialize an item:", ex)
+            return ItemStack(Material.AIR)
+        } catch (ex: ClassNotFoundException)
+        {
+            ConsoleLogger.severe("Unable to deserialize an item:", ex)
+            return ItemStack(Material.AIR)
         }
     }
 }

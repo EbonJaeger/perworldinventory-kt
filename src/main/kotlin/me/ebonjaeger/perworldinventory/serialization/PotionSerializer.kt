@@ -5,6 +5,8 @@ import com.google.gson.JsonObject
 import me.ebonjaeger.perworldinventory.Utils
 import org.bukkit.Bukkit
 import org.bukkit.Color
+import net.minidev.json.JSONArray
+import net.minidev.json.JSONObject
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
@@ -19,24 +21,24 @@ object PotionSerializer
      * @param effects The PotionEffects to serialize
      * @return The serialized PotionEffects
      */
-    fun serialize(effects: MutableCollection<PotionEffect>): JsonArray
+    fun serialize(effects: MutableCollection<PotionEffect>): JSONArray
     {
-        val array = JsonArray()
+        val array = JSONArray()
 
         effects.forEach {
-            val obj = JsonObject()
+            val obj = JSONObject()
 
-            obj.addProperty("type", it.type.name)
-            obj.addProperty("amp", it.amplifier)
-            obj.addProperty("duration", it.duration)
-            obj.addProperty("ambient", it.isAmbient)
-            obj.addProperty("particles", it.hasParticles())
+            obj["type"] = it.type.name
+            obj["amp"] = it.amplifier
+            obj["duration"] = it.duration
+            obj["ambient"] = it.isAmbient
+            obj["particles"] = it.hasParticles()
 
             // The color augments were added in the 1.9.0 API
             val saveColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0)
             if (saveColor && it.hasParticles() && it.color != null)
             {
-                obj.addProperty("color", it.color.asRGB())
+                obj["color"] = it.color.asRGB()
             }
 
             array.add(obj)
@@ -51,26 +53,26 @@ object PotionSerializer
      * @param array The serialized PotionEffects
      * @return The PotionEffects
      */
-    fun deserialize(array: JsonArray): MutableCollection<PotionEffect>
+    fun deserialize(array: JSONArray): MutableCollection<PotionEffect>
     {
         val effects = mutableListOf<PotionEffect>()
 
-        for (i in 0 until array.size())
+        for (i in 0 until array.size)
         {
-            val obj = array[i].asJsonObject
+            val obj = array[i] as JSONObject
 
-            val type = PotionEffectType.getByName(obj["type"].asString)
-            val amplifier = obj["amp"].asInt
-            val duration = obj["duration"].asInt
-            val ambient = obj["ambient"].asBoolean
-            val particles = obj["particles"].asBoolean
+            val type = PotionEffectType.getByName(obj["type"] as String)
+            val amplifier = obj["amp"] as Int
+            val duration = obj["duration"] as Int
+            val ambient = obj["ambient"] as Boolean
+            val particles = obj["particles"] as Boolean
 
             // The color augments were added in the 1.9.0 API
             val getColor = Utils.checkServerVersion(Bukkit.getVersion(), 1, 9, 0) &&
-                    obj.has("color")
+                    obj.containsKey("color")
             if (getColor)
             {
-                val color = Color.fromRGB(obj["color"].asInt)
+                val color = Color.fromRGB(obj["color"] as Int)
                 val effect = PotionEffect(type, duration, amplifier, ambient, particles, color)
                 effects.add(effect)
                 continue
