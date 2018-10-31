@@ -8,9 +8,9 @@ Kotlin programming language.
 
 ## Installation and Usage
 
-[![Build Status](https://ci.codemc.org/job/Gnat008/job/PerWorldInventory-KT/badge/icon)](https://ci.codemc.org/job/Gnat008/job/PerWorldInventory-KT/)
+[![Build Status](https://ci.codemc.org/job/EbonJaeger/job/PerWorldInventory-KT/badge/icon)](https://ci.codemc.org/job/EbonJaeger/job/PerWorldInventory-KT/)
 [![Dependency Status](https://www.versioneye.com/user/projects/5aea27cb0fb24f5450e028a7/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5aea27cb0fb24f5450e028a7)
-[![codecov](https://codecov.io/gh/Gnat008/perworldinventory-kt/branch/master/graph/badge.svg)](https://codecov.io/gh/Gnat008/perworldinventory-kt)
+[![codecov](https://codecov.io/gh/EbonJaeger/perworldinventory-kt/branch/master/graph/badge.svg)](https://codecov.io/gh/EbonJaeger/perworldinventory-kt)
 ## Building Prerequisites
 * JDK 8
 * Maven
