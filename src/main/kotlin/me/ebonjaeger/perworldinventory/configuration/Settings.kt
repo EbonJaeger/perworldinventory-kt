@@ -1,7 +1,9 @@
 package me.ebonjaeger.perworldinventory.configuration
 
 import ch.jalu.configme.SettingsHolder
-import ch.jalu.configme.SettingsManager
+import ch.jalu.configme.SettingsManagerImpl
+import ch.jalu.configme.configurationdata.ConfigurationData
+import ch.jalu.configme.configurationdata.ConfigurationDataBuilder
 import ch.jalu.configme.migration.MigrationService
 import ch.jalu.configme.resource.YamlFileResource
 import java.io.File
@@ -9,14 +11,14 @@ import java.io.File
 /**
  * Settings class for PWI settings.
  *
- * @param file The configuration file to load
+ * @param resource The property resource to read from and write to
  * @param migrater The configuration migrater to use to add new config options
  * @param settingsHolders Classes that hold the actual properties
  */
-class Settings private constructor(file: YamlFileResource,
-                                   migrater: MigrationService,
-                                   vararg settingsHolders: Class<out SettingsHolder>) :
-        SettingsManager(file, migrater, *settingsHolders)
+class Settings private constructor(resource: YamlFileResource,
+                                   configurationData: ConfigurationData,
+                                   migrater: MigrationService) :
+        SettingsManagerImpl(resource, configurationData, migrater)
 {
 
     companion object {
@@ -35,9 +37,10 @@ class Settings private constructor(file: YamlFileResource,
          */
         fun create(file: File): Settings {
             val fileResource = YamlFileResource(file)
+            val configurationData = ConfigurationDataBuilder.createConfiguration(*PROPERTY_HOLDERS)
             val migrater = PwiMigrationService()
 
-            return Settings(fileResource, migrater, *PROPERTY_HOLDERS)
+            return Settings(fileResource, configurationData, migrater)
         }
     }
 }

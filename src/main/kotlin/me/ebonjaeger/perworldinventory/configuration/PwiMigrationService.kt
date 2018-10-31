@@ -1,70 +1,40 @@
 package me.ebonjaeger.perworldinventory.configuration
 
+import ch.jalu.configme.configurationdata.ConfigurationData
+import ch.jalu.configme.migration.MigrationService
 import ch.jalu.configme.migration.PlainMigrationService
-import ch.jalu.configme.properties.Property
-import ch.jalu.configme.resource.PropertyResource
-import me.ebonjaeger.perworldinventory.ConsoleLogger
+import ch.jalu.configme.resource.PropertyReader
 import me.ebonjaeger.perworldinventory.LogLevel
 
 class PwiMigrationService : PlainMigrationService()
 {
 
-    override fun performMigrations(resource: PropertyResource?, properties: MutableList<Property<*>>?): Boolean
+    override fun performMigrations(reader: PropertyReader, configurationData: ConfigurationData): Boolean
     {
-        return migrateDebugLevels(resource!!)
+        return migrateDebugLevels(reader, configurationData)
     }
 
     /**
      * Migrate the old simple on-off debug mode to the new multi-leveled debug mode.
      *
-     * @param resource The property resource
+     * @param reader The property reader
+     * @param configurationData The configuration data
      * @return True if the configuration has changed, false otherwise
      */
-    private fun migrateDebugLevels(resource: PropertyResource) : Boolean
+    private fun migrateDebugLevels(reader: PropertyReader, configurationData: ConfigurationData) : Boolean
     {
         val oldPath = "debug-mode"
         val newSetting = PluginSettings.LOGGING_LEVEL
 
-        if (!newSetting!!.isPresent(resource) && resource.contains(oldPath))
+        if (!newSetting!!.isPresent(reader) && reader.contains(oldPath))
         {
-            val oldValue = resource.getBoolean(oldPath) ?: return false
+            val oldValue = reader.getBoolean(oldPath) ?: return false
             val level = if (oldValue) LogLevel.FINE else LogLevel.INFO
 
-            resource.setValue(oldPath, null)
-            resource.setValue(newSetting.path, level.name)
-            return true
+            configurationData.setValue(newSetting, level)
+            return MigrationService.MIGRATION_REQUIRED
         }
 
-        return false
-    }
-
-    /**
-     * Checks for an old property path and moves it to a new path if it is present and the new path is not yet set.
-     *
-     * @param oldProperty The old property (create a temporary [Property] object with the path)
-     * @param newProperty The new property to move the value to
-     * @param resource The property resource
-     * @param <T> The type of the property
-     * @return True if a migration has been done, false otherwise
-     */
-    private fun <T> moveProperty(oldProperty: Property<T>,
-                                 newProperty: Property<T>,
-                                 resource: PropertyResource): Boolean
-    {
-        if (resource.contains(oldProperty.path))
-        {
-            if (resource.contains(newProperty.path))
-            {
-                ConsoleLogger.info("Detected deprecated property " + oldProperty.path)
-            } else
-            {
-                ConsoleLogger.info("Renaming " + oldProperty.path + " to " + newProperty.path)
-                resource.setValue(newProperty.path, oldProperty.getValue(resource))
-            }
-
-            return true
-        }
-
-        return false
+        return MigrationService.NO_MIGRATION_NEEDED
     }
 }
