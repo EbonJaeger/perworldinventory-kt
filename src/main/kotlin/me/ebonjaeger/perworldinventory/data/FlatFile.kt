@@ -81,7 +81,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             val key = location.world.name
 
             // Get any existing data
-            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
             FileReader(file).use {
                 val root = parser.parse(it) as JSONObject
                 val locations = if (root.containsKey("locations"))
@@ -123,7 +123,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         }
 
         FileReader(file).use {
-            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
             val data = parser.parse(it) as JSONObject
 
             return PlayerSerializer.deserialize(data, player.name, player.inventory.size, player.enderChest.size)
@@ -142,7 +142,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         }
 
         FileReader(file).use {
-            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
             val data = parser.parse(it) as JSONObject
 
             return LocationSerializer.deserialize(data)
@@ -161,7 +161,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         }
 
         FileReader(file).use {
-            val parser = JSONParser(JSONParser.MODE_PERMISSIVE)
+            val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
             val root = parser.parse(it) as JSONObject
             if (!root.containsKey("locations"))
             {

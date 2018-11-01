@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import com.dumptruckman.bukkit.configuration.util.SerializationHelper
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
@@ -49,7 +50,7 @@ object ItemSerializer
             }
         }
 
-        obj["item"] = item.serialize()
+        obj["item"] = SerializationHelper.serialize(item)
 
         return obj
     }
@@ -77,7 +78,7 @@ object ItemSerializer
                 return if (obj["item"] is Map<*, *>)
                 {
                     val item = obj["item"] as Map<String, Any>
-                    ItemStack.deserialize(item)
+                    SerializationHelper.deserialize(item) as ItemStack
                 } else
                 {
                     ItemStack(Material.AIR)
