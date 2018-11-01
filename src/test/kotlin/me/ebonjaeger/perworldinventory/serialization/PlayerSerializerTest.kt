@@ -5,6 +5,8 @@ import com.natpryce.hamkrest.equalTo
 import com.nhaarman.mockito_kotlin.given
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import net.minidev.json.JSONObject
+import net.minidev.json.JSONStyle
+import net.minidev.json.parser.JSONParser
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -82,14 +84,15 @@ class PlayerSerializerTest
                 ItemStack(Material.DIAMOND), ItemStack(Material.AIR),
                 ItemStack(Material.DIAMOND))
         val profile = PlayerProfile(armor, enderChest, inventory, false, "Bob",
-                5.0F, 50.5F, false, 20, 20.0, 14.3, GameMode.SURVIVAL, 5, 4.86F,
+                5.0F, 50.5F, false, 20, 20.0, 14.0, GameMode.SURVIVAL, 5, 4.86F,
                 mutableListOf(), 0.0F, 0, 500, 500, 0.0)
 
         // when
-        val json = PlayerSerializer.serialize(profile)
+        val json = PlayerSerializer.serialize(profile).toJSONString(JSONStyle.LT_COMPRESS)
 
         // then
-        val result = PlayerSerializer.deserialize(json, "Bob", inventory.size, enderChest.size)
+        val parsed = JSONParser(JSONParser.USE_INTEGER_STORAGE).parse(json) as JSONObject
+        val result = PlayerSerializer.deserialize(parsed, "Bob", inventory.size, enderChest.size)
         assertProfilesAreEqual(profile, result)
     }
 
@@ -102,15 +105,16 @@ class PlayerSerializerTest
         val enderChest = arrayOf(ItemStack(Material.GOLDEN_APPLE))
         val inventory = arrayOf(ItemStack(Material.DIAMOND))
         val profile = PlayerProfile(armor, enderChest, inventory, false, "Bob",
-                5.0F, 50.5F, false, 20, 20.0, 14.3, GameMode.SURVIVAL, 5, 4.86F,
+                5.0F, 50.5F, false, 20, 20.0, 14.0, GameMode.SURVIVAL, 5, 4.86F,
                 mutableListOf(), 0.0F, 0, 500, 500, 0.0)
 
         // when
-        val json = PlayerSerializer.serialize(profile)
+        val json = PlayerSerializer.serialize(profile).toJSONString(JSONStyle.LT_COMPRESS)
 
         // then
-        (json["stats"] as JSONObject).remove("display-name")
-        val result = PlayerSerializer.deserialize(json, "Bob", inventory.size, enderChest.size)
+        val parsed = JSONParser(JSONParser.USE_INTEGER_STORAGE).parse(json) as JSONObject
+        (parsed["stats"] as JSONObject).remove("display-name")
+        val result = PlayerSerializer.deserialize(parsed, "Bob", inventory.size, enderChest.size)
         assertProfilesAreEqual(profile, result)
     }
 

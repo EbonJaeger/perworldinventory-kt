@@ -28,7 +28,7 @@ object EconomySerializer
     {
         if (data.containsKey("balance"))
         {
-            return data["balance"] as Double
+            return (data["balance"] as Float).toDouble()
         }
 
         return 0.0
