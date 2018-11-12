@@ -1,10 +1,10 @@
 package me.ebonjaeger.perworldinventory.conversion
 
 import ch.jalu.injector.annotations.NoMethodScan
-import com.onarandombox.multiverseinventories.ProfileTypes
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile
-import com.onarandombox.multiverseinventories.api.share.Sharables
+import com.onarandombox.multiverseinventories.WorldGroup
+import com.onarandombox.multiverseinventories.profile.PlayerProfile
+import com.onarandombox.multiverseinventories.profile.ProfileTypes
+import com.onarandombox.multiverseinventories.share.Sharables
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
@@ -30,7 +30,7 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
                                           @DataDirectory private val dataDirectory: File)
 {
 
-    var mvGroups: List<WorldGroupProfile>? = null
+    var mvGroups: List<WorldGroup>? = null
 
     /**
      * Converts data from the MultiVerse-Inventories format to the PWI format.
@@ -62,7 +62,7 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
 
                 try
                 {
-                    val playerProfile = mvGroup.getPlayerData(type, player)
+                    val playerProfile = mvGroup.groupProfileContainer.getPlayerData(type, player)
                     if (playerProfile != null)
                     {
                         val data = convertData(playerProfile)

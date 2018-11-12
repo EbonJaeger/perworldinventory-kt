@@ -24,16 +24,15 @@ class ConvertCommand @Inject constructor(private val pluginManager: PluginManage
     {
         if (!pluginManager.isPluginEnabled("Multiverse-Inventories"))
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}" +
-                    "Multiverse-Inventories is not installed! Cannot convert data!")
+            sender.sendMessage(
+                    "${ChatColor.DARK_RED}» ${ChatColor.GRAY}Multiverse-Inventories is not installed! Cannot convert data!")
             return
         }
 
         val mvi = pluginManager.getPlugin("Multiverse-Inventories")
         if (mvi == null)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}" +
-                    "Unable to get Multiverse-Inventories instance!")
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get Multiverse-Inventories instance!")
             return
         }
 
