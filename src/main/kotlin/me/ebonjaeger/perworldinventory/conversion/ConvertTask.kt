@@ -1,8 +1,11 @@
 package me.ebonjaeger.perworldinventory.conversion
 
+import me.ebonjaeger.perworldinventory.ConsoleLogger
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -44,8 +47,8 @@ class ConvertTask (private val convertService: ConvertService,
         convertService.executeConvert(playersInPage)
         if (currentPage % 20 == 0)
         {
-            sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}Convert progress: " +
-                    "$stopIndex/${offlinePlayers.size}")
+            ConsoleLogger.info(
+                    "${ChatColor.BLUE}» ${ChatColor.GRAY}Convert progress: $stopIndex/${offlinePlayers.size}")
         }
     }
 
@@ -53,13 +56,16 @@ class ConvertTask (private val convertService: ConvertService,
     {
         cancel()
 
-        sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}Conversion has " +
-                "been completed! Disabling MultiVerse-Inventories...")
+        if (sender !is ConsoleCommandSender) {
+            ConsoleLogger.info(
+                    "${ChatColor.BLUE}» ${ChatColor.GRAY}Conversion has been completed! Disabling MultiVerse-Inventories!")
+        }
+        if (sender is Player && sender.isOnline) {
+            sender.sendMessage(
+                    "${ChatColor.BLUE}» ${ChatColor.GRAY}Conversion has been completed! Disabling MultiVerse-Inventories!")
+        }
 
         convertService.finish()
-
-        sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}" +
-                "MultiVerse-Inventories disabled! Don't forget to remove the .jar!")
 
         convertService.converting = false
     }

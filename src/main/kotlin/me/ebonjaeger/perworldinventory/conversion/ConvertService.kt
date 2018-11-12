@@ -2,12 +2,14 @@ package me.ebonjaeger.perworldinventory.conversion
 
 import ch.jalu.injector.annotations.NoMethodScan
 import com.onarandombox.multiverseinventories.MultiverseInventories
+import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.GroupManager
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.plugin.PluginManager
 import javax.inject.Inject
 
@@ -35,16 +37,20 @@ class ConvertService @Inject constructor(private val bukkitService: BukkitServic
         convertPlayers(sender, offlinePlayers, mvinventory)
     }
 
-    private fun convertPlayers(sender: CommandSender,
-                               offlinePlayers: Array<out OfflinePlayer>,
+    private fun convertPlayers(sender: CommandSender, offlinePlayers: Array<out OfflinePlayer>,
                                mvinventory: MultiverseInventories)
     {
         if (converting)
         {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}" +
-                    "A conversion is already in progress!")
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}A conversion is already in progress!")
             return
         }
+
+        if (sender !is ConsoleCommandSender) {
+            ConsoleLogger.info(
+                    "${ChatColor.BLUE}» ${ChatColor.GRAY}Beginning conversion from Multiverse-Inventories...")
+        }
+        sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}Beginning conversion from Multiverse-Inventories...")
 
         converting = true
         val mvGroups = mvinventory.groupManager.groups
