@@ -7,7 +7,7 @@ import me.ebonjaeger.perworldinventory.ReflectionUtils
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.Server
-import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitScheduler
 import org.hamcrest.CoreMatchers.containsString
@@ -36,7 +36,7 @@ class ConvertTaskTest
                 mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java),
                 mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java), mock(OfflinePlayer::class.java))
 
-        val task = ConvertTask(convertService, mock(CommandSender::class.java), players)
+        val task = ConvertTask(convertService, mock(Player::class.java), players)
 
         // when (1 - first run, 5 players per run)
         task.run()
@@ -58,7 +58,8 @@ class ConvertTaskTest
     fun shouldStopAndInformOnComplete()
     {
         // given
-        val sender = mock(CommandSender::class.java)
+        val sender = mock(Player::class.java)
+        given(sender.isOnline).willReturn(true)
         val players = emptyArray<OfflinePlayer>()
         val task = ConvertTask(convertService, sender, players)
 
