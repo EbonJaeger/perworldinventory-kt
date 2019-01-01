@@ -185,14 +185,15 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
      * to reason that they should be able to fly when going back to the same group.
      * Therefore, set their allow flight to true before setting their fly mode.
      */
-    private fun transferFlying(player: Player, profile: PlayerProfile)
-    {
-        if (profile.isFlying && !player.allowFlight)
-        {
-            player.allowFlight = true
-        }
+    private fun transferFlying(player: Player, profile: PlayerProfile) {
+        if (settings.getProperty(PlayerSettings.LOAD_FLYING)) {
 
-        player.isFlying = profile.isFlying
+            if (profile.isFlying && !player.allowFlight) {
+                player.allowFlight = true
+            }
+
+            player.isFlying = profile.isFlying
+        }
     }
 
     /**
