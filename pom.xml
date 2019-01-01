@@ -6,7 +6,7 @@
 
     <groupId>me.ebonjaeger</groupId>
     <artifactId>perworldinventory-kt</artifactId>
-    <version>2.2.1-legacy</version>
+    <version>2.2.2-legacy</version>
 
     <name>PerWorldInventory</name>
     <description>Have a different inventory for each world.</description>
