@@ -35,12 +35,12 @@ object LocationSerializer
     fun deserialize(obj: JSONObject): Location
     {
         val world = Bukkit.getWorld(obj["world"] as String)
-        val x = obj["x"] as Double
-        val y = obj["y"] as Double
-        val z = obj["z"] as Double
+        val x = obj["x"] as Float
+        val y = obj["y"] as Float
+        val z = obj["z"] as Float
         val pitch = obj["pitch"] as Float
         val yaw = obj["yaw"] as Float
 
-        return Location(world, x, y, z, yaw, pitch)
+        return Location(world, x.toDouble(), y.toDouble(), z.toDouble(), yaw, pitch)
     }
 }
