@@ -1,4 +1,4 @@
-![PerWorldInventory](https://imgur.com/FA8b4OY)
+![PerWorldInventory](https://i.imgur.com/FA8b4OY.png)
 
 PerWorldInventory Is a multiworld inventory plugin for CraftBukkit and Spigot that supports UUIDs.
 This version 2.0.0 of the plugin is a full, from-scratch rewrite using the 
