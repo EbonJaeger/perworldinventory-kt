@@ -54,7 +54,7 @@ class EconomyService @Inject constructor(private val server: Server,
                     if (response.errorMessage.equals("Loan was not permitted", true))
                     {
                         ConsoleLogger.warning("[ECON] Negative balances are not permitted. Setting balance for '${player.name}'" +
-                                " to 0 in '${player.location.world.name}'")
+                                " to 0 in '${player.location.world?.name}'")
                         econ.withdrawPlayer(player, oldBalance)
                     } else
                     {
