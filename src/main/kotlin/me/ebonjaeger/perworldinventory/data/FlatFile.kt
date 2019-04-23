@@ -78,7 +78,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         {
             createFileIfNotExists(file)
             val data = LocationSerializer.serialize(location)
-            val key = location.world.name
+            val key = location.world?.name
 
             // Get any existing data
             val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
