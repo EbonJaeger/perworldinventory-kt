@@ -18,23 +18,24 @@ class EntityPortalEventListener @Inject constructor(private val groupManager: Gr
         if (event.entity !is Item)
             return
 
-        ConsoleLogger.fine("[ENTITYPORTALEVENT] A '${event.entity.name}' is going through a portal")
+        ConsoleLogger.fine("[EntityPortalEvent] A '${event.entity.name}' is going through a portal")
 
-        val worldFrom = event.from.world.name
+        val worldFrom = event.from.world
+        val locationTo = event.to ?: return // A destination location is not guaranteed to exist
+        val worldTo = locationTo.world
 
-        if (event.to == null || event.to.world == null)
-        {
-            ConsoleLogger.debug("[ENTITYPORTALEVENT] event.getTo().getWorld().getName() would throw a NPE! Exiting method!")
+        if (worldFrom == null || worldTo == null) {
+            ConsoleLogger.fine("[EntityPortalEvent] One of the worlds was null, returning")
             return
         }
-        val worldTo = event.to.world.name
-        val from = groupManager.getGroupFromWorld(worldFrom)
-        val to = groupManager.getGroupFromWorld(worldTo)
+
+        val from = groupManager.getGroupFromWorld(worldFrom.name)
+        val to = groupManager.getGroupFromWorld(worldTo.name)
 
         // If the groups are different, cancel the event
         if (from != to)
         {
-            ConsoleLogger.debug("[ENTITYPORTALEVENT] Group '${from.name}' and group '${to.name}' are different! Canceling event!")
+            ConsoleLogger.debug("[EntityPortalEvent] Group '${from.name}' and group '${to.name}' are different! Canceling event!")
             event.isCancelled = true
         }
     }
