@@ -21,7 +21,8 @@ class PlayerDeathListener @Inject constructor(private val groupManager: GroupMan
     fun onPlayerDeath(event: PlayerDeathEvent)
     {
         val player = event.entity
-        val group = groupManager.getGroupFromWorld(player.location.world.name)
+        val location = player.location
+        val group = groupManager.getGroupFromWorld(location.world!!.name)
 
         if (!event.keepInventory)
         {

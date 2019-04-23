@@ -25,27 +25,28 @@ class PlayerSpawnLocationListener @Inject constructor(private val dataSource: Da
             return
 
         val player = event.player
-        val spawnWorld = event.spawnLocation.world.name
+        val spawnWorld = event.spawnLocation.world!!.name // The server will never provide a null world in a Location
         ConsoleLogger.fine("onPlayerSpawn: '${player.name}' joining in world '$spawnWorld'")
 
         val location = dataSource.getLogout(player)
-        if (location != null && location.world != null)
-        {
-            ConsoleLogger.debug("onPlayerSpawn: Logout location found for player '${player.name}': $location")
 
-            if (location.world.name != spawnWorld)
-            {
-                val spawnGroup = groupManager.getGroupFromWorld(spawnWorld)
-                val logoutGroup = groupManager.getGroupFromWorld(location.world.name)
+        if (location == null || location.world == null) { // No valid location found
+            return
+        }
 
-                if (spawnGroup != logoutGroup)
-                {
-                    ConsoleLogger.fine("onPlayerSpawn: Current group does not match logout group for '${player.name}'")
-                    ConsoleLogger.debug("onPlayerSpawn: spawnGroup=$spawnGroup, logoutGroup=$logoutGroup")
+        ConsoleLogger.debug("onPlayerSpawn: Logout location found for player '${player.name}': $location")
 
-                    profileManager.addPlayerProfile(player, logoutGroup, player.gameMode)
-                    profileManager.getPlayerData(player, spawnGroup, player.gameMode)
-                }
+        val world = location.world
+        if (world!!.name != spawnWorld) { // We saved this Location, so we can assume it has a world
+            val spawnGroup = groupManager.getGroupFromWorld(spawnWorld)
+            val logoutGroup = groupManager.getGroupFromWorld(world.name)
+
+            if (spawnGroup != logoutGroup) {
+                ConsoleLogger.fine("onPlayerSpawn: Current group does not match logout group for '${player.name}'")
+                ConsoleLogger.debug("onPlayerSpawn: spawnGroup=$spawnGroup, logoutGroup=$logoutGroup")
+
+                profileManager.addPlayerProfile(player, logoutGroup, player.gameMode)
+                profileManager.getPlayerData(player, spawnGroup, player.gameMode)
             }
         }
     }

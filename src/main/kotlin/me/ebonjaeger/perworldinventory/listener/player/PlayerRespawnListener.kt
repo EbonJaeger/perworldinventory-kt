@@ -22,7 +22,7 @@ class PlayerRespawnListener @Inject constructor(private val groupManager: GroupM
     {
         if (!settings.getProperty(PluginSettings.MANAGE_DEATH_RESPAWN)) return
 
-        val group = groupManager.getGroupFromWorld(event.player.location.world.name)
+        val group = groupManager.getGroupFromWorld(event.player.location.world!!.name) // The server will never provide a null world in a Location
         val respawnWorld = group.respawnWorld
         if (respawnWorld != null && group.containsWorld(respawnWorld)) {
             event.respawnLocation = Bukkit.getWorld(respawnWorld).spawnLocation

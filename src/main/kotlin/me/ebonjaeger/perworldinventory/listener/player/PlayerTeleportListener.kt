@@ -16,14 +16,16 @@ class PlayerTeleportListener @Inject constructor(private val groupManager: Group
     @EventHandler(priority = EventPriority.MONITOR)
     fun onPlayerTeleport(event: PlayerTeleportEvent)
     {
-        if (event.isCancelled || event.from.world == event.to.world)
+        val destination = event.to ?: return // Why is it even possible for the destination to be null?
+
+        if (event.isCancelled || event.from.world == destination.world)
         {
             return
         }
 
         val player = event.player
-        val worldFromName = event.from.world.name
-        val worldToName = event.to.world.name
+        val worldFromName = event.from.world!!.name // The server will never provide a null world in a Location
+        val worldToName = destination.world!!.name // The server will never provide a null world in a Location
         val groupFrom = groupManager.getGroupFromWorld(worldFromName)
         val groupTo = groupManager.getGroupFromWorld(worldToName)
 
