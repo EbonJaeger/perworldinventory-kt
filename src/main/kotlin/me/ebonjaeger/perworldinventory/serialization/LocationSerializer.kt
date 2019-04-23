@@ -16,7 +16,7 @@ object LocationSerializer
     fun serialize(location: Location): JSONObject
     {
         val obj = JSONObject()
-        obj["world"] = location.world.name
+        obj["world"] = location.world?.name
         obj["x"] = location.x.toFloat()
         obj["y"] = location.y.toFloat()
         obj["z"] = location.z.toFloat()
