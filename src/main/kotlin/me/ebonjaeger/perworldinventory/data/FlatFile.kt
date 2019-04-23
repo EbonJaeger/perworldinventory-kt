@@ -82,8 +82,8 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
 
             // Get any existing data
             val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
-            FileReader(file).use {
-                val root = parser.parse(it) as JSONObject
+            FileReader(file).use { reader ->
+                val root = parser.parse(reader) as JSONObject
                 val locations = if (root.containsKey("locations"))
                 {
                     root["locations"] as JSONObject
@@ -101,7 +101,7 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
                 // Write the latest data to disk
                 locations[key] = data
                 root["locations"] = locations
-                FileWriter(file).use { it.write(root.toJSONString(JSONStyle.LT_COMPRESS)) }
+                FileWriter(file).use { writer -> writer.write(root.toJSONString(JSONStyle.LT_COMPRESS)) }
             }
         } catch (ex: IOException)
         {
