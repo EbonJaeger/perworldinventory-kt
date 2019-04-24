@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import com.nhaarman.mockito_kotlin.eq
 import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -31,6 +32,8 @@ import kotlin.test.assertEquals
 @RunWith(PowerMockRunner::class)
 class ItemSerializerTest {
 
+    private lateinit var unsafe: UnsafeValues
+
     @Before
     fun writeMocksAndInitializeSerializer() {
         mockStatic(Bukkit::class.java)
@@ -50,9 +53,11 @@ class ItemSerializerTest {
 
         // As of 1.13, Bukkit has a compatibility layer, and serializing an item
         // now checks the data version to see what Material name to use.
-        val unsafe = mock(UnsafeValues::class.java)
+        unsafe = mock(UnsafeValues::class.java)
         given(Bukkit.getUnsafe()).willReturn(unsafe)
         given(unsafe.dataVersion).willReturn(1513)
+        given(unsafe.getMaterial("APPLE", 1513)).willReturn(Material.APPLE)
+        given(unsafe.getMaterial("TORCH", 1513)).willReturn(Material.TORCH)
     }
 
     @Test
@@ -92,12 +97,12 @@ class ItemSerializerTest {
         val expected = ItemStack(Material.TORCH, 16)
 
         val obj = JSONObject()
-        ByteArrayOutputStream().use {
-            BukkitObjectOutputStream(it).use {
+        ByteArrayOutputStream().use { os ->
+            BukkitObjectOutputStream(os).use {
                 it.writeObject(expected)
             }
 
-            val encoded = Base64Coder.encodeLines(it.toByteArray())
+            val encoded = Base64Coder.encodeLines(os.toByteArray())
             obj["item"] = encoded
         }
 
@@ -112,7 +117,6 @@ class ItemSerializerTest {
         assertEquals(expected.type, actual.type)
         assertEquals(expected.amount, actual.amount)
         assertEquals(expected.data, actual.data)
-        assertEquals(expected.durability, actual.durability)
     }
 
     /**
@@ -136,7 +140,7 @@ class ItemSerializerTest {
                 }
             }
         } else {
-            fail("Expected given.itemMeta to be of test impl, but was ${given.itemMeta::class}")
+            fail("Expected given.itemMeta to be of test impl, but was ${given.itemMeta!!::class}")
         }
     }
 }
