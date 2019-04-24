@@ -1,5 +1,7 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import com.dumptruckman.bukkit.configuration.util.SerializationHelper
+import me.ebonjaeger.perworldinventory.ConsoleLogger
 import net.minidev.json.JSONArray
 import net.minidev.json.JSONObject
 import org.bukkit.potion.PotionEffect
@@ -9,9 +11,8 @@ object PotionSerializer
 {
 
     /**
-     * Serialize a Collection of PotionEffects into a JsonArray of JsonObjects. Each
-     * JsonObject contains the type, amplifier, duration and color of a potion effect.
-     * The color is saved in the RGB format.
+     * Serialize a Collection of PotionEffects into a JsonArray of JsonObjects. The
+     * effects are serialized using their ConfigurationSerialization method.
      *
      * @param effects The PotionEffects to serialize
      * @return The serialized PotionEffects
@@ -20,15 +21,10 @@ object PotionSerializer
     {
         val array = JSONArray()
 
-        effects.forEach {
+        effects.forEach { effect ->
             val obj = JSONObject()
 
-            obj["type"] = it.type.name
-            obj["amp"] = it.amplifier
-            obj["duration"] = it.duration
-            obj["ambient"] = it.isAmbient
-            obj["particles"] = it.hasParticles()
-            obj["hasIcon"] = it.hasIcon()
+            obj["effect"] = SerializationHelper.serialize(effect)
 
             array.add(obj)
         }
@@ -42,6 +38,7 @@ object PotionSerializer
      * @param array The serialized PotionEffects
      * @return The PotionEffects
      */
+    @Suppress("UNCHECKED_CAST") // Reading a map we created; it's safe to assume the Map types
     fun deserialize(array: JSONArray): MutableCollection<PotionEffect>
     {
         val effects = mutableListOf<PotionEffect>()
@@ -50,19 +47,38 @@ object PotionSerializer
         {
             val obj = array[i] as JSONObject
 
-            val type = PotionEffectType.getByName(obj["type"] as String)
-            val amplifier = obj["amp"] as Int
-            val duration = obj["duration"] as Int
-            val ambient = obj["ambient"] as Boolean
-            val particles = obj["particles"] as Boolean
+            val effect = if (obj["effect"] is Map<*, *> && (obj["effect"] as Map<*, *>).containsKey("==")) { // Object is a Map, and contains the classname as a key
+                val map = obj["effect"] as Map<String, Any>
+                SerializationHelper.deserialize(map) as PotionEffect
+            } else { // Likely older data, try to use the old long way
+                deserializeLongWay(obj)
+            }
 
-            // Randomly in 1.13, color stopped being a thing, and now icon is. Yay.
-            val hasIcon = if (obj.containsKey("hasIcon")) obj["hasIcon"] as Boolean else false
-
-            val effect = PotionEffect(type, duration, amplifier, ambient, particles, hasIcon)
-            effects.add(effect)
+            if (effect != null) { // Potion effect de-serialized correctly
+                effects.add(effect)
+            }
         }
 
         return effects
+    }
+
+    @Deprecated("Kept for backwards compatibility, and may be removed in a later MC version")
+    private fun deserializeLongWay(obj: JSONObject): PotionEffect? {
+        val type = PotionEffectType.getByName(obj["type"] as String)
+
+        if (type == null) {
+            ConsoleLogger.warning("Unable to get potion effect for type: ${obj["type"]}")
+            return null
+        }
+
+        val amplifier = obj["amp"] as Int
+        val duration = obj["duration"] as Int
+        val ambient = obj["ambient"] as Boolean
+        val particles = obj["particles"] as Boolean
+
+        // Randomly in 1.13, color stopped being a thing, and now icon is. Yay.
+        val hasIcon = if (obj.containsKey("hasIcon")) obj["hasIcon"] as Boolean else false
+
+        return PotionEffect(type, duration, amplifier, ambient, particles, hasIcon)
     }
 }
