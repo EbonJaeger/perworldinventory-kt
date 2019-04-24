@@ -45,7 +45,7 @@ class LocationSerializerTest
 
     private fun assertHasSameProperties(given: Location, expected: Location)
     {
-        assertThat(given.world.name, equalTo(expected.world.name))
+        assertThat(given.world!!.name, equalTo(expected.world!!.name)) // We created them, we know they're not null!
         assertThat(given.x.toFloat(), equalTo(expected.x.toFloat()))
         assertThat(given.y.toFloat(), equalTo(expected.y.toFloat()))
         assertThat(given.z.toFloat(), equalTo(expected.z.toFloat()))
