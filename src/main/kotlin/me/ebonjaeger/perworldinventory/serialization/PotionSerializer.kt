@@ -17,16 +17,14 @@ object PotionSerializer
      * @param effects The PotionEffects to serialize
      * @return The serialized PotionEffects
      */
+    @Suppress("UNCHECKED_CAST") // We know that #serialize will give us a Map for a ConfigurationSerializable object
     fun serialize(effects: MutableCollection<PotionEffect>): JSONArray
     {
         val array = JSONArray()
 
         effects.forEach { effect ->
-            val obj = JSONObject()
-
-            obj["effect"] = SerializationHelper.serialize(effect)
-
-            array.add(obj)
+            val map = SerializationHelper.serialize(effect) as Map<String, Any>
+            array.add(JSONObject(map))
         }
 
         return array
@@ -38,7 +36,6 @@ object PotionSerializer
      * @param array The serialized PotionEffects
      * @return The PotionEffects
      */
-    @Suppress("UNCHECKED_CAST") // Reading a map we created; it's safe to assume the Map types
     fun deserialize(array: JSONArray): MutableCollection<PotionEffect>
     {
         val effects = mutableListOf<PotionEffect>()
@@ -47,8 +44,8 @@ object PotionSerializer
         {
             val obj = array[i] as JSONObject
 
-            val effect = if (obj["effect"] is Map<*, *> && (obj["effect"] as Map<*, *>).containsKey("==")) { // Object is a Map, and contains the classname as a key
-                val map = obj["effect"] as Map<String, Any>
+            val effect = if (obj.containsKey("==")) { // Object contains the classname as a key
+                val map = obj as Map<String, Any>
                 SerializationHelper.deserialize(map) as PotionEffect
             } else { // Likely older data, try to use the old long way
                 deserializeLongWay(obj)
