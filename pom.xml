@@ -31,7 +31,7 @@
         <bukkitplugin.authors>EbonJaeger</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.14-pre5-SNAPSHOT</bukkit.version>
+        <bukkit.version>1.14-R0.1-SNAPSHOT</bukkit.version>
         <powermock.version>1.7.3</powermock.version>
     </properties>
 
@@ -241,13 +241,13 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
-            <version>1.2.20</version>
+            <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit</artifactId>
-            <version>1.2.20</version>
+            <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.meta.Damageable
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.tags.CustomItemTagContainer
+import org.bukkit.persistence.PersistentDataContainer
 
 /**
  * Implementation of [ItemMeta] for usage in tests.
@@ -205,6 +206,10 @@ class ItemMetaTestImpl : ItemMeta, Damageable {
     }
 
     override fun getAttributeModifiers(attribute: Attribute): MutableCollection<AttributeModifier> {
+        throw NotImplementedError("not implemented")
+    }
+
+    override fun getPersistentDataContainer(): PersistentDataContainer {
         throw NotImplementedError("not implemented")
     }
 }
