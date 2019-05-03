@@ -32,20 +32,26 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     @CommandPermission("perworldinventory.command.groups.info")
     @Description("Display information about a group")
     @CommandCompletion("@groups")
-    fun onGroupInfo(sender: CommandSender, @Optional groupName: String)
+    fun onGroupInfo(sender: CommandSender, @Optional groupName: String?)
     {
         var group: Group? = null
         if (groupName !== null)
         {
             group = groupManager.getGroup(groupName)
-
         }
 
         if (group === null)
         {
             if (sender is Player)
             {
-                group = groupManager.getGroupFromWorld(sender.location.world.name)
+                val world = sender.location.world
+
+                if (world == null) {
+                    sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get the world from your location!")
+                    return
+                }
+
+                group = groupManager.getGroupFromWorld(world.name)
             } else
             {
                 sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unknown group '$groupName'!")
@@ -95,7 +101,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     @CommandPermission("perworldinventory.command.groups.modify")
     @Description("Add a world to a group")
     @CommandCompletion("@groups @worlds")
-    fun onAddWorld(sender: CommandSender, groupName: String, @Optional world: String)
+    fun onAddWorld(sender: CommandSender, groupName: String, @Optional world: String?)
     {
         val group = groupManager.getGroup(groupName)
 
@@ -109,12 +115,12 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         var worldName = world
 
         // Check if the sender specified a world, and if that world exists
-        if (world != null && Bukkit.getWorld(world) == null)
+        if (worldName != null && Bukkit.getWorld(worldName) == null)
         {
             // User specified a world, but it doesn't exist
             sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
             return
-        } else if (world == null) // Else, get the world from the sender's current location
+        } else if (worldName == null) // Else, get the world from the sender's current location
         {
             if (sender !is Player)
             {
@@ -122,7 +128,14 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
                 return
             }
 
-            worldName = sender.location.world.name
+            val playerWorld = sender.location.world
+
+            if (playerWorld == null) {
+                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get the world from your location!")
+                return
+            }
+
+            worldName = playerWorld.name
         }
 
         group.addWorld(worldName)
@@ -151,7 +164,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     @CommandPermission("perworldinventory.command.groups.modify")
     @Description("Remove a world from a group")
     @CommandCompletion("@groups @worlds")
-    fun onRemoveWorld(sender: CommandSender, groupName: String, @Optional world: String)
+    fun onRemoveWorld(sender: CommandSender, groupName: String, @Optional world: String?)
     {
         val group = groupManager.getGroup(groupName)
 
@@ -165,12 +178,12 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         var worldName = world
 
         // Check if the sender specified a world, and if that world exists
-        if (world != null && Bukkit.getWorld(world) == null)
+        if (worldName != null && Bukkit.getWorld(worldName) == null)
         {
             // User specified a world, but it doesn't exist
             sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
             return
-        } else if (world == null) // Else, get the world from the sender's current location
+        } else if (worldName == null) // Else, get the world from the sender's current location
         {
             if (sender !is Player)
             {
@@ -178,7 +191,14 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
                 return
             }
 
-            worldName = sender.location.world.name
+            val playerWorld = sender.location.world
+
+            if (playerWorld == null) {
+                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get the world from your location!")
+                return
+            }
+
+            worldName = playerWorld.name
         }
 
         // Make sure the group actually has the world in it
@@ -197,7 +217,7 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
     @CommandPermission("perworldinventory.command.groups.modify")
     @Description("Set the default spawn world for a group")
     @CommandCompletion("@groups @worlds")
-    fun onSetRespawnWorld(sender: CommandSender, groupName: String, @Optional world: String)
+    fun onSetRespawnWorld(sender: CommandSender, groupName: String, @Optional world: String?)
     {
         val group = groupManager.getGroup(groupName)
 
@@ -211,12 +231,12 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
         var worldName = world
 
         // Check if the sender specified a world, and if that world exists
-        if (world != null && Bukkit.getWorld(world) == null)
+        if (worldName != null && Bukkit.getWorld(worldName) == null)
         {
             // User specified a world, but it doesn't exist
             sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}No world with that name exists!")
             return
-        } else if (world == null) // Else, get the world from the sender's current location
+        } else if (worldName == null) // Else, get the world from the sender's current location
         {
             if (sender !is Player)
             {
@@ -224,7 +244,14 @@ class GroupCommands @Inject constructor(private val groupManager: GroupManager) 
                 return
             }
 
-            worldName = sender.location.world.name
+            val playerWorld = sender.location.world
+
+            if (playerWorld == null) {
+                sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get the world from your location!")
+                return
+            }
+
+            worldName = playerWorld.name
         }
 
         // Make sure the group actually has the world in it

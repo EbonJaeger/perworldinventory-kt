@@ -2,6 +2,7 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import net.minidev.json.JSONObject
+import org.bukkit.util.NumberConversions
 
 object EconomySerializer
 {
@@ -28,7 +29,7 @@ object EconomySerializer
     {
         if (data.containsKey("balance"))
         {
-            return (data["balance"] as Float).toDouble()
+            return NumberConversions.toDouble(data["balance"])
         }
 
         return 0.0

@@ -39,11 +39,10 @@ data class PlayerProfile constructor(val armor: Array<out ItemStack>,
      *
      * @param player The player to build this profile from
      * @param balance The amount of currency the player has
-     * @param useAttributes If the [Attribute] class should be used for max health
      */
     constructor(player: Player,
-                balance: Double,
-                useAttributes: Boolean) : this(player.inventory.armorContents,
+                balance: Double) : this(
+            player.inventory.armorContents,
             player.enderChest.contents,
             player.inventory.contents,
             player.allowFlight,
@@ -52,7 +51,7 @@ data class PlayerProfile constructor(val armor: Array<out ItemStack>,
             player.exp,
             player.isFlying,
             player.foodLevel,
-            if (useAttributes) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).baseValue else player.maxHealth,
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue, // If this is ever null, I will be very surprised
             player.health,
             player.gameMode,
             player.level,

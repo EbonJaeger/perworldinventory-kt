@@ -139,7 +139,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         {
             player.inventory.clear()
             player.inventory.contents = profile.inventory
-            player.inventory.armorContents = profile.armor
+            player.inventory.setArmorContents(profile.armor)
         }
         if (settings.getProperty(PlayerSettings.LOAD_ENDER_CHEST))
         {
@@ -154,11 +154,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             return
         }
 
-        if (bukkitService.shouldUseAttributes()) {
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).baseValue = profile.maxHealth
-        } else {
-            player.maxHealth = profile.maxHealth
-        }
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = profile.maxHealth // Players have max health, this wont be null
 
         if (profile.health > 0 && profile.health <= profile.maxHealth) {
             player.health = profile.health
@@ -226,13 +222,7 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
         }
         if (settings.getProperty(PlayerSettings.LOAD_HEALTH))
         {
-            if (bukkitService.shouldUseAttributes())
-            {
-                player.getAttribute(Attribute.GENERIC_MAX_HEALTH).baseValue = PlayerDefaults.HEALTH
-            } else
-            {
-                player.maxHealth = PlayerDefaults.HEALTH
-            }
+            player.getAttribute(Attribute.GENERIC_MAX_HEALTH)!!.baseValue = PlayerDefaults.HEALTH // Players have max health, this wont be null
             player.health = PlayerDefaults.HEALTH
         }
         if (settings.getProperty(PlayerSettings.LOAD_LEVEL))

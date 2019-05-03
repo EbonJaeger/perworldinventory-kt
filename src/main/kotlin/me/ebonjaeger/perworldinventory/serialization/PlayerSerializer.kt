@@ -5,6 +5,7 @@ import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import net.minidev.json.JSONArray
 import net.minidev.json.JSONObject
 import org.bukkit.GameMode
+import org.bukkit.util.NumberConversions
 
 object PlayerSerializer
 {
@@ -77,8 +78,8 @@ object PlayerSerializer
                 stats["exp"] as Float,
                 stats["flying"] as Boolean,
                 stats["food"] as Int,
-                (stats["max-health"] as Float).toDouble(),
-                (stats["health"] as Float).toDouble(),
+                NumberConversions.toDouble(stats["max-health"]),
+                NumberConversions.toDouble(stats["health"]),
                 GameMode.valueOf(stats["gamemode"] as String),
                 stats["level"] as Int,
                 stats["saturation"] as Float,

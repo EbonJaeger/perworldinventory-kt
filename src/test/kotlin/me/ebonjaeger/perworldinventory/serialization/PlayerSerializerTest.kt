@@ -31,6 +31,8 @@ import org.powermock.modules.junit4.PowerMockRunner
 class PlayerSerializerTest
 {
 
+    private lateinit var unsafe: UnsafeValues
+
     @Before
     fun prepareTestingStuff()
     {
@@ -47,9 +49,14 @@ class PlayerSerializerTest
 
         // As of 1.13, Bukkit has a compatibility layer, and serializing an item
         // now checks the data version to see what Material name to use.
-        val unsafe = PowerMockito.mock(UnsafeValues::class.java)
+        unsafe = PowerMockito.mock(UnsafeValues::class.java)
         BDDMockito.given(Bukkit.getUnsafe()).willReturn(unsafe)
         BDDMockito.given(unsafe.dataVersion).willReturn(1513)
+        given(unsafe.getMaterial("AIR", 1513)).willReturn(Material.AIR)
+        given(unsafe.getMaterial("DIAMOND", 1513)).willReturn(Material.DIAMOND)
+        given(unsafe.getMaterial("DIAMOND_CHESTPLATE", 1513)).willReturn(Material.DIAMOND_CHESTPLATE)
+        given(unsafe.getMaterial("IRON_LEGGINGS", 1513)).willReturn(Material.IRON_LEGGINGS)
+        given(unsafe.getMaterial("GOLDEN_APPLE", 1513)).willReturn(Material.GOLDEN_APPLE)
     }
 
     @Test

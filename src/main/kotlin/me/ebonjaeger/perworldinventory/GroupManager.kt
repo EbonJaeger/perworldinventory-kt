@@ -109,7 +109,13 @@ class GroupManager @Inject constructor(@PluginFolder pluginFolder: File,
         bukkitService.runTaskAsynchronously {
             val yaml = YamlConfiguration.loadConfiguration(WORLDS_CONFIG_FILE)
             bukkitService.runTask {
-                yaml.getConfigurationSection("groups.").getKeys(false).forEach { key ->
+                var section = yaml.getConfigurationSection("groups.")
+
+                if (section == null) { // Ensure the file contains the groups section
+                    section = yaml.createSection("groups")
+                }
+
+                section.getKeys(false).forEach { key ->
                     val worlds = yaml.getStringList("groups.$key.worlds").toMutableSet()
                     val gameMode = GameMode.valueOf( (yaml.getString("groups.$key.default-gamemode") ?: "SURVIVAL").toUpperCase() )
                     val respawnWorld = if (yaml.contains("groups.$key.respawnWorld"))

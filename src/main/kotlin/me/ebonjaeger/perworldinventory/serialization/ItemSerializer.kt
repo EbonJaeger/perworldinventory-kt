@@ -93,16 +93,15 @@ object ItemSerializer
 
     private fun decodeItem(encoded: String): ItemStack
     {
+        if (encoded == AIR)
+        {
+            return ItemStack(Material.AIR)
+        }
+
         try
         {
-            if (encoded == AIR)
-            {
-                return ItemStack(Material.AIR)
-            } else
-            {
-                ByteArrayInputStream(Base64Coder.decodeLines(encoded)).use {
-                    BukkitObjectInputStream(it).use { return it.readObject() as ItemStack }
-                }
+            ByteArrayInputStream(Base64Coder.decodeLines(encoded)).use { byteStream ->
+                BukkitObjectInputStream(byteStream).use { return it.readObject() as ItemStack }
             }
         } catch (ex: IOException)
         {

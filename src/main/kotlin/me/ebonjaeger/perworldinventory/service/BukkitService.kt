@@ -23,9 +23,6 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
     fun getOfflinePlayers(): Array<out OfflinePlayer> =
             Bukkit.getOfflinePlayers()
 
-    fun getServerVersion(): String =
-        plugin.server.version
-
     fun runRepeatingTaskAsynchronously(task: Runnable, delay: Long, period: Long): BukkitTask =
             scheduler.runTaskTimerAsynchronously(plugin, task, delay, period)
 
@@ -44,7 +41,4 @@ class BukkitService @Inject constructor(private val plugin: PerWorldInventory)
 
     fun runTask(task: () -> Unit): BukkitTask =
         scheduler.runTask(plugin, task)
-
-    fun shouldUseAttributes() =
-            Utils.checkServerVersion(getServerVersion(), 1, 11, 0)
 }

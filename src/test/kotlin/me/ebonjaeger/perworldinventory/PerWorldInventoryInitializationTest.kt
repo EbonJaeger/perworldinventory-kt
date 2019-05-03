@@ -39,6 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner
 import java.io.File
 import java.util.logging.Logger
 import kotlin.reflect.KClass
+import kotlin.test.fail
 
 
 /**
@@ -61,11 +62,13 @@ class PerWorldInventoryInitializationTest {
     private lateinit var pluginManager: PluginManager
 
     private lateinit var pluginFolder: File
+    private lateinit var pluginFile: File
     private lateinit var plugin: PerWorldInventory
 
     @Before
     fun mockServer() {
         pluginFolder = temporaryFolder.newFolder()
+        pluginFile = temporaryFolder.newFile()
 
         setField(Bukkit::class, null, "server", server)
         given(server.logger).willReturn(mock(Logger::class.java))
@@ -79,7 +82,7 @@ class PerWorldInventoryInitializationTest {
         val descriptionFile = PluginDescriptionFile(
                 "PerWorldInventory", "N/A", PerWorldInventory::class.java.canonicalName)
         val pluginLoader = JavaPluginLoader(server)
-        plugin = PerWorldInventory(pluginLoader, descriptionFile, pluginFolder, null)
+        plugin = PerWorldInventory(pluginLoader, descriptionFile, pluginFolder, pluginFile)
         setField(JavaPlugin::class, plugin, "logger", mock(PluginLogger::class.java))
     }
 
@@ -108,7 +111,9 @@ class PerWorldInventoryInitializationTest {
 
     private fun verifyListenerWasRegistered(clazz: KClass<out Listener>, injector: Injector) {
         val listener = injector.getIfAvailable(clazz)
-        assertThat("Listener available for $clazz", listener, not(nullValue()))
+        if (listener === null) {
+            fail("Listener not available for '$clazz'")
+        }
         Mockito.verify(pluginManager).registerEvents(listener, plugin)
     }
 

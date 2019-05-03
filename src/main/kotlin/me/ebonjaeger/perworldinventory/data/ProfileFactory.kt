@@ -18,6 +18,6 @@ class ProfileFactory @Inject constructor(private val bukkitService: BukkitServic
     fun create(player: Player): PlayerProfile
     {
         val balance = economyService.getBalance(player)
-        return PlayerProfile(player, balance, bukkitService.shouldUseAttributes())
+        return PlayerProfile(player, balance)
     }
 }

@@ -23,7 +23,7 @@ class PlayerQuitListener @Inject constructor(private val plugin: PerWorldInvento
         plugin.timeouts.remove(event.player.uniqueId)
 
         val player = event.player
-        val group = groupManager.getGroupFromWorld(player.location.world.name)
+        val group = groupManager.getGroupFromWorld(player.location.world!!.name) // The server will never provide a null world in a Location
 
         dataSource.saveLogout(player)
         profileManager.addPlayerProfile(player, group, player.gameMode)
@@ -35,7 +35,7 @@ class PlayerQuitListener @Inject constructor(private val plugin: PerWorldInvento
         plugin.timeouts.remove(event.player.uniqueId)
 
         val player = event.player
-        val group = groupManager.getGroupFromWorld(player.location.world.name)
+        val group = groupManager.getGroupFromWorld(player.location.world!!.name) // The server will never provide a null world in a Location
 
         dataSource.saveLogout(player)
         profileManager.addPlayerProfile(player, group, player.gameMode)

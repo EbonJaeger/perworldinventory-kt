@@ -54,7 +54,7 @@ class PerWorldInventory : JavaPlugin
     constructor(): super()
 
     /* Constructor used for tests. */
-    internal constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File?)
+    internal constructor(loader: JavaPluginLoader, description: PluginDescriptionFile, dataFolder: File, file: File)
             : super(loader, description, dataFolder, file)
 
     override fun onEnable()
