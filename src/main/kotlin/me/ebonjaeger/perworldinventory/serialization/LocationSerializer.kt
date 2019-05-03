@@ -1,8 +1,10 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import com.dumptruckman.bukkit.configuration.util.SerializationHelper
 import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.util.NumberConversions
 
 object LocationSerializer
 {
@@ -13,17 +15,11 @@ object LocationSerializer
      * @param location The location to serialize
      * @return A JsonObject with the world name and location properties
      */
+    @Suppress("UNCHECKED_CAST") // We know that #serialize will give us a Map for a ConfigurationSerializable object
     fun serialize(location: Location): JSONObject
     {
-        val obj = JSONObject()
-        obj["world"] = location.world!!.name // The server will never provide a null world in a Location
-        obj["x"] = location.x.toFloat()
-        obj["y"] = location.y.toFloat()
-        obj["z"] = location.z.toFloat()
-        obj["pitch"] = location.pitch
-        obj["yaw"] = location.yaw
-
-        return obj
+        val map = SerializationHelper.serialize(location) as Map<String, Any>
+        return JSONObject(map)
     }
 
     /**
@@ -34,13 +30,17 @@ object LocationSerializer
      */
     fun deserialize(obj: JSONObject): Location
     {
-        val world = Bukkit.getWorld(obj["world"] as String)
-        val x = obj["x"] as Float
-        val y = obj["y"] as Float
-        val z = obj["z"] as Float
-        val pitch = obj["pitch"] as Float
-        val yaw = obj["yaw"] as Float
+        return if (obj.containsKey("==")) { // Location was serialized using ConfigurationSerializable method
+            SerializationHelper.deserialize(obj as Map<String, Any>) as Location
+        } else { // Location was serialized by hand
+            val world = Bukkit.getWorld(obj["world"] as String)
+            val x = NumberConversions.toDouble(obj["x"])
+            val y = NumberConversions.toDouble(obj["y"])
+            val z = NumberConversions.toDouble(obj["z"])
+            val pitch = NumberConversions.toFloat(obj["pitch"])
+            val yaw = NumberConversions.toFloat(obj["yaw"])
 
-        return Location(world, x.toDouble(), y.toDouble(), z.toDouble(), yaw, pitch)
+            Location(world, x, y, z, yaw, pitch)
+        }
     }
 }
