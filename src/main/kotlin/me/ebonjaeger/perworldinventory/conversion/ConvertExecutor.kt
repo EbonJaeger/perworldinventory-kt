@@ -9,7 +9,7 @@ import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
-import me.ebonjaeger.perworldinventory.serialization.InventorySerializer
+import me.ebonjaeger.perworldinventory.serialization.InventoryHelper
 import me.ebonjaeger.perworldinventory.serialization.PotionSerializer
 import net.minidev.json.JSONObject
 import net.minidev.json.JSONStyle
@@ -92,15 +92,15 @@ class ConvertExecutor @Inject constructor(private val groupManager: GroupManager
         // Inventory and armor
         val inventory = JSONObject()
         if (profile[Sharables.INVENTORY] != null)
-            inventory["inventory"] = InventorySerializer.serializeInventory(profile[Sharables.INVENTORY])
+            inventory["inventory"] = InventoryHelper.serializeInventory(profile[Sharables.INVENTORY])
         if (profile[Sharables.ARMOR] != null)
-            inventory["armor"] = InventorySerializer.serializeInventory(profile[Sharables.ARMOR])
+            inventory["armor"] = InventoryHelper.serializeInventory(profile[Sharables.ARMOR])
 
         obj["inventory"] = inventory
 
         // Ender chest
         if (profile[Sharables.ENDER_CHEST] != null)
-            obj["ender-chest"] = InventorySerializer.serializeInventory(profile[Sharables.ENDER_CHEST])
+            obj["ender-chest"] = InventoryHelper.serializeInventory(profile[Sharables.ENDER_CHEST])
 
         // Player stats
         val stats = JSONObject()

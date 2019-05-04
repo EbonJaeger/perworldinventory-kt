@@ -11,6 +11,7 @@ import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
+import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
@@ -20,6 +21,7 @@ import me.ebonjaeger.perworldinventory.listener.player.*
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Server
+import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -101,6 +103,9 @@ class PerWorldInventory : JavaPlugin
         updateTimeoutsTaskId = server.scheduler.scheduleSyncRepeatingTask(
                 this, UpdateTimeoutsTask(this), 1L, 1L
         )
+
+        // ConfigurationSerializable classes must be registered as such
+        ConfigurationSerialization.registerClass(PlayerProfile::class.java)
 
         ConsoleLogger.fine("PerWorldInventory is enabled with logger level '${settings.getProperty(PluginSettings.LOGGING_LEVEL).name}'")
     }

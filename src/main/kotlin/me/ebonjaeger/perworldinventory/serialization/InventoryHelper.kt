@@ -7,27 +7,8 @@ import net.minidev.json.JSONObject
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object InventorySerializer
+object InventoryHelper
 {
-
-    /**
-     * Serialize a player's inventory. This will save the armor contents of the
-     * inventory along with the main inventory items.
-     *
-     * @param player The player to serialize
-     * @return A JsonObject with a player's armor and inventory contents
-     */
-    fun serializeAllInventories(player: PlayerProfile): JSONObject
-    {
-        val obj = JSONObject()
-        val inventory = serializeInventory(player.inventory)
-        val armor = serializeInventory(player.armor)
-
-        obj["inventory"] = inventory
-        obj["armor"] = armor
-
-        return obj
-    }
 
     /**
      * Serialize an inventory's contents.
@@ -35,15 +16,27 @@ object InventorySerializer
      * @param contents The items in the inventory
      * @return A JsonArray containing the inventory contents
      */
-    fun serializeInventory(contents: Array<out ItemStack>): JSONArray
+    fun serializeInventory(contents: Array<out ItemStack>): List<Map<String, Any>>
     {
-        val inventory = JSONArray()
+        val inventory = mutableListOf<Map<String, Any>>()
 
         contents.indices
                 .map { ItemSerializer.serialize(contents[it], it) }
                 .forEach { inventory.add(it) }
 
         return inventory
+    }
+
+    fun listToInventory(items: List<*>): Array<out ItemStack> {
+        val contents = mutableListOf<ItemStack>()
+        val iter = items.listIterator()
+        while (iter.hasNext()) {
+            val next = iter.next() as Map<*, *>
+            val item = next["item"] as ItemStack
+            contents.add(item)
+        }
+
+        return contents.toTypedArray()
     }
 
     /**
