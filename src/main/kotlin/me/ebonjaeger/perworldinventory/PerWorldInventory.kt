@@ -2,10 +2,7 @@ package me.ebonjaeger.perworldinventory
 
 import co.aikar.commands.PaperCommandManager
 import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI
-import me.ebonjaeger.perworldinventory.command.ConvertCommand
-import me.ebonjaeger.perworldinventory.command.GroupCommands
-import me.ebonjaeger.perworldinventory.command.HelpCommand
-import me.ebonjaeger.perworldinventory.command.ReloadCommand
+import me.ebonjaeger.perworldinventory.command.*
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
@@ -165,6 +162,7 @@ class PerWorldInventory : JavaPlugin
         commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
         commandManager.registerCommand(injector.getSingleton(ConvertCommand::class))
         commandManager.registerCommand(injector.getSingleton(GroupCommands::class))
+        commandManager.registerCommand(injector.getSingleton(MigrateCommand::class))
     }
 
     /**

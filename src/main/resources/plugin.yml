@@ -23,6 +23,7 @@ permissions:
       perworldinventory.command.groups.add: true
       perworldinventory.command.groups.modify: true
       perworldinventory.command.groups.remove: true
+      perworldinventory.command.migrate: true
   perworldinventory.bypass.*:
     default: false
     children:
@@ -45,6 +46,8 @@ permissions:
   perworldinventory.command.groups.modify:
     default: false
   perworldinventory.command.groups.remove:
+    default: false
+  perworldinventory.command.migrate:
     default: false
   perworldinventory.bypass.gamemode:
     default: false
