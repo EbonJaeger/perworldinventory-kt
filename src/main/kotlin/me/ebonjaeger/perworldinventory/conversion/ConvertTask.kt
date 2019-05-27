@@ -33,8 +33,11 @@ const val MAX_CONVERSIONS_PER_TICK = 10
  * Task to convert player data from MultiVerse-Inventories to PWI.
  *
  * @property convertService The [ConvertService] running this task.
+ * @property groupManager The PerWorldInventory [GroupManager].
  * @property sender The [CommandSender] that started the conversion.
  * @property offlinePlayers All [OfflinePlayer]s on the server.
+ * @property multiVerseGroups Groups from MultiVerse-Inventories.
+ * @property dataDirectory The directory where player data is stored.
  */
 class ConvertTask (private val convertService: ConvertService,
                    private val groupManager: GroupManager,
