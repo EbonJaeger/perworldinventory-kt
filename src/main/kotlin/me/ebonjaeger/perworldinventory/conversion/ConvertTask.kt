@@ -10,7 +10,6 @@ import me.ebonjaeger.perworldinventory.data.PlayerDefaults
 import me.ebonjaeger.perworldinventory.data.ProfileKey
 import me.ebonjaeger.perworldinventory.data.migration.ENDER_CHEST_SLOTS
 import me.ebonjaeger.perworldinventory.data.migration.INVENTORY_SLOTS
-import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.serialization.InventoryHelper
 import me.ebonjaeger.perworldinventory.serialization.PotionSerializer
 import net.minidev.json.JSONObject
@@ -42,7 +41,7 @@ class ConvertTask (private val convertService: ConvertService,
                    private val sender: CommandSender,
                    private val offlinePlayers: Array<out OfflinePlayer>,
                    private val multiVerseGroups: List<WorldGroup>,
-                   @DataDirectory private val dataDirectory: File) : BukkitRunnable() {
+                   private val dataDirectory: File) : BukkitRunnable() {
 
     private val queue: Queue<OfflinePlayer> = LinkedList<OfflinePlayer>()
 
