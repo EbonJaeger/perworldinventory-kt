@@ -2,91 +2,89 @@ package me.ebonjaeger.perworldinventory.conversion
 
 import ch.jalu.injector.annotations.NoMethodScan
 import com.onarandombox.multiverseinventories.MultiverseInventories
+import com.onarandombox.multiverseinventories.WorldGroup
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.GroupManager
+import me.ebonjaeger.perworldinventory.PerWorldInventory
+import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
-import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.entity.Player
 import org.bukkit.plugin.PluginManager
+import java.io.File
 import javax.inject.Inject
 
 /**
  * Initiates conversion tasks.
  */
 @NoMethodScan
-class ConvertService @Inject constructor(private val bukkitService: BukkitService,
-                                         private val convertExecutor: ConvertExecutor,
+class ConvertService @Inject constructor(private val plugin: PerWorldInventory,
+                                         private val bukkitService: BukkitService,
                                          private val groupManager: GroupManager,
-                                         private val pluginManager: PluginManager)
-{
+                                         private val pluginManager: PluginManager,
+                                         @DataDirectory private val dataDirectory: File) {
 
-    /**
-     * Conversion status.
-     *
-     * If this is true, then a conversion is currently in progress,
-     * and another conversion cannot be started.
-     */
-    var converting = false
+    private var converting = false
+    private var sender: CommandSender? = null
 
-    fun runConversion(sender: CommandSender, mvinventory: MultiverseInventories)
-    {
-        val offlinePlayers = bukkitService.getOfflinePlayers()
-        convertPlayers(sender, offlinePlayers, mvinventory)
+    fun isConverting(): Boolean {
+        return converting
     }
 
-    private fun convertPlayers(sender: CommandSender, offlinePlayers: Array<out OfflinePlayer>,
-                               mvinventory: MultiverseInventories)
-    {
-        if (converting)
-        {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}A conversion is already in progress!")
+    fun beginConverting(sender: CommandSender, mvInventory: MultiverseInventories) {
+        val offlinePlayers = bukkitService.getOfflinePlayers()
+
+        if (isConverting()) {
             return
         }
 
-        if (sender !is ConsoleCommandSender) {
-            ConsoleLogger.info(
-                    "${ChatColor.BLUE}» ${ChatColor.GRAY}Beginning conversion from Multiverse-Inventories...")
+        this.sender = sender
+
+        if (sender !is ConsoleCommandSender) { // No need to send a message to console when console did the command
+            ConsoleLogger.info("Beginning conversion from MultiVerse-Inventories.")
         }
-        sender.sendMessage("${ChatColor.BLUE}» ${ChatColor.GRAY}Beginning conversion from Multiverse-Inventories...")
 
         converting = true
-        val mvGroups = mvinventory.groupManager.groups
-        convertExecutor.mvGroups = mvGroups
 
-        mvGroups.forEach {
+        val groups = mvInventory.groupManager.groups
+        convertGroups(groups)
+
+        val task = ConvertTask(this, groupManager, sender, offlinePlayers, groups, dataDirectory)
+        task.runTaskTimerAsynchronously(plugin, 0, 20)
+    }
+
+    fun finishConversion(converted: Int) {
+        converting = false
+
+        val mvInventory = pluginManager.getPlugin("Multiverse-Inventories")
+        if (mvInventory != null && pluginManager.isPluginEnabled(mvInventory)) {
+            pluginManager.disablePlugin(mvInventory)
+        }
+
+        ConsoleLogger.info("Data conversion has been completed! Converted $converted profiles.")
+        if (sender != null && sender is Player) {
+            if ((sender as Player).isOnline) {
+                (sender as Player).sendMessage("${ChatColor.GREEN}» ${ChatColor.GRAY}Data conversion has been completed!")
+            }
+        }
+    }
+
+    private fun convertGroups(groups: List<WorldGroup>) {
+        groups.forEach { group ->
             // Ensure that the group exists first, otherwise you get nulls down the road
-            val pwiGroup = groupManager.getGroup(it.name)
-            val worlds = it.worlds
+            val pwiGroup = groupManager.getGroup(group.name)
+            val worlds = group.worlds
 
-            if (pwiGroup == null)
-            {
-                groupManager.addGroup(it.name, worlds, GameMode.SURVIVAL, true)
-            } else
-            {
+            if (pwiGroup == null) {
+                groupManager.addGroup(group.name, worlds, GameMode.SURVIVAL, true)
+            } else {
                 pwiGroup.addWorlds(worlds)
             }
         }
 
-        val task = ConvertTask(this, sender, offlinePlayers)
-        bukkitService.runRepeatingTaskAsynchronously(task, 0, 1)
-    }
-
-    fun finish()
-    {
-        val mvinventory = pluginManager.getPlugin("Multiverse-Inventories")
-        if (mvinventory != null && pluginManager.isPluginEnabled(mvinventory))
-        {
-            pluginManager.disablePlugin(mvinventory)
-        }
-
         groupManager.saveGroups()
-    }
-
-    fun executeConvert(batch: Collection<OfflinePlayer>)
-    {
-        batch.forEach(convertExecutor::executeConvert)
     }
 }
