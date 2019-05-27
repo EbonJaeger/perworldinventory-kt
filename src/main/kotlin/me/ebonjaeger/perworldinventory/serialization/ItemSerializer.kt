@@ -24,16 +24,15 @@ object ItemSerializer
      * @param index The position in the inventory
      * @return A JsonObject with the item and its index
      */
-    fun serialize(item: ItemStack?, index: Int): JSONObject
+    fun serialize(item: ItemStack?, index: Int): Map<String, Any>
     {
-        val obj = JSONObject()
+        val obj = linkedMapOf<String, Any>()
         obj["index"] = index
 
-        // If item is null, return air
-        if (item == null)
-        {
-            obj["item"] = AIR
-            return obj
+        // Items in inventories can be null. Because why wouldn't they be.
+        var checkedItem = item
+        if (checkedItem == null) {
+            checkedItem = ItemStack(Material.AIR)
         }
 
         /*
@@ -41,16 +40,16 @@ object ItemSerializer
          * This is because some people are getting skulls with null owners, which causes Spigot to throw an error
          * when it tries to serialize the item.
          */
-        if (item.type == Material.PLAYER_HEAD)
+        if (checkedItem.type == Material.PLAYER_HEAD)
         {
-            val meta = item.itemMeta as SkullMeta
+            val meta = checkedItem.itemMeta as SkullMeta
             if (meta.hasOwner() && (meta.owningPlayer == null))
             {
-                item.itemMeta = Bukkit.getServer().itemFactory.getItemMeta(Material.PLAYER_HEAD)
+                checkedItem.itemMeta = Bukkit.getServer().itemFactory.getItemMeta(Material.PLAYER_HEAD)
             }
         }
 
-        obj["item"] = SerializationHelper.serialize(item)
+        obj["item"] = SerializationHelper.serialize(checkedItem)
 
         return obj
     }

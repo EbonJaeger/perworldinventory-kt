@@ -1,6 +1,5 @@
 package me.ebonjaeger.perworldinventory.serialization
 
-import com.nhaarman.mockito_kotlin.eq
 import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -69,7 +68,7 @@ class ItemSerializerTest {
         val json = ItemSerializer.serialize(item, 1)
 
         // then
-        val result = ItemSerializer.deserialize(json, 3)
+        val result = ItemSerializer.deserialize(JSONObject(json), 3)
         assertHasSameProperties(item, result)
     }
 
@@ -85,7 +84,7 @@ class ItemSerializerTest {
 
         // then
         // deserialize item and test for match
-        val result = ItemSerializer.deserialize(json, 3)
+        val result = ItemSerializer.deserialize(JSONObject(json), 3)
         assertHasSameProperties(item, result)
         assertItemMetaMapsAreEqual(result, item)
     }

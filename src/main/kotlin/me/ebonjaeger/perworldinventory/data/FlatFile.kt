@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.data
 
+import com.dumptruckman.bukkit.configuration.util.SerializationHelper
 import me.ebonjaeger.perworldinventory.ConsoleLogger
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.serialization.LocationSerializer
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: File) : DataSource
 {
 
+    @Suppress("UNCHECKED_CAST") // We know we serialize to a Map<String, Any> since we made it
     override fun savePlayer(key: ProfileKey, player: PlayerProfile)
     {
         val file = getFile(key)
@@ -40,10 +42,11 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
         }
 
         ConsoleLogger.fine("Writing player data for player '${player.displayName}' to file")
-        val data = PlayerSerializer.serialize(player)
+        val map = SerializationHelper.serialize(player)
+        val json = JSONObject(map as Map<String, *>)
         try
         {
-            FileWriter(file).use { it.write(data.toJSONString(JSONStyle.LT_COMPRESS)) }
+            FileWriter(file).use { it.write(json.toJSONString(JSONStyle.LT_COMPRESS)) }
         } catch (ex: IOException)
         {
             ConsoleLogger.severe("Could not write data to file '$file':", ex)
@@ -122,11 +125,15 @@ class FlatFile @Inject constructor(@DataDirectory private val dataDirectory: Fil
             return null
         }
 
-        FileReader(file).use {
+        FileReader(file).use { reader ->
             val parser = JSONParser(JSONParser.USE_INTEGER_STORAGE)
-            val data = parser.parse(it) as JSONObject
+            val data = parser.parse(reader) as JSONObject
 
-            return PlayerSerializer.deserialize(data, player.name, player.inventory.size, player.enderChest.size)
+            return if (data.containsKey("==")) { // Data is from ConfigurationSerialization
+                SerializationHelper.deserialize(data) as PlayerProfile
+            } else { // Old data format and methods
+                PlayerSerializer.deserialize(data, player.name, player.inventory.size, player.enderChest.size)
+            }
         }
     }
 

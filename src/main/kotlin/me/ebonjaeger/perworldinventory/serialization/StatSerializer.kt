@@ -9,36 +9,6 @@ object StatSerializer
 {
 
     /**
-     * Serialize a player's stats into a [JSONObject].
-     *
-     * @param player The player whose stats to serialize
-     * @return The serialized stats
-     */
-    fun serialize(player: PlayerProfile): JSONObject
-    {
-        val obj = JSONObject()
-
-        obj["can-fly"] = player.allowFlight
-        obj["display-name"] = player.displayName
-        obj["exhaustion"] = player.exhaustion
-        obj["exp"] = player.experience
-        obj["flying"] = player.isFlying
-        obj["food"] = player.foodLevel
-        obj["gamemode"] = player.gameMode.toString()
-        obj["max-health"] = player.maxHealth
-        obj["health"] = player.health
-        obj["level"] = player.level
-        obj["saturation"] = player.saturation
-        obj["fallDistance"] = player.fallDistance
-        obj["fireTicks"] = player.fireTicks
-        obj["maxAir"] = player.maximumAir
-        obj["remainingAir"] = player.remainingAir
-        obj["potion-effects"] = PotionSerializer.serialize(player.potionEffects)
-
-        return obj
-    }
-
-    /**
      * Validate data by making sure that all stats are present.
      * If something is missing, add it to the object with sane
      * defaults, in most cases using the [PlayerDefaults] object.

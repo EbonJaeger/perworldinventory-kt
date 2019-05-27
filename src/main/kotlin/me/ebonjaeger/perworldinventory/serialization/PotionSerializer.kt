@@ -11,23 +11,23 @@ object PotionSerializer
 {
 
     /**
-     * Serialize a Collection of PotionEffects into a JsonArray of JsonObjects. The
+     * Serialize a Collection of PotionEffects. The
      * effects are serialized using their ConfigurationSerialization method.
      *
      * @param effects The PotionEffects to serialize
      * @return The serialized PotionEffects
      */
     @Suppress("UNCHECKED_CAST") // We know that #serialize will give us a Map for a ConfigurationSerializable object
-    fun serialize(effects: MutableCollection<PotionEffect>): JSONArray
+    fun serialize(effects: MutableCollection<PotionEffect>): List<Map<String, Any>>
     {
-        val array = JSONArray()
+        val list = mutableListOf<Map<String, Any>>()
 
         effects.forEach { effect ->
             val map = SerializationHelper.serialize(effect) as Map<String, Any>
-            array.add(JSONObject(map))
+            list.add(map)
         }
 
-        return array
+        return list
     }
 
     /**

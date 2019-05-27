@@ -1,5 +1,6 @@
 package me.ebonjaeger.perworldinventory.serialization
 
+import com.dumptruckman.bukkit.configuration.util.SerializationHelper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.nhaarman.mockito_kotlin.given
@@ -44,8 +45,9 @@ class PlayerSerializerTest
         // No implementation of the ItemMeta interface readily available, so we return our own
         given(itemFactory.getItemMeta(ArgumentMatchers.any())).willAnswer { itemMeta }
 
-        // Bukkit's serializer needs to know about our test implementation of ItemMeta or it will fail
+        // Bukkit's serializer needs to know about our test implementation of ItemMeta and PlayerProfile or it will fail
         ConfigurationSerialization.registerClass(ItemMetaTestImpl::class.java)
+        ConfigurationSerialization.registerClass(PlayerProfile::class.java)
 
         // As of 1.13, Bukkit has a compatibility layer, and serializing an item
         // now checks the data version to see what Material name to use.
@@ -59,7 +61,7 @@ class PlayerSerializerTest
         given(unsafe.getMaterial("GOLDEN_APPLE", 1513)).willReturn(Material.GOLDEN_APPLE)
     }
 
-    @Test
+    @Test @Suppress("UNCHECKED_CAST")
     fun verifyCorrectSerialization()
     {
         // given
@@ -103,33 +105,12 @@ class PlayerSerializerTest
                 mutableListOf(), 0.0F, 0, 500, 500, 0.0)
 
         // when
-        val json = PlayerSerializer.serialize(profile).toJSONString(JSONStyle.LT_COMPRESS)
+        val map = SerializationHelper.serialize(profile) as Map<String, *>
+        val json = JSONObject(map).toJSONString(JSONStyle.LT_COMPRESS)
 
         // then
         val parsed = JSONParser(JSONParser.USE_INTEGER_STORAGE).parse(json) as JSONObject
-        val result = PlayerSerializer.deserialize(parsed, "Bob", inventory.size, enderChest.size)
-        assertProfilesAreEqual(profile, result)
-    }
-
-    @Test
-    fun verifyCorrectSerializationMissingDisplayName()
-    {
-        // given
-        val armor = arrayOf(ItemStack(Material.AIR), ItemStack(Material.DIAMOND_CHESTPLATE),
-                ItemStack(Material.IRON_LEGGINGS), ItemStack(Material.AIR))
-        val enderChest = arrayOf(ItemStack(Material.GOLDEN_APPLE))
-        val inventory = arrayOf(ItemStack(Material.DIAMOND))
-        val profile = PlayerProfile(armor, enderChest, inventory, false, "Bob",
-                5.0F, 50.5F, false, 20, 20.0, 14.0, GameMode.SURVIVAL, 5, 4.86F,
-                mutableListOf(), 0.0F, 0, 500, 500, 0.0)
-
-        // when
-        val json = PlayerSerializer.serialize(profile).toJSONString(JSONStyle.LT_COMPRESS)
-
-        // then
-        val parsed = JSONParser(JSONParser.USE_INTEGER_STORAGE).parse(json) as JSONObject
-        (parsed["stats"] as JSONObject).remove("display-name")
-        val result = PlayerSerializer.deserialize(parsed, "Bob", inventory.size, enderChest.size)
+        val result = SerializationHelper.deserialize(parsed) as PlayerProfile
         assertProfilesAreEqual(profile, result)
     }
 

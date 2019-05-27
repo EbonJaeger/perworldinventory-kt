@@ -2,15 +2,13 @@ package me.ebonjaeger.perworldinventory
 
 import co.aikar.commands.PaperCommandManager
 import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI
-import me.ebonjaeger.perworldinventory.command.ConvertCommand
-import me.ebonjaeger.perworldinventory.command.GroupCommands
-import me.ebonjaeger.perworldinventory.command.HelpCommand
-import me.ebonjaeger.perworldinventory.command.ReloadCommand
+import me.ebonjaeger.perworldinventory.command.*
 import me.ebonjaeger.perworldinventory.configuration.MetricsSettings
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.data.DataSource
 import me.ebonjaeger.perworldinventory.data.DataSourceProvider
+import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import me.ebonjaeger.perworldinventory.initialization.DataDirectory
 import me.ebonjaeger.perworldinventory.initialization.Injector
 import me.ebonjaeger.perworldinventory.initialization.InjectorBuilder
@@ -20,6 +18,7 @@ import me.ebonjaeger.perworldinventory.listener.player.*
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.Server
+import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.PluginManager
 import org.bukkit.plugin.java.JavaPlugin
@@ -102,6 +101,9 @@ class PerWorldInventory : JavaPlugin
                 this, UpdateTimeoutsTask(this), 1L, 1L
         )
 
+        // ConfigurationSerializable classes must be registered as such
+        ConfigurationSerialization.registerClass(PlayerProfile::class.java)
+
         ConsoleLogger.fine("PerWorldInventory is enabled with logger level '${settings.getProperty(PluginSettings.LOGGING_LEVEL).name}'")
     }
 
@@ -160,6 +162,7 @@ class PerWorldInventory : JavaPlugin
         commandManager.registerCommand(injector.getSingleton(ReloadCommand::class))
         commandManager.registerCommand(injector.getSingleton(ConvertCommand::class))
         commandManager.registerCommand(injector.getSingleton(GroupCommands::class))
+        commandManager.registerCommand(injector.getSingleton(MigrateCommand::class))
     }
 
     /**

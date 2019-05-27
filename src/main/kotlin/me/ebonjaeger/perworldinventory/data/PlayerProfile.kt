@@ -1,10 +1,15 @@
 package me.ebonjaeger.perworldinventory.data
 
+import com.dumptruckman.bukkit.configuration.util.SerializationHelper
+import me.ebonjaeger.perworldinventory.serialization.InventoryHelper
+import me.ebonjaeger.perworldinventory.serialization.PotionSerializer
 import org.bukkit.GameMode
 import org.bukkit.attribute.Attribute
+import org.bukkit.configuration.serialization.ConfigurationSerializable
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
+import org.bukkit.util.NumberConversions
 import java.util.*
 
 /**
@@ -12,27 +17,26 @@ import java.util.*
  * It contains all of the variables that can be saved, as well as a few things
  * for internal use.
  */
-data class PlayerProfile constructor(val armor: Array<out ItemStack>,
-                                     val enderChest: Array<out ItemStack>,
-                                     val inventory: Array<out ItemStack>,
-                                     val allowFlight: Boolean,
-                                     val displayName: String,
-                                     val exhaustion: Float,
-                                     val experience: Float,
-                                     val isFlying: Boolean,
-                                     val foodLevel: Int,
-                                     val maxHealth: Double,
-                                     val health: Double,
-                                     val gameMode: GameMode,
-                                     val level: Int,
-                                     val saturation: Float,
-                                     val potionEffects: MutableCollection<PotionEffect>,
-                                     val fallDistance: Float,
-                                     val fireTicks: Int,
-                                     val maximumAir: Int,
-                                     val remainingAir: Int,
-                                     val balance: Double)
-{
+data class PlayerProfile(val armor: Array<out ItemStack>,
+                         val enderChest: Array<out ItemStack>,
+                         val inventory: Array<out ItemStack>,
+                         val allowFlight: Boolean,
+                         val displayName: String,
+                         val exhaustion: Float,
+                         val experience: Float,
+                         val isFlying: Boolean,
+                         val foodLevel: Int,
+                         val maxHealth: Double,
+                         val health: Double,
+                         val gameMode: GameMode,
+                         val level: Int,
+                         val saturation: Float,
+                         val potionEffects: MutableCollection<PotionEffect>,
+                         val fallDistance: Float,
+                         val fireTicks: Int,
+                         val maximumAir: Int,
+                         val remainingAir: Int,
+                         val balance: Double) : ConfigurationSerializable {
 
     /**
      * Simple constructor to use when you have a [Player] object to work with.
@@ -63,8 +67,111 @@ data class PlayerProfile constructor(val armor: Array<out ItemStack>,
             player.remainingAir,
             balance)
 
-    override fun equals(other: Any?): Boolean
-    {
+    companion object {
+
+        /**
+         * Deserialize a [Map] into a [PlayerProfile].
+         *
+         * @param map The map to deserialize
+         * @return The profile from the given data
+         * @see ConfigurationSerializable
+         */
+        @JvmStatic
+        fun deserialize(map: Map<String, Any>): PlayerProfile {
+            val inventory = map["inventory"] as Map<*, *>
+
+            /* Inventory contents */
+            val contentsList = inventory["contents"] as List<*>
+            val contents = InventoryHelper.listToInventory(contentsList)
+
+            /* Armor contents */
+            val armorList = inventory["armor"] as List<*>
+            val armor = InventoryHelper.listToInventory(armorList)
+
+            /* Ender Chest contents */
+            val enderChestList = map["ender-chest"] as List<*>
+            val enderChest = InventoryHelper.listToInventory(enderChestList)
+
+            /* Player stats */
+            val stats = map["stats"] as MutableMap<*, *>
+
+            /* Potion effects */
+            val potionsList = map["potion-effects"] as List<*>
+            val potions = mutableListOf<PotionEffect>()
+            potionsList.forEach { pot -> potions.add(SerializationHelper.deserialize(pot as Map<*, *>) as PotionEffect) }
+
+            /* Put it all together */
+            return PlayerProfile(
+                    armor,
+                    enderChest,
+                    contents,
+                    stats["can-fly"] as Boolean,
+                    stats["display-name"] as String,
+                    stats["exhaustion"] as Float,
+                    stats["exp"] as Float,
+                    stats["flying"] as Boolean,
+                    stats["food"] as Int,
+                    NumberConversions.toDouble(stats["max-health"]),
+                    NumberConversions.toDouble(stats["health"]),
+                    GameMode.valueOf(stats["gamemode"] as String),
+                    stats["level"] as Int,
+                    stats["saturation"] as Float,
+                    potions,
+                    stats["fallDistance"] as Float,
+                    stats["fireTicks"] as Int,
+                    stats["maxAir"] as Int,
+                    stats["remainingAir"] as Int,
+                    NumberConversions.toDouble(map["balance"])
+            )
+        }
+    }
+
+    /**
+     * Serialize a [PlayerProfile] to it's [Map] representation.
+     *
+     * @return A Map representing the profile's state
+     * @see ConfigurationSerializable.serialize
+     */
+    override fun serialize(): MutableMap<String, Any> {
+        val map = mutableMapOf<String, Any>()
+
+        /* Player inventories */
+        val contents = InventoryHelper.serializeInventory(this.inventory)
+        val armor = InventoryHelper.serializeInventory(this.armor)
+        val inventory = linkedMapOf(Pair("contents", contents), Pair("armor", armor))
+        val enderChest = InventoryHelper.serializeInventory(this.enderChest)
+
+        /* Player stats */
+        val stats = linkedMapOf<String, Any>()
+        stats["can-fly"] = this.allowFlight
+        stats["display-name"] = this.displayName
+        stats["exhaustion"] = this.exhaustion
+        stats["exp"] = this.experience
+        stats["flying"] = this.isFlying
+        stats["food"] = this.foodLevel
+        stats["gamemode"] = this.gameMode.toString()
+        stats["max-health"] = this.maxHealth
+        stats["health"] = this.health
+        stats["level"] = this.level
+        stats["saturation"] = this.saturation
+        stats["fallDistance"] = this.fallDistance
+        stats["fireTicks"] = this.fireTicks
+        stats["maxAir"] = this.maximumAir
+        stats["remainingAir"] = this.remainingAir
+
+        val potionEffects = PotionSerializer.serialize(this.potionEffects)
+
+        map["data-format"] = 4
+        map["inventory"] = inventory
+        map["ender-chest"] = enderChest
+        map["stats"] = stats
+        map["potion-effects"] = potionEffects
+        map["balance"] = this.balance
+
+        return map
+    }
+
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is PlayerProfile) return false
 
@@ -92,8 +199,7 @@ data class PlayerProfile constructor(val armor: Array<out ItemStack>,
         return true
     }
 
-    override fun hashCode(): Int
-    {
+    override fun hashCode(): Int {
         var result = Arrays.hashCode(armor)
         result = 31 * result + Arrays.hashCode(enderChest)
         result = 31 * result + Arrays.hashCode(inventory)
