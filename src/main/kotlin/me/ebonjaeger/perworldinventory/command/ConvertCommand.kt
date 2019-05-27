@@ -14,28 +14,28 @@ import javax.inject.Inject
 
 @CommandAlias("perworldinventory|pwi")
 class ConvertCommand @Inject constructor(private val pluginManager: PluginManager,
-                                         private val convertService: ConvertService) : BaseCommand()
-{
+                                         private val convertService: ConvertService) : BaseCommand() {
 
     @Subcommand("convert")
     @CommandPermission("perworldinventory.convert")
     @Description("Convert inventory data from another plugin")
-    fun onConvert(sender: CommandSender)
-    {
-        if (!pluginManager.isPluginEnabled("Multiverse-Inventories"))
-        {
-            sender.sendMessage(
-                    "${ChatColor.DARK_RED}» ${ChatColor.GRAY}Multiverse-Inventories is not installed! Cannot convert data!")
+    fun onConvert(sender: CommandSender) {
+        if (convertService.isConverting()) {
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}A data conversion is already in progress!")
             return
         }
 
-        val mvi = pluginManager.getPlugin("Multiverse-Inventories")
-        if (mvi == null)
-        {
-            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get Multiverse-Inventories instance!")
+        if (!pluginManager.isPluginEnabled("MultiVerse-Inventories")) {
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}MultiVerse-Inventories is not installed! Cannot convert data!")
             return
         }
 
-        convertService.runConversion(sender, mvi as MultiverseInventories)
+        val mvi = pluginManager.getPlugin("MultiVerse-Inventories")
+        if (mvi == null) {
+            sender.sendMessage("${ChatColor.DARK_RED}» ${ChatColor.GRAY}Unable to get MultiVerse-Inventories instance!")
+            return
+        }
+
+        convertService.beginConverting(sender, mvi as MultiverseInventories)
     }
 }
