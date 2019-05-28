@@ -98,7 +98,7 @@ data class PlayerProfile(val armor: Array<out ItemStack>,
             /* Potion effects */
             val potionsList = map["potion-effects"] as List<*>
             val potions = mutableListOf<PotionEffect>()
-            potionsList.forEach { pot -> potions.add(SerializationHelper.deserialize(pot as Map<*, *>) as PotionEffect) }
+            potionsList.forEach { pot -> potions.add(pot as PotionEffect) }
 
             /* Put it all together */
             return PlayerProfile(
