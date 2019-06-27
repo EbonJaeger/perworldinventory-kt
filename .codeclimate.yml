@@ -6,7 +6,7 @@ checks:
   method-lines:
     enabled: false
 
-excluded_patterns:
+exclude_patterns:
   # Exclude settings objects
   - 'src/main/kotlin/me/ebonjaeger/perworldinventory/configuration/*Settings.kt'
   # Exclude player profile class since it just complains about the .equals function
