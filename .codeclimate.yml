@@ -1,0 +1,15 @@
+version: '2' # required to adjust maintainability checks
+
+checks:
+  file-lines:
+    enabled: false
+  method-lines:
+    enabled: false
+
+excluded_patterns:
+  # Exclude settings objects
+  - 'src/main/kotlin/me/ebonjaeger/perworldinventory/configuration/*Settings.kt'
+  # Exclude player profile class since it just complains about the .equals function
+  - 'src/main/kotlin/me/ebonjaeger/perworldinventory/data/PlayerProfile.kt'
+  # Don't check test classes
+  - 'src/test/kotlin/**/*Test.java'
