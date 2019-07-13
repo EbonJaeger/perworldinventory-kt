@@ -27,10 +27,6 @@ class PlayerDeathListener @Inject constructor(private val groupManager: GroupMan
         if (!event.keepInventory)
         {
             player.inventory.clear()
-        }
-
-        if (!event.keepLevel)
-        {
             player.totalExperience = event.newExp
             player.level = event.newLevel
         }
