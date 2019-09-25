@@ -17,14 +17,11 @@ import javax.inject.Inject
 
 class PlayerGameModeChangeListener @Inject constructor(private val groupManager: GroupManager,
                                                        private val profileManager: ProfileManager,
-                                                       private val settings: Settings) : Listener
-{
+                                                       private val settings: Settings) : Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
-    fun onPlayerChangedGameMode(event: PlayerGameModeChangeEvent)
-    {
-        if (event.isCancelled || !settings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES))
-        {
+    fun onPlayerChangedGameMode(event: PlayerGameModeChangeEvent) {
+        if (event.isCancelled || !settings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES)) {
             return
         }
 
@@ -39,19 +36,16 @@ class PlayerGameModeChangeListener @Inject constructor(private val groupManager:
 
         // Check if the player can bypass the inventory switch
         if (!settings.getProperty(PluginSettings.DISABLE_BYPASS) &&
-                player.hasPermission(PlayerPermission.BYPASS_GAMEMODE.getNode()))
-        {
+                player.hasPermission(PlayerPermission.BYPASS_GAMEMODE.getNode())) {
             ConsoleLogger.debug("onPlayerChangedGameMode: '${player.name}' is bypassing the inventory switch")
             return
         }
 
         // Create and call an InventoryLoadEvent. If it isn't cancelled, load
         // the player's new profile
-        val loadEvent = InventoryLoadEvent(player, Cause.GAMEMODE_CHANGE, player.gameMode,
-                event.newGameMode, group)
+        val loadEvent = InventoryLoadEvent(player, Cause.GAMEMODE_CHANGE, player.gameMode, event.newGameMode, group)
         Bukkit.getPluginManager().callEvent(loadEvent)
-        if (!event.isCancelled)
-        {
+        if (!loadEvent.isCancelled) {
             ConsoleLogger.fine("onPlayerChangedGameMode: Loading profile for '${player.name}'")
             profileManager.getPlayerData(player, group, event.newGameMode)
         }

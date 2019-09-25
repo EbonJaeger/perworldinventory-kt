@@ -1,6 +1,5 @@
 package me.ebonjaeger.perworldinventory.data
 
-import com.dumptruckman.bukkit.configuration.util.SerializationHelper
 import me.ebonjaeger.perworldinventory.serialization.InventoryHelper
 import me.ebonjaeger.perworldinventory.serialization.PotionSerializer
 import org.bukkit.GameMode
