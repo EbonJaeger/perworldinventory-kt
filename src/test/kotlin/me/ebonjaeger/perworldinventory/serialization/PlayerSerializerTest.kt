@@ -3,7 +3,10 @@ package me.ebonjaeger.perworldinventory.serialization
 import com.dumptruckman.bukkit.configuration.util.SerializationHelper
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import com.nhaarman.mockito_kotlin.given
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkStatic
+import me.ebonjaeger.perworldinventory.TestHelper
 import me.ebonjaeger.perworldinventory.data.PlayerProfile
 import net.minidev.json.JSONObject
 import net.minidev.json.JSONStyle
@@ -13,37 +16,25 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.UnsafeValues
 import org.bukkit.configuration.serialization.ConfigurationSerialization
-import org.bukkit.inventory.ItemFactory
 import org.bukkit.inventory.ItemStack
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.BDDMockito
-import org.powermock.api.mockito.PowerMockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
 /**
  * Tests for [PlayerSerializer].
  */
-@PrepareForTest(Bukkit::class)
-@RunWith(PowerMockRunner::class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PlayerSerializerTest
 {
 
     private lateinit var unsafe: UnsafeValues
 
-    @Before
-    fun prepareTestingStuff()
-    {
-        PowerMockito.mockStatic(Bukkit::class.java)
-        val itemFactory = PowerMockito.mock(ItemFactory::class.java)
-        given(Bukkit.getItemFactory()).willReturn(itemFactory)
-        val itemMeta = ItemMetaTestImpl()
-
-        // No implementation of the ItemMeta interface readily available, so we return our own
-        given(itemFactory.getItemMeta(ArgumentMatchers.any())).willAnswer { itemMeta }
+    @BeforeAll
+    fun prepareTestingStuff() {
+        mockkStatic(Bukkit::class)
+        val itemFactory = TestHelper.mockItemFactory()
+        every { Bukkit.getItemFactory() } returns itemFactory
 
         // Bukkit's serializer needs to know about our test implementation of ItemMeta and PlayerProfile or it will fail
         ConfigurationSerialization.registerClass(ItemMetaTestImpl::class.java)
@@ -51,19 +42,19 @@ class PlayerSerializerTest
 
         // As of 1.13, Bukkit has a compatibility layer, and serializing an item
         // now checks the data version to see what Material name to use.
-        unsafe = PowerMockito.mock(UnsafeValues::class.java)
-        BDDMockito.given(Bukkit.getUnsafe()).willReturn(unsafe)
-        BDDMockito.given(unsafe.dataVersion).willReturn(1513)
-        given(unsafe.getMaterial("AIR", 1513)).willReturn(Material.AIR)
-        given(unsafe.getMaterial("DIAMOND", 1513)).willReturn(Material.DIAMOND)
-        given(unsafe.getMaterial("DIAMOND_CHESTPLATE", 1513)).willReturn(Material.DIAMOND_CHESTPLATE)
-        given(unsafe.getMaterial("IRON_LEGGINGS", 1513)).willReturn(Material.IRON_LEGGINGS)
-        given(unsafe.getMaterial("GOLDEN_APPLE", 1513)).willReturn(Material.GOLDEN_APPLE)
+        unsafe = mockkClass(UnsafeValues::class, relaxed = true)
+        every { Bukkit.getUnsafe() } returns unsafe
+        every { unsafe.dataVersion } returns 1513
+        every { unsafe.getMaterial("AIR", 1513) } returns Material.AIR
+        every { unsafe.getMaterial("DIAMOND", 1513) } returns Material.DIAMOND
+        every { unsafe.getMaterial("DIAMOND_CHESTPLATE", 1513) } returns Material.DIAMOND_CHESTPLATE
+        every { unsafe.getMaterial("IRON_LEGGINGS", 1513) } returns Material.IRON_LEGGINGS
+        every { unsafe.getMaterial("GOLDEN_APPLE", 1513) } returns Material.GOLDEN_APPLE
     }
 
-    @Test @Suppress("UNCHECKED_CAST")
-    fun verifyCorrectSerialization()
-    {
+    @Test
+    @Suppress("UNCHECKED_CAST")
+    fun verifyCorrectSerialization() {
         // given
         val armor = arrayOf(ItemStack(Material.AIR), ItemStack(Material.DIAMOND_CHESTPLATE),
                 ItemStack(Material.IRON_LEGGINGS), ItemStack(Material.AIR))
@@ -116,18 +107,15 @@ class PlayerSerializerTest
 
     private fun assertProfilesAreEqual(expected: PlayerProfile, actual: PlayerProfile)
     {
-        for (i in 0 until expected.armor.size)
-        {
+        for (i in expected.armor.indices) {
             assertThat(expected.armor[i].type, equalTo(actual.armor[i].type))
         }
 
-        for (i in 0 until expected.inventory.size)
-        {
+        for (i in expected.inventory.indices) {
             assertThat(expected.inventory[i].type, equalTo(actual.inventory[i].type))
         }
 
-        for (i in 0 until expected.enderChest.size)
-        {
+        for (i in expected.enderChest.indices) {
             assertThat(expected.enderChest[i].type, equalTo(actual.enderChest[i].type))
         }
 

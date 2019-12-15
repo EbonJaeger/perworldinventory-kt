@@ -3,31 +3,25 @@ package me.ebonjaeger.perworldinventory
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import io.mockk.classMockk
 import io.mockk.every
+import io.mockk.mockkClass
 import me.ebonjaeger.perworldinventory.TestHelper.mockGroup
 import me.ebonjaeger.perworldinventory.configuration.PluginSettings
 import me.ebonjaeger.perworldinventory.configuration.Settings
 import me.ebonjaeger.perworldinventory.service.BukkitService
 import org.bukkit.GameMode
-import org.junit.Assert.assertNotNull
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
 import java.io.File
 
 /**
  * Test for [GroupManager].
  */
-@RunWith(PowerMockRunner::class)
-@PrepareForTest(BukkitService::class)
 class GroupManagerTest {
 
-    private val bukkitService = Mockito.mock(BukkitService::class.java)
+    private val bukkitService = mockkClass(BukkitService::class)
 
-    private val settings = classMockk(Settings::class)
+    private val settings = mockkClass(Settings::class)
 
     private val groupManager = GroupManager(File(""), bukkitService, settings)
 

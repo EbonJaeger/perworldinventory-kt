@@ -1,6 +1,16 @@
 package me.ebonjaeger.perworldinventory
 
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.mockkStatic
+import io.mockk.slot
+import me.ebonjaeger.perworldinventory.serialization.ItemMetaTestImpl
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.Material
+import org.bukkit.Server
+import org.bukkit.inventory.ItemFactory
+import org.bukkit.inventory.meta.ItemMeta
 import java.io.File
 import java.net.URI
 import java.net.URISyntaxException
@@ -71,8 +81,36 @@ object TestHelper
      * @param gameMode The default GameMode
      * @return A new group with the given name, worlds and default GameMode
      */
-    fun mockGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode): Group
-    {
+    fun mockGroup(name: String, worlds: MutableSet<String>, gameMode: GameMode): Group {
         return Group(name, worlds, gameMode, null)
+    }
+
+    fun mockBukkit() {
+        mockkStatic(Bukkit::class)
+
+        @Suppress("SENSELESS_COMPARISON") // There is exactly one time where this is not false: the first time
+        if (Bukkit.getServer() == null) {
+            val server = mockkClass(Server::class, relaxed = true)
+            Bukkit.setServer(server)
+        }
+    }
+
+    fun mockItemFactory(): ItemFactory {
+        val itemFactory = mockkClass(ItemFactory::class)
+
+        // No implementation of the ItemMeta interface readily available, so we return our own
+        every { itemFactory.getItemMeta(any()) } answers { ItemMetaTestImpl() }
+
+        // This is required for ItemStack#setItemMeta to be successful
+        val itemMeta = ItemMetaTestImpl()
+        val metaArg = slot<ItemMeta>()
+        val materialArg = slot<Material>()
+        every { itemFactory.getItemMeta(any()) } answers { itemMeta }
+        every { itemFactory.equals(any(), isNull()) } returns false
+        every { itemFactory.isApplicable(ofType(ItemMeta::class), ofType(Material::class)) } returns true
+        every { itemFactory.asMetaFor(capture(metaArg), ofType(Material::class)) } answers { metaArg.captured }
+        every { itemFactory.updateMaterial(ofType(ItemMeta::class), capture(materialArg)) } answers { materialArg.captured }
+
+        return itemFactory
     }
 }

@@ -1,10 +1,10 @@
 package me.ebonjaeger.perworldinventory.listener
 
-import junit.framework.Assert.fail
 import me.ebonjaeger.perworldinventory.TestHelper
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.Test
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
 

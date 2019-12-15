@@ -70,7 +70,7 @@ class EconomyService @Inject constructor(private val server: Server,
         }
     }
 
-    fun withDrawMoneyFromPlayer(player: Player) {
+    fun withdrawFromPlayer(player: Player) {
         if (economy != null) {
             val amount = economy?.getBalance(player) ?: 0.0
             economy?.withdrawPlayer(player, amount)

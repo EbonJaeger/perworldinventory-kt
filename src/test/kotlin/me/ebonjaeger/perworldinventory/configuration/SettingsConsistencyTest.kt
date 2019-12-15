@@ -7,7 +7,7 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.isEmpty
 import me.ebonjaeger.perworldinventory.TestHelper.getFromJar
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Tests that the config.yml file corresponds with the settings holder classes in the code.

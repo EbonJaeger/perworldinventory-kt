@@ -1,37 +1,36 @@
 package me.ebonjaeger.perworldinventory.command
 
-import com.nhaarman.mockito_kotlin.given
-import io.mockk.*
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkClass
+import io.mockk.runs
+import io.mockk.verify
 import me.ebonjaeger.perworldinventory.Group
 import me.ebonjaeger.perworldinventory.GroupManager
+import me.ebonjaeger.perworldinventory.TestHelper
 import me.ebonjaeger.perworldinventory.TestHelper.mockGroup
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.World
 import org.bukkit.command.CommandSender
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.powermock.api.mockito.PowerMockito.mockStatic
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
-import kotlin.test.BeforeTest
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
  * Tests for [GroupCommands].
  */
-@PrepareForTest(Bukkit::class)
-@RunWith(PowerMockRunner::class)
 class GroupCommandsTest
 {
 
-    private var groupManager = classMockk(GroupManager::class)
+    private var groupManager = mockkClass(GroupManager::class)
     private val commands = GroupCommands(groupManager)
 
-    @BeforeTest
+    @BeforeEach
     fun setupMocks()
     {
-        mockStatic(Bukkit::class.java)
+        TestHelper.mockBukkit()
 
         every { groupManager.addGroup(any(), any(), any(), any()) } just runs
         every { groupManager.removeGroup(any()) } just runs
@@ -50,7 +49,7 @@ class GroupCommandsTest
         commands.onAddGroup(sender, "test", "survival", "test", "test_nether")
 
         // then
-        verify(inverse = true) { groupManager.addGroup(any(), any(), any(), any()) }
+        verify(exactly = 0) { groupManager.addGroup(any(), any(), any(), any()) }
     }
 
     @Test
@@ -64,15 +63,16 @@ class GroupCommandsTest
         commands.onAddGroup(sender, "test", "invalid", "creative")
 
         // then
-        verify(inverse = true) { groupManager.addGroup(any(), any(), any(), any()) }
+        verify(exactly = 0) { groupManager.addGroup(any(), any(), any(), any()) }
     }
 
     @Test
-    fun addGroupSuccessfully()
-    {
+    fun addGroupSuccessfully() {
         // given
         val sender = mockk<CommandSender>(relaxed = true)
         every { groupManager.getGroup("test") } returns null
+        every { groupManager.addGroup(any(), any(), any(), any()) } just runs
+        every { groupManager.saveGroups() } just runs
 
         // when
         commands.onAddGroup(sender, "test", "creative", "creative")
@@ -92,22 +92,23 @@ class GroupCommandsTest
         commands.onAddWorld(sender, "bob", "bobs_world")
 
         // then
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) { groupManager.saveGroups() }
     }
 
     @Test
-    fun addWorldInvalidWorld()
-    {
+    fun addWorldInvalidWorld() {
         // given
         val sender = mockk<CommandSender>(relaxed = true)
         every { groupManager.getGroup("test") } returns mockGroup("test")
-        given(Bukkit.getWorld("invalid")).willReturn(null)
+        every { Bukkit.getWorld("invalid") } returns null
 
         // when
         commands.onAddWorld(sender, "test", "invalid")
 
         // then
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) {
+            groupManager.saveGroups()
+        }
     }
 
     @Test
@@ -118,8 +119,7 @@ class GroupCommandsTest
         val world = mockk<World>(relaxed = true)
         val group = mockGroup("test", mutableSetOf("test"))
 
-        given(Bukkit.getWorld("bob")).willReturn(world)
-
+        every { Bukkit.getWorld("bob") } returns world
         every { world.name } returns "bob"
         every { groupManager.getGroup("test") } returns group
 
@@ -133,8 +133,7 @@ class GroupCommandsTest
     }
 
     @Test
-    fun removeGroupInvalidName()
-    {
+    fun removeGroupInvalidName() {
         // given
         val sender = mockk<CommandSender>(relaxed = true)
         every { groupManager.getGroup("invalid") } returns null
@@ -143,16 +142,19 @@ class GroupCommandsTest
         commands.onRemoveGroup(sender, "invalid")
 
         // then
-        verify(inverse = true) { groupManager.removeGroup(any()) }
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) {
+            groupManager.removeGroup(any())
+            groupManager.saveGroups()
+        }
     }
 
     @Test
-    fun removeGroupSuccessfully()
-    {
+    fun removeGroupSuccessfully() {
         // given
         val sender = mockk<CommandSender>(relaxed = true)
         every { groupManager.getGroup("test") } returns mockGroup("test")
+        every { groupManager.removeGroup(any()) } just runs
+        every { groupManager.saveGroups() } just runs
 
         // when
         commands.onRemoveGroup(sender, "test")
@@ -173,7 +175,7 @@ class GroupCommandsTest
         commands.onRemoveWorld(sender, "bob", "bobs_world")
 
         // then
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) { groupManager.saveGroups() }
     }
 
     @Test
@@ -182,13 +184,13 @@ class GroupCommandsTest
         // given
         val sender = mockk<CommandSender>(relaxed = true)
         every { groupManager.getGroup("test") } returns mockGroup("test")
-        given(Bukkit.getWorld("invalid")).willReturn(null)
+        every { Bukkit.getWorld("invalid") } returns null
 
         // when
         commands.onRemoveWorld(sender, "test", "invalid")
 
         // then
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) { groupManager.saveGroups() }
     }
 
     @Test
@@ -199,8 +201,7 @@ class GroupCommandsTest
         val world = mockk<World>(relaxed = true)
         val group = mockGroup("test", mutableSetOf("test", "bob"))
 
-        given(Bukkit.getWorld("bob")).willReturn(world)
-
+        every { Bukkit.getWorld("bob") } returns world
         every { world.name } returns "bob"
         every { groupManager.getGroup("test") } returns group
 
@@ -224,7 +225,7 @@ class GroupCommandsTest
         commands.onSetRespawnWorld(sender, "bob", "bobs_world")
 
         // then
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) { groupManager.saveGroups() }
     }
 
     @Test
@@ -233,13 +234,13 @@ class GroupCommandsTest
         // given
         val sender = mockk<CommandSender>(relaxed = true)
         every { groupManager.getGroup("test") } returns mockGroup("test")
-        given(Bukkit.getWorld("invalid")).willReturn(null)
+        every { Bukkit.getWorld("invalid") } returns null
 
         // when
         commands.onSetRespawnWorld(sender, "test", "invalid")
 
         // then
-        verify(inverse = true) { groupManager.saveGroups() }
+        verify(exactly = 0) { groupManager.saveGroups() }
     }
 
     @Test
@@ -250,8 +251,7 @@ class GroupCommandsTest
         val world = mockk<World>(relaxed = true)
         val group = mockGroup("test", mutableSetOf("test", "bob"))
 
-        given(Bukkit.getWorld("bob")).willReturn(world)
-
+        every { Bukkit.getWorld("bob") } returns world
         every { world.name } returns "bob"
         every { groupManager.getGroup("test") } returns group
 

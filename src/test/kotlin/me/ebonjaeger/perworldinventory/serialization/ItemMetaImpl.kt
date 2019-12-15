@@ -86,10 +86,6 @@ class ItemMetaTestImpl : ItemMeta, Damageable {
         throw NotImplementedError("not implemented")
     }
 
-    override fun spigot(): ItemMeta.Spigot {
-        throw NotImplementedError("not implemented")
-    }
-
     override fun getDisplayName(): String {
         throw NotImplementedError("not implemented")
     }

@@ -3,7 +3,7 @@ package me.ebonjaeger.perworldinventory
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import org.bukkit.GameMode
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  * Test for [Group].

@@ -2,37 +2,31 @@ package me.ebonjaeger.perworldinventory.serialization
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import io.mockk.every
+import io.mockk.mockkClass
+import me.ebonjaeger.perworldinventory.TestHelper
 import net.minidev.json.JSONObject
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.junit.Before
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.BDDMockito.given
-import org.powermock.api.mockito.PowerMockito.mock
-import org.powermock.api.mockito.PowerMockito.mockStatic
-import org.powermock.core.classloader.annotations.PrepareForTest
-import org.powermock.modules.junit4.PowerMockRunner
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
-@PrepareForTest(Bukkit::class)
-@RunWith(PowerMockRunner::class)
 class LocationSerializerTest
 {
 
-    @Before
+    @BeforeEach
     fun createMocks()
     {
-        mockStatic(Bukkit::class.java)
+        TestHelper.mockBukkit()
     }
 
     @Test
-    fun verifySerializedLocation()
-    {
+    fun verifySerializedLocation() {
         // given
-        val world = mock(World::class.java)
-        given(Bukkit.getWorld("test")).willReturn(world)
-        given(world.name).willReturn("test")
+        val world = mockkClass(World::class)
+        every { Bukkit.getWorld("test") } returns world
+        every { world.name } returns "test"
 
         val loc = Location(world, 134.523, 64.0, -3876.26437, 432.67F, 32.63413F)
 
@@ -47,9 +41,9 @@ class LocationSerializerTest
     @Test
     fun deserializedOldDataCorrectly() {
         // given
-        val world = mock(World::class.java)
-        given(Bukkit.getWorld("test")).willReturn(world)
-        given(world.name).willReturn("test")
+        val world = mockkClass(World::class)
+        every { Bukkit.getWorld("test") } returns world
+        every { world.name } returns "test"
 
         val expected = Location(world, 14521.3, 14.0, -2352.121, 123.3F, -2352.532F)
 

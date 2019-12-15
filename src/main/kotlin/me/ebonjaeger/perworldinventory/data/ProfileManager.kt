@@ -254,6 +254,6 @@ class ProfileManager @Inject constructor(private val bukkitService: BukkitServic
             player.activePotionEffects.forEach { player.removePotionEffect(it.type) }
         }
 
-        economyService.withDrawMoneyFromPlayer(player)
+        economyService.withdrawFromPlayer(player)
     }
 }

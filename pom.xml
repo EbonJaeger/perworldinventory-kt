@@ -17,7 +17,7 @@
         <!-- Project properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.jdkVersion>1.8</project.jdkVersion>
-        <kotlin.version>1.3.50</kotlin.version>
+        <kotlin.version>1.3.61</kotlin.version>
 
         <!-- Output properties -->
         <project.outputName>PerWorldInventory</project.outputName>
@@ -31,8 +31,9 @@
         <bukkitplugin.authors>EbonJaeger</bukkitplugin.authors>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkit.version>1.14.4-R0.1-SNAPSHOT</bukkit.version>
-        <powermock.version>2.0.2</powermock.version>
+        <bukkit.version>1.15-R0.1-SNAPSHOT</bukkit.version>
+        <junit.jupiter.version>5.5.2</junit.jupiter.version>
+        <powermock.version>2.0.4</powermock.version>
     </properties>
 
     <licenses>
@@ -103,7 +104,7 @@
         <dependency>
             <groupId>ch.jalu</groupId>
             <artifactId>configme</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.0</version>
         </dependency>
 
         <!-- Dependency Injector -->
@@ -203,9 +204,15 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -218,24 +225,6 @@
             <groupId>io.mockk</groupId>
             <artifactId>mockk</artifactId>
             <version>1.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-module-junit4</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito2</artifactId>
-            <version>${powermock.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nhaarman</groupId>
-            <artifactId>mockito-kotlin</artifactId>
-            <version>1.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -252,7 +241,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit</artifactId>
+            <artifactId>kotlin-test-junit5</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
@@ -405,7 +394,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.4</version>
+                <version>0.8.5</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>

@@ -4,15 +4,15 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.junit.Before
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
-@Ignore
+@Disabled
 class PotionSerializerTest
 {
 
-    @Before
+    @BeforeEach
     fun registerPotionEffects()
     {
         PotionEffectType.registerPotionEffectType(PotionEffectType.ABSORPTION)
