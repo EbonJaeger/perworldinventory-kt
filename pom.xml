@@ -33,7 +33,6 @@
         <!-- Change Bukkit Version HERE! -->
         <bukkit.version>1.15-R0.1-SNAPSHOT</bukkit.version>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
-        <powermock.version>2.0.4</powermock.version>
     </properties>
 
     <licenses>
