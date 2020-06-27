@@ -16,7 +16,7 @@ share-if-unconfigured: false
 manage-death-respawn: false
 
 # Disables the nagging message when a world is created on the fly
-# Intended for users who know what their doing, and don't need to have worlds configured
+# Intended for users who know what they're doing, and don't need to have worlds configured
 disable-nag-message: false
 
 metrics:
