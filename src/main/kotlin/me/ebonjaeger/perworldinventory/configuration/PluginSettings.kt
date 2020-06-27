@@ -60,6 +60,6 @@ object PluginSettings : SettingsHolder
 
     @JvmField
     @Comment("Disables the nagging message when a world is created on the fly",
-            "Intended for users who know what their doing, and don't need to have worlds configured")
+            "Intended for users who know what they're doing, and don't need to have worlds configured")
     val DISABLE_NAG: Property<Boolean>? = newProperty("disable-nag-message", false)
 }
